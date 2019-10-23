@@ -8,11 +8,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(HEADER 
     linreg.h
     traintest.h
+    polyfeatures.h
 )
 
 set(SOURCES
     linreg.cpp
     traintest.cpp
+    polyfeatures.cpp
     main.cpp
 )
 

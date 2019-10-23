@@ -3,8 +3,6 @@
 #include <numeric>
 #include <random>
 
-#include <iostream>
-
 void test_train::split(const std::vector<std::vector<double>>& x, const std::vector<double>& y, std::vector<std::vector<double>>& x_train, std::vector<std::vector<double>>& x_test, std::vector<double>& y_train, std::vector<double>& y_test, double test_proportion)
 {
     size_t test_size = y.size() * test_proportion;
