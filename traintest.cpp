@@ -38,6 +38,4 @@ void test_train::split(const std::vector<std::vector<double>>& x, const std::vec
         y_test.push_back(y[*index]);
         indices.erase(index);
     }
-
-
 }

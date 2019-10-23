@@ -1,5 +1,6 @@
 #include "linreg.h"
 #include "traintest.h"
+#include "polyfeatures.h"
 #include <iostream>
 
 int main(int argc, char** args)
@@ -12,6 +13,11 @@ int main(int argc, char** args)
     std::vector<std::vector<double>> x; 
     std::vector<double> y (std::begin(Y), std::end(Y));
     x.push_back(std::vector<double>(std::begin(X1), std::end(X1)));
+    x.push_back(std::vector<double>(std::begin(X1), std::end(X1)));
+
+
+    polynomial_features pf(3);
+    pf.transform(x);
 
     std::vector<std::vector<double>> x_test, x_train;
     std::vector<double> y_test, y_train;
