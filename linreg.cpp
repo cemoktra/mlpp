@@ -60,6 +60,24 @@ double linear_regression::predict(const std::vector<double> &x)
     return result;
 }
 
+double linear_regression::score(const std::vector<std::vector<double>> &x, const std::vector<double> &y)
+{
+    std::vector<double> input(x.size());
+    double mean = std::accumulate(y.begin(), y.end(), 0) / y.size();
+
+    double sqr = 0.0;
+    double sqt = 0.0;
+    for (auto i = 0; i < y.size(); i++) {
+        for (auto j = 0; j < x.size(); j++)
+            input[j] = x[j][i];
+        double p = predict(input);
+        sqr += (p - y[i]) * (p - y[i]);
+        sqt += (mean - y[i]) * (mean - y[i]);
+    }
+
+    return 1.0 - (sqr / sqt);
+}
+
 double linear_regression::cost(const std::vector<std::vector<double>> &x, const std::vector<double> &y)
 {
     size_t samples = y.size();

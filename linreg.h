@@ -12,6 +12,9 @@ public:
 
     double predict(const std::vector<double> &x);
 
+    // TODO:
+    double score(const std::vector<std::vector<double>> &x, const std::vector<double> &y);
+
 private:
     double cost(const std::vector<std::vector<double>> &x, const std::vector<double> &y);
     void init_coeffs(size_t count);

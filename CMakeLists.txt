@@ -5,5 +5,16 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(LinearRegression main.cpp linreg.cpp linreg.h)
+set(HEADER 
+    linreg.h
+    traintest.h
+)
+
+set(SOURCES
+    linreg.cpp
+    traintest.cpp
+    main.cpp
+)
+
+add_executable(LinearRegression ${HEADER} ${SOURCES})
 target_link_libraries(LinearRegression tbb)
