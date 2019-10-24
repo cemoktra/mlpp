@@ -15,7 +15,7 @@ int main(int argc, char** args)
     std::vector<std::vector<double>> x_test, x_train;
     std::vector<double> y_test, y_train;
 
-    kfold kf(3, false);
+    kfold kf(4, false);
     linear_regression lr;
     std::vector<double> mean_coeffs;
 
