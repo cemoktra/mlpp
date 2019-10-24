@@ -1,6 +1,7 @@
 #include "../src/linreg.h"
 #include "../src/traintest.h"
 #include "../src/polyfeatures.h"
+#include "../src/kfold.h"
 #include <iostream>
 
 int main(int argc, char** args)
@@ -17,6 +18,11 @@ int main(int argc, char** args)
     std::vector<std::vector<double>> x_test, x_train;
     std::vector<double> y_test, y_train;
     
+    kfold kf(3);
+    kf.split(0, x, y, x_train, x_test, y_train, y_test);
+    kf.split(1, x, y, x_train, x_test, y_train, y_test);
+    kf.split(2, x, y, x_train, x_test, y_train, y_test);
+
     test_train::split(x, y, x_train, x_test, y_train, y_test);
 
     linear_regression lr;

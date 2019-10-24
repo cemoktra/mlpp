@@ -8,6 +8,10 @@ void test_train::split(const std::vector<std::vector<double>>& x, const std::vec
     size_t test_size = y.size() * test_proportion;
     size_t train_size = y.size() - test_size;
 
+    x_train.clear();
+    x_test.clear();
+    y_train.clear();
+    y_test.clear();
     x_train.resize(x.size());    
     x_test.resize(x.size());
 

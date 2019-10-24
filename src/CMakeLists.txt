@@ -7,12 +7,14 @@ set(HEADER
     linreg.h
     traintest.h
     polyfeatures.h
+    kfold.h
 )
 
 set(SOURCES
     linreg.cpp
     traintest.cpp
     polyfeatures.cpp
+    kfold.cpp
 )
 
 add_library(LinearRegression ${HEADER} ${SOURCES})
