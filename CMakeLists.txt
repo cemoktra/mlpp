@@ -1,16 +1,6 @@
-project(MachineLearning)
-
 cmake_minimum_required(VERSION 3.5)
 
-# include(ExternalProject)
-
-# ExternalProject_Add(
-#     SOURCE_DIR "${CMAKE_BINARY_DIR}/googletest-src"
-#     BINARY_DIR "${CMAKE_BINARY_DIR}/googletest-build"
-#     GIT_REPOSITORY "https://github.com/google/googletest.git" 
-#     GIT_TAG "release-1.10.0"
-#     INSTALL_COMMAND ""
-# )
+project(MachineLearning VERSION 0.1.0)
 
 configure_file(cmake/CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
