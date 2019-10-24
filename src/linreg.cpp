@@ -23,6 +23,11 @@ void linear_regression::init_buffers(size_t count)
     m_sxy.resize(count);
 }
 
+void linear_regression::set_coeffs(const std::vector<double>& coeffs)
+{
+    m_coeffs = coeffs;
+}
+
 void linear_regression::train(const std::vector<std::vector<double>> &x, const std::vector<double> &y, size_t maxIterations)
 {   
     bool thresholdReached = false;

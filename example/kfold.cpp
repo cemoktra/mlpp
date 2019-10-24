@@ -1,6 +1,7 @@
 #include "../src/linreg.h"
 #include "../src/kfold.h"
 #include <iostream>
+#include <algorithm>
 
 int main(int argc, char** args)
 {
@@ -16,6 +17,8 @@ int main(int argc, char** args)
 
     kfold kf(3, false);
     linear_regression lr;
+    std::vector<double> mean_coeffs;
+
     for (auto i = 0; i < kf.k(); ++i) {
         kf.split(i, x, y, x_train, x_test, y_train, y_test);
         lr.train(x_train, y_train);
@@ -25,5 +28,18 @@ int main(int argc, char** args)
             std::cout << coeff << " ";
         std::cout << std::endl;
         std::cout << "score: " << lr.score(x_test, y_test) << std::endl;
+
+        if (mean_coeffs.size())
+            std::transform(mean_coeffs.begin(), mean_coeffs.end(), lr.coeffs().begin(), mean_coeffs.begin(), std::plus<>());
+        else 
+            mean_coeffs = lr.coeffs();
     }
+
+    std::transform(mean_coeffs.begin(), mean_coeffs.end(), mean_coeffs.begin(), std::bind(std::divides<>(), std::placeholders::_1, kf.k()));
+    lr.set_coeffs(mean_coeffs);
+    std::cout << "mean coeffs: ";
+    for (auto coeff : lr.coeffs())
+        std::cout << coeff << " ";
+    std::cout << std::endl;
+    std::cout << "mean score: " << lr.score(x_test, y_test) << std::endl;
 }

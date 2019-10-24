@@ -12,12 +12,11 @@ public:
     void train(const std::vector<std::vector<double>> &x, const std::vector<double> &y, size_t maxIterations = 0);
 
     std::vector<double> coeffs();
-
     double predict(const std::vector<double> &x);
-
-    // TODO:
     double score(const std::vector<std::vector<double>> &x, const std::vector<double> &y);
 
+    void set_coeffs(const std::vector<double>& coeffs);
+    
 private:
     double cost(const std::vector<std::vector<double>> &x, const std::vector<double> &y);
     void init_coeffs(size_t count);
