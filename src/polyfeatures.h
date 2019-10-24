@@ -1,3 +1,6 @@
+#ifndef _POLYFEATURES_H_
+#define _POLYFEATURES_H_
+
 #include <vector>
 
 class polynomial_features
@@ -12,3 +15,5 @@ private:
     size_t m_degree;
     bool m_bias;
 };
+
+#endif

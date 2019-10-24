@@ -1,3 +1,6 @@
+#ifndef _LINREG_H_
+#define _LINREG_H_
+
 #include <vector>
 
 class linear_regression
@@ -29,3 +32,5 @@ private:
     std::vector<double> m_sxx;
     std::vector<double> m_sxy;
 };
+
+#endif
