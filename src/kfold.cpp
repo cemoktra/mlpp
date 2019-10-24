@@ -11,6 +11,11 @@ kfold::kfold(size_t k, bool shuffle)
 {
 }
 
+size_t kfold::k()
+{
+    return m_k;
+}
+
 void kfold::split(size_t index, const std::vector<std::vector<double>>& x, const std::vector<double>& y, std::vector<std::vector<double>>& x_train, std::vector<std::vector<double>>& x_test, std::vector<double>& y_train, std::vector<double>& y_test)
 {
     if (m_indices.size() != y.size()) {

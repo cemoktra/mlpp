@@ -18,19 +18,25 @@ int main(int argc, char** args)
     std::vector<std::vector<double>> x_test, x_train;
     std::vector<double> y_test, y_train;
     
-    kfold kf(3);
-    kf.split(0, x, y, x_train, x_test, y_train, y_test);
-    kf.split(1, x, y, x_train, x_test, y_train, y_test);
-    kf.split(2, x, y, x_train, x_test, y_train, y_test);
 
-    test_train::split(x, y, x_train, x_test, y_train, y_test);
-
+    kfold kf(3, false);
     linear_regression lr;
-    //lr.train(x, y);
-    lr.train(x_train, y_train);
-    for (auto coeff : lr.coeffs())
-        std::cout << coeff << " ";
-    std::cout << std::endl;
+    for (auto i = 0; i < kf.k(); ++i) {
+        kf.split(i, x, y, x_train, x_test, y_train, y_test);
+        lr.train(x_train, y_train);
+        std::cout << "KFOLD " << i + 1 << std::endl;
+        std::cout << "coeffs: ";
+        for (auto coeff : lr.coeffs())
+            std::cout << coeff << " ";
+        std::cout << std::endl;
+        std::cout << "score: " << lr.score(x_test, y_test) << std::endl;
+    }
 
-    std::cout << lr.score(x_test, y_test) << std::endl;
+    // test_train::split(x, y, x_train, x_test, y_train, y_test);
+    // lr.train(x_train, y_train);
+    // std::cout << "coeffs: ";
+    // for (auto coeff : lr.coeffs())
+    //     std::cout << coeff << " ";
+    // std::cout << std::endl;
+    // std::cout << "score: " << lr.score(x_test, y_test) << std::endl;
 }
