@@ -9,7 +9,7 @@ public:
     linear_regression();
     ~linear_regression() = default;
 
-    void train(const std::vector<std::vector<double>> &x, const std::vector<double> &y);
+    void train(const std::vector<std::vector<double>> &x, const std::vector<double> &y, size_t maxIterations = 0);
 
     std::vector<double> coeffs();
 

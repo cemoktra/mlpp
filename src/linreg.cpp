@@ -23,9 +23,10 @@ void linear_regression::init_buffers(size_t count)
     m_sxy.resize(count);
 }
 
-void linear_regression::train(const std::vector<std::vector<double>> &x, const std::vector<double> &y)
+void linear_regression::train(const std::vector<std::vector<double>> &x, const std::vector<double> &y, size_t maxIterations)
 {   
     bool thresholdReached = false;
+    size_t iteration = 0;
 
     if (x.size() == 0)
         return;
@@ -34,6 +35,7 @@ void linear_regression::train(const std::vector<std::vector<double>> &x, const s
     init_buffers(x.size());
 
     while (!thresholdReached) {
+        ++iteration;
         cost(x, y);
 
         thresholdReached = true;
@@ -41,6 +43,8 @@ void linear_regression::train(const std::vector<std::vector<double>> &x, const s
             m_coeffs[i] -= m_rate * m_coeffs_delta[i];
             thresholdReached = thresholdReached && fabs(m_coeffs_delta[i]) < m_threshold;
         }
+        if (maxIterations > 0 && iteration >= maxIterations)
+            break;
     }
 }
 

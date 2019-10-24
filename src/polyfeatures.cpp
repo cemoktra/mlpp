@@ -55,5 +55,5 @@ std::vector<std::vector<double>> polynomial_features::transform(const std::vecto
     }
 
 
-    return std::vector<std::vector<double>>();
+    return result;
 }
