@@ -18,5 +18,8 @@ Eigen::MatrixXd linear_regression::calc_weights(const Eigen::MatrixXd& x, Eigen:
 {
     auto xTx = (x.transpose() * x);
     auto xTy = (x.transpose() * y);
-    return xTx.inverse() * xTy;
+
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(xTx, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    auto xTx_inverse = svd.solve(Eigen::MatrixXd::Identity(xTx.rows(), xTx.cols()));
+    return xTx_inverse * xTy;
 }
