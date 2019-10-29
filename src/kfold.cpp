@@ -16,11 +16,12 @@ size_t kfold::k()
     return m_k;
 }
 
-void kfold::split(size_t index, const std::vector<std::vector<double>>& x, const std::vector<double>& y, std::vector<std::vector<double>>& x_train, std::vector<std::vector<double>>& x_test, std::vector<double>& y_train, std::vector<double>& y_test)
+#include <iostream>
+void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test)
 {
-    if (m_indices.size() != y.size()) {
-        prepareIndices(y.size());
-        m_blockSize = ceil(static_cast<double>(y.size()) / m_k);
+    if (m_indices.size() != y.rows()) {
+        prepareIndices(y.rows());
+        m_blockSize = ceil(static_cast<double>(y.rows()) / m_k);
     }
     if (index >= m_k)
         throw std::out_of_range ("invalid split index");
@@ -29,27 +30,31 @@ void kfold::split(size_t index, const std::vector<std::vector<double>>& x, const
     auto test_end   = std::next(test_begin + m_blockSize - 1);
     test_end = std::min(test_end, m_indices.end());
 
-    x_train.clear();
-    x_test.clear();
-    y_train.clear();
-    y_test.clear();
-    x_train.resize(x.size());    
-    x_test.resize(x.size());
+    Eigen::MatrixXd _x_train(x.rows(), x.cols());
+    Eigen::MatrixXd _y_train(y.rows(), 1);
+    Eigen::MatrixXd _x_test(x.rows(), x.cols());
+    Eigen::MatrixXd _y_test(y.rows(), 1);
 
+    size_t train_idx = 0;
+    size_t test_idx = 0;
     for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
     {
         if (it < test_begin || it >= test_end) {
-            for (auto j = 0; j < x.size(); j++) {
-                x_train[j].push_back(x[j][*it]);
+            for (auto j = 0; j < x.cols(); j++) {
+                _x_train(train_idx, j) = x(*it, j);
             }
-            y_train.push_back(y[*it]);
+            _y_train(train_idx++, 0) = y(*it, 0);
         } else {
-            for (auto j = 0; j < x.size(); j++) {
-                x_test[j].push_back(x[j][*it]);
+            for (auto j = 0; j < x.cols(); j++) {
+                _x_test(test_idx, j) = x(*it, j);
             }
-            y_test.push_back(y[*it]);
+            _y_test(test_idx++, 0) = y(*it, 0);
         }
     }
+    x_train = _x_train.block(0, 0, train_idx, x.cols());
+    y_train = _y_train.block(0, 0, train_idx, y.cols());
+    x_test = _x_test.block(0, 0, test_idx, x.cols());
+    y_test = _y_test.block(0, 0, test_idx, y.cols());
 }
 
 void kfold::prepareIndices(size_t count)

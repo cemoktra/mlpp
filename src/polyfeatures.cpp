@@ -10,19 +10,11 @@ polynomial_features::polynomial_features(size_t degree, bool bias)
 {
 }
 
-std::vector<std::vector<double>> polynomial_features::transform(const std::vector<std::vector<double>> &x)
+Eigen::MatrixXd polynomial_features::transform(const Eigen::MatrixXd &x)
 {
-    std::vector<std::vector<double>> result;
+    Eigen::MatrixXd result = x;
 
-    if (m_bias) {
-        std::vector<double> bias(x[0].size());
-        std::fill(bias.begin(), bias.end(), 1.0);
-        result.push_back(bias);
-    }
-    for (auto _x : x)
-        result.push_back(_x);
-
-    std::vector<double> polynom(x.size());
+    std::vector<double> polynom(x.cols());
     for (auto i = 2u; i <= m_degree; i++) {
         std::fill(polynom.begin(), polynom.end(), 0.0);
 
@@ -30,30 +22,32 @@ std::vector<std::vector<double>> polynomial_features::transform(const std::vecto
         while (true) {
             if (i == std::accumulate(polynom.begin(), polynom.end(), 0)) {
                 // create data
-                std::vector<double> data;
-                for (auto j = 0; j < x[0].size(); j++) {
-                    double value = 1.0;
-                    for (auto k = 0; k < polynom.size(); k++) {
-                        value *= std::pow(x[k][j], polynom[k]);
-                    }
-                    data.push_back(value);
+                result.conservativeResize(Eigen::NoChange, result.cols() + 1);
+                Eigen::VectorXd newcol = Eigen::VectorXd::Ones(x.rows());
+                for (auto k = 0; k < polynom.size(); k++) {
+                    Eigen::VectorXd p = result.col(k).array().pow(polynom[k]);
+                    newcol = newcol.cwiseProduct(p);
                 }
-                result.push_back(data);
+                result.col(result.cols() - 1) = newcol;
             }
 
             digit = 0;
-            while (digit < x.size()) {
+            while (digit < x.cols()) {
                 polynom[digit]++;
                 if (polynom[digit] > i) {
                     polynom[digit++] = 0;
                 } else
                     break;
             }
-            if (digit >= x.size())
+            if (digit >= x.cols())
                 break;
         }
     }
 
+    if (m_bias) {
+        result.conservativeResize(Eigen::NoChange, result.cols() + 1);
+        result.col(result.cols() - 1) = Eigen::VectorXd::Ones(result.rows()); // add bias
+    }
 
     return result;
 }

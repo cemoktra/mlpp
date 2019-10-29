@@ -3,17 +3,15 @@
 #include <numeric>
 #include <random>
 
-void test_train::split(const std::vector<std::vector<double>>& x, const std::vector<double>& y, std::vector<std::vector<double>>& x_train, std::vector<std::vector<double>>& x_test, std::vector<double>& y_train, std::vector<double>& y_test, double test_proportion)
+void test_train::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test, double test_proportion, bool shuffle)
 {
-    size_t test_size = y.size() * test_proportion;
-    size_t train_size = y.size() - test_size;
+    size_t test_size = y.rows() * test_proportion;
+    size_t train_size = y.rows() - test_size;
 
-    x_train.clear();
-    x_test.clear();
-    y_train.clear();
-    y_test.clear();
-    x_train.resize(x.size());    
-    x_test.resize(x.size());
+    x_train.resize(train_size, x.cols());
+    y_train.resize(train_size, 1);
+    x_test.resize(test_size, x.cols());
+    y_test.resize(test_size, 1);
 
     std::vector<size_t> indices (y.size());
     std::iota(indices.begin(), indices.end(), 0);
@@ -24,22 +22,23 @@ void test_train::split(const std::vector<std::vector<double>>& x, const std::vec
 
     for (auto i = 0; i < train_size; i++)
     {
-        auto index = indices.begin() + floor(dis(gen) * indices.size());
-        for (auto j = 0; j < x.size(); j++) {
-            x_train[j].push_back(x[j][*index]);
+        auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
+
+        for (auto j = 0; j < x.cols(); j++) {
+            x_train(i, j) = x(*index, j);
         }
         
-        y_train.push_back(y[*index]);
+        y_train(i, 0) = y(*index, 0);
         indices.erase(index);
     }
 
     for (auto i = 0; i < test_size; i++)
     {
-        auto index = indices.begin() + floor(dis(gen) * indices.size());
-        for (auto j = 0; j < x.size(); j++) {
-            x_test[j].push_back(x[j][*index]);
+        auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
+        for (auto j = 0; j < x.cols(); j++) {
+            x_test(i, j) = x(*index, j);
         }
-        y_test.push_back(y[*index]);
+        y_test(i, 0) = y(*index, 0);
         indices.erase(index);
     }
 }

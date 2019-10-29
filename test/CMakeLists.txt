@@ -9,5 +9,5 @@ set(SOURCES
 )
 
 add_executable(UnitTests ${SOURCES})
-target_link_libraries(UnitTests gtest_main LinearRegression)
+target_link_libraries(UnitTests gtest_main MachineLearning)
 add_test(NAME unit_tests COMMAND UnitTests)

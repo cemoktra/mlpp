@@ -1,14 +1,14 @@
 #ifndef _KFOLD_H_
 #define _KFOLD_H_
 
-#include <vector>
+#include <Eigen/Dense>
 
 class kfold {
 public:
     kfold(size_t k, bool shuffle = true);
     ~kfold() = default;
 
-    void split(size_t index, const std::vector<std::vector<double>>& x, const std::vector<double>& y, std::vector<std::vector<double>>& x_train, std::vector<std::vector<double>>& x_test, std::vector<double>& y_train, std::vector<double>& y_test);
+    void split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test);
     size_t k();
 
 private:
