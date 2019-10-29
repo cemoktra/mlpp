@@ -12,7 +12,7 @@ int main(int argc, char** args)
     class_map["M"] = 1.0; // bad
     class_map["B"] = 0.0; // good
 
-    std::vector<int> requested_cols (20);
+    std::vector<int> requested_cols (31);
     std::iota(requested_cols.begin(), requested_cols.end(), 1);
 
     Eigen::MatrixXd data;
