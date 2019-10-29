@@ -6,13 +6,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 class test_data {
 public:
     test_data();
     ~test_data();
 
-    static void parse(std::string file, std::vector<int> data_columns, Eigen::MatrixXd& data)
+    static void parse(std::string file, std::vector<int> data_columns, Eigen::MatrixXd& data, const std::map<std::string, double>& class_map = std::map<std::string, double>())
     {
         std::ifstream fis(file);
         std::string line, token;
@@ -44,8 +45,19 @@ public:
 
                 while (std::getline(tokenStream, token, ','))
                 {
-                    if (std::find(data_columns.begin(), data_columns.end(), column) != data_columns.end())
-                        data(lines, index++) = stod(token);
+                    if (std::find(data_columns.begin(), data_columns.end(), column) != data_columns.end()) {
+                        try {
+                            data(lines, index++) = stod(token);
+                        } catch (...) {
+                            auto mapped_value = class_map.find(token);
+                            if (mapped_value != class_map.end()) {
+                                data(lines, index++) = mapped_value->second;
+                            } else {
+                                data(lines, index++) = std::numeric_limits<double>::quiet_NaN();
+                                std::cout << "Could not handle csv value: " << token << std::endl;
+                            }
+                        }
+                    }
                     column++;
                 }
                 lines++;
@@ -54,4 +66,4 @@ public:
    }
 };
 
-#endif
+#endif 

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(HEADER 
     regression.h
     linreg.h
+    logreg.h
     traintest.h
     polyfeatures.h
     normalize.h
@@ -15,6 +16,7 @@ set(HEADER
 set(SOURCES
     regression.cpp
     linreg.cpp
+    logreg.cpp
     traintest.cpp
     polyfeatures.cpp
     normalize.cpp

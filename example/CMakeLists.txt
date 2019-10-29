@@ -15,5 +15,5 @@ target_link_libraries(MultiVar MachineLearning)
 add_executable(Polynomial polynomial.cpp)
 target_link_libraries(Polynomial MachineLearning)
 
-# add_executable(LogReg logistic_regression.cpp)
-# target_link_libraries(LogReg MachineLearning)
+add_executable(LogReg logistic_regression.cpp)
+target_link_libraries(LogReg MachineLearning)

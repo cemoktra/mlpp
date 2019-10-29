@@ -16,6 +16,5 @@ Eigen::MatrixXd normalize::transform(const Eigen::MatrixXd& x)
         auto scale = std::max(std::fabs(min), std::fabs(max));
         result.col(i) /= scale;
     }
-
     return result;
 }
