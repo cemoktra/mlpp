@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(HEADER 
+    model_interface.h
     regression.h
     linreg.h
     logreg.h
@@ -11,6 +12,7 @@ set(HEADER
     polyfeatures.h
     normalize.h
     kfold.h
+    oneforall.h
 )
 
 set(SOURCES
@@ -21,6 +23,7 @@ set(SOURCES
     polyfeatures.cpp
     normalize.cpp
     kfold.cpp
+    oneforall.cpp
 )
 
 add_library(MachineLearning ${HEADER} ${SOURCES})

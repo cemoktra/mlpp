@@ -1,10 +1,9 @@
 #ifndef _REGRESSION_H_
 #define _REGRESSION_H_
 
-#include <Eigen/Dense>
-#include <vector>
+#include "model_interface.h"
 
-class regression
+class regression : public model_interface
 {
 public:
     regression(double rate, double threshold);
@@ -12,7 +11,7 @@ public:
 
     virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) = 0;
 
-    void train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations = 0);
+    void train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations = 0) override;
     virtual double score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y);
 
     void set_weights(const Eigen::MatrixXd& weights);

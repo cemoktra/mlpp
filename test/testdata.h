@@ -39,23 +39,31 @@ public:
             if (firstline) 
                 firstline = false;
             else {
+                auto pos = line.find("\"");
+                while (pos != std::string::npos) {
+                    auto next_pos = line.find("\"", pos + 1);
+                    std::string column = line.substr(pos, next_pos - pos);
+                    while (column.find(",") != std::string::npos) {
+                        column.replace(column.find(","), 1, "_");
+                        line.replace(pos, next_pos - pos, column);
+                    }
+                    pos = line.find("\"", next_pos + 1);
+                }
+
                 std::istringstream tokenStream(line);
                 column = 0;
                 index = 0;
-
                 while (std::getline(tokenStream, token, ','))
                 {
                     if (std::find(data_columns.begin(), data_columns.end(), column) != data_columns.end()) {
                         try {
-                            data(lines, index++) = stod(token);
-                        } catch (...) {
                             auto mapped_value = class_map.find(token);
-                            if (mapped_value != class_map.end()) {
+                            if (mapped_value != class_map.end())
                                 data(lines, index++) = mapped_value->second;
-                            } else {
-                                data(lines, index++) = std::numeric_limits<double>::quiet_NaN();
-                                std::cout << "Could not handle csv value: " << token << std::endl;
-                            }
+                            else
+                                data(lines, index++) = stod(token);
+                        } catch (...) {
+                            std::cout << "Could not handle csv value: " << token << std::endl;
                         }
                     }
                     column++;
