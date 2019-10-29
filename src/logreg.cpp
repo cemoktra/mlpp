@@ -55,3 +55,19 @@ Eigen::MatrixXd logistic_regression::calc_weights(const Eigen::MatrixXd& x, Eige
 
     return m_weights;
 }
+
+double logistic_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+{
+    size_t pos = 0, neg = 0;
+
+    auto p = predict(x);
+    
+    for (auto i = 0; i < p.rows(); i++) {
+        double bin_result = p(i, 0) > 0.5 ? 1.0 : 0.0;
+        if (bin_result == y(i, 0))
+            pos++;
+        else
+            neg++;        
+    }
+    return static_cast<double>(pos) / static_cast<double>(pos + neg);
+}

@@ -13,7 +13,7 @@ public:
     virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) = 0;
 
     void train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations = 0);
-    double score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y);
+    virtual double score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y);
 
     void set_weights(const Eigen::MatrixXd& weights);
     Eigen::MatrixXd weights();

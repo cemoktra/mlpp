@@ -10,7 +10,7 @@ public:
     ~logistic_regression() = default;
 
     Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
-
+    double score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y) override;
 protected:
     Eigen::MatrixXd sigmoid(const Eigen::MatrixXd& x);
     
