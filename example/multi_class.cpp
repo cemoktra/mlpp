@@ -1,4 +1,5 @@
 #include "../src/oneforall.h"
+#include "../src/oneforone.h"
 #include "../src/traintest.h"
 #include "../src/normalize.h"
 #include "../test/testdata.h"
@@ -32,7 +33,11 @@ int main(int argc, char** args)
 
     one_for_all ofa (class_map);
     ofa.train(x_train, y_train);
-    std::cout << "score: " << ofa.score(x_test, y_test) << std::endl;
+    std::cout << "one for all score: " << ofa.score(x_test, y_test) << std::endl;
+
+    one_for_one ofo (class_map);
+    ofo.train(x_train, y_train);
+    std::cout << "one for one score: " << ofo.score(x_test, y_test) << std::endl;
     
     return 0;
 }

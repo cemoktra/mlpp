@@ -13,6 +13,7 @@ set(HEADER
     normalize.h
     kfold.h
     oneforall.h
+    oneforone.h
 )
 
 set(SOURCES
@@ -24,6 +25,7 @@ set(SOURCES
     normalize.cpp
     kfold.cpp
     oneforall.cpp
+    oneforone.cpp
 )
 
 add_library(MachineLearning ${HEADER} ${SOURCES})
