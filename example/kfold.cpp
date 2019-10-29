@@ -2,7 +2,6 @@
 #include "../src/kfold.h"
 #include "../test/testdata.h"
 #include <iostream>
-#include <algorithm>
 
 int main(int argc, char** args)
 {

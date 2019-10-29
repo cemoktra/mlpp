@@ -1,6 +1,5 @@
 #include "oneforall.h"
 #include "logreg.h"
-#include <iostream>
 
 one_for_all::one_for_all(const std::map<std::string, double>& class_map)
     : model_interface()

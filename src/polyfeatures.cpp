@@ -1,8 +1,6 @@
 #include "polyfeatures.h"
-
-#include <iostream>
-#include <math.h>
 #include <numeric>
+#include <algorithm>
 
 polynomial_features::polynomial_features(size_t degree, bool bias)
     : m_degree(degree)

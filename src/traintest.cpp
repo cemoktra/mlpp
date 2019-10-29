@@ -1,7 +1,7 @@
 #include "traintest.h"
 
-#include <numeric>
 #include <random>
+#include <numeric>
 
 void test_train::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test, double test_proportion, bool shuffle)
 {

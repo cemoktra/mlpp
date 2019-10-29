@@ -30,8 +30,6 @@ int main(int argc, char** args)
     Eigen::MatrixXd x_train, x_test, y_train, y_test;
     test_train::split(m_x, m_y, x_train, x_test, y_train, y_test, 0.25);
 
-    // logistic_regression lr;
-    // lr.train(x_train, y_train);
     one_for_all ofa (class_map);
     ofa.train(x_train, y_train);
     std::cout << "score: " << ofa.score(x_test, y_test) << std::endl;

@@ -1,7 +1,5 @@
 
 #include "normalize.h"
-#include <math.h>
-#include <cstdlib>
 
 Eigen::MatrixXd normalize::transform(const Eigen::MatrixXd& x)
 {

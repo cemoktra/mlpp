@@ -1,6 +1,5 @@
 #include "logreg.h"
 #include <stdexcept>
-#include <iostream>
 
 logistic_regression::logistic_regression() 
     : regression(0.02, 0.0001)

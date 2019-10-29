@@ -1,9 +1,5 @@
 #include "regression.h"
 
-#include <math.h>
-#include <numeric>
-#include <iostream>
-
 regression::regression(double rate, double threshold)
     : m_rate(rate)
     , m_threshold(threshold)

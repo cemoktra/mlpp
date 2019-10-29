@@ -1,8 +1,6 @@
 #include "kfold.h"
-
-#include <numeric>
 #include <random>
-#include <algorithm>
+#include <numeric>
 
 kfold::kfold(size_t k, bool shuffle)
     : m_k(k)
@@ -16,7 +14,6 @@ size_t kfold::k()
     return m_k;
 }
 
-#include <iostream>
 void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test)
 {
     if (m_indices.size() != y.rows()) {
