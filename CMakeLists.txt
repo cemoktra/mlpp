@@ -2,16 +2,16 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MachineLearning VERSION 0.1.0)
 
-configure_file(cmake/CMakeLists.txt.in extra-download/CMakeLists.txt)
+configure_file(cmake/CMakeLists.txt.in download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/extra-download )
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/download )
 if(result)
   message(FATAL_ERROR "CMake step for googletest failed: ${result}")
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
   RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/extra-download )
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/download )
 if(result)
   message(FATAL_ERROR "Build step for googletest failed: ${result}")
 endif()
