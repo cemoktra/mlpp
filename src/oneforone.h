@@ -18,6 +18,9 @@ public:
     void train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations = 0) override;
     double score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y) override;
     
+    void set_weights(const Eigen::MatrixXd& weights);
+    Eigen::MatrixXd weights();
+    
 protected:
     std::vector<logistic_regression*> m_models;
     size_t m_classes;

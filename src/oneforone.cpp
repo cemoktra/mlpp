@@ -94,3 +94,26 @@ double one_for_one::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
     }
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
+
+void one_for_one::set_weights(const Eigen::MatrixXd& weights)
+{
+    for (auto i = 0; i < weights.cols(); i++) {
+        m_models[i]->set_weights(weights.col(i));
+    }
+}
+
+Eigen::MatrixXd one_for_one::weights()
+{
+    Eigen::MatrixXd weights;
+
+    for (auto i = 0; i < m_models.size(); i++) {
+        if (i == 0)
+            weights = m_models[i]->weights();
+        else {
+            weights.conservativeResize(Eigen::NoChange, weights.cols() + 1);
+            weights.col(weights.cols() - 1) = m_models[i]->weights();
+        }
+    }
+
+    return weights;
+}
