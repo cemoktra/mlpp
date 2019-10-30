@@ -28,24 +28,26 @@ void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd&
     test_end = std::min(test_end, m_indices.end());
 
     Eigen::MatrixXd _x_train(x.rows(), x.cols());
-    Eigen::MatrixXd _y_train(y.rows(), 1);
+    Eigen::MatrixXd _y_train(y.rows(), y.cols());
     Eigen::MatrixXd _x_test(x.rows(), x.cols());
-    Eigen::MatrixXd _y_test(y.rows(), 1);
+    Eigen::MatrixXd _y_test(y.rows(), y.cols());
 
     size_t train_idx = 0;
     size_t test_idx = 0;
     for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
     {
         if (it < test_begin || it >= test_end) {
-            for (auto j = 0; j < x.cols(); j++) {
+            for (auto j = 0; j < x.cols(); j++)
                 _x_train(train_idx, j) = x(*it, j);
-            }
-            _y_train(train_idx++, 0) = y(*it, 0);
+            for (auto j = 0; j < y.cols(); j++)
+                _y_train(train_idx, j) = y(*it, j);
+            train_idx++;
         } else {
-            for (auto j = 0; j < x.cols(); j++) {
+            for (auto j = 0; j < x.cols(); j++)
                 _x_test(test_idx, j) = x(*it, j);
-            }
-            _y_test(test_idx++, 0) = y(*it, 0);
+            for (auto j = 0; j < y.cols(); j++)
+                _y_test(train_idx, j) = y(*it, j);
+            test_idx++;
         }
     }
     x_train = _x_train.block(0, 0, train_idx, x.cols());

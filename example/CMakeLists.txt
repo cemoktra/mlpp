@@ -20,3 +20,6 @@ target_link_libraries(LogReg MachineLearning)
 
 add_executable(MultiClass multi_class.cpp)
 target_link_libraries(MultiClass MachineLearning)
+
+add_executable(Multinomial mulitnomial.cpp)
+target_link_libraries(Multinomial MachineLearning)

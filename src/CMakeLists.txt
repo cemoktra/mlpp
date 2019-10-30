@@ -8,24 +8,26 @@ set(HEADER
     regression.h
     linreg.h
     logreg.h
+    multinomial_logreg.h
     traintest.h
     polyfeatures.h
     normalize.h
     kfold.h
-    oneforall.h
     oneforone.h
+    one_hot.h
 )
 
 set(SOURCES
     regression.cpp
     linreg.cpp
     logreg.cpp
+    multinomial_logreg.cpp
     traintest.cpp
     polyfeatures.cpp
     normalize.cpp
     kfold.cpp
-    oneforall.cpp
     oneforone.cpp
+    one_hot.cpp
 )
 
 add_library(MachineLearning ${HEADER} ${SOURCES})

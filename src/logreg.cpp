@@ -1,5 +1,6 @@
 #include "logreg.h"
 #include <stdexcept>
+#include <iostream>
 
 logistic_regression::logistic_regression() 
     : regression(0.02, 0.0001)
@@ -25,34 +26,44 @@ Eigen::MatrixXd logistic_regression::sigmoid(const Eigen::MatrixXd& x)
     return result;
 }
 
-
 Eigen::MatrixXd logistic_regression::calc_weights(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
 {
-    Eigen::MatrixXd ones = Eigen::MatrixXd::Ones(y.rows(), y.cols());
-    Eigen::MatrixXd p, p1, logp, logp1, c1, c2, gradient;
-    double cost;
-    auto samples = x.rows();
-    m_weights = Eigen::MatrixXd::Ones(x.cols(), 1);
+    double current_cost, last_cost;
+    m_weights = Eigen::MatrixXd::Ones(x.cols(), y.cols());
+
+    last_cost = std::numeric_limits<double>::max();
 
     while (true) {
-        p  = predict(x);
-        p1 = ones - p;
-        logp  = p.array().log();
-        logp1 = p1.array().log();
+        auto p = predict(x);
+        auto g = gradient(x, y, p);
+        m_weights -= g;
 
-        c1 = (-y).cwiseProduct(logp);
-        c2 = (ones - y).cwiseProduct(logp1);
-        cost = (c1 - c2).sum() / samples;
-
-        gradient = x.transpose() * (p - y);
-        gradient = m_rate * gradient / samples;
-        m_weights -= gradient;
-        
-        if (!(gradient.array().abs() > m_threshold).any())
+        current_cost = cost(y, p);
+        if (last_cost - current_cost <  m_threshold)
             break;
+        last_cost = current_cost;
     }
 
     return m_weights;
+}
+
+double logistic_regression::cost(const Eigen::MatrixXd& y, const Eigen::MatrixXd& p)
+{
+    Eigen::MatrixXd ones = Eigen::MatrixXd::Ones(y.rows(), y.cols());
+    Eigen::MatrixXd p1, logp, logp1, c1, c2;
+
+    p1 = ones - p;
+    logp  = p.array().log();
+    logp1 = p1.array().log();
+    c1 = (-y).cwiseProduct(logp);
+    c2 = (ones - y).cwiseProduct(logp1);
+    return (c1 - c2).sum() / p.rows();
+}
+
+Eigen::MatrixXd logistic_regression::gradient(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const Eigen::MatrixXd& p)
+{
+    Eigen::MatrixXd gradient = x.transpose() * (p - y);
+    return m_rate * gradient / x.rows();
 }
 
 double logistic_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
@@ -62,11 +73,22 @@ double logistic_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
     auto p = predict(x);
     
     for (auto i = 0; i < p.rows(); i++) {
-        double bin_result = p(i, 0) > 0.5 ? 1.0 : 0.0;
-        if (bin_result == y(i, 0))
+        auto prow = p.row(i);
+        auto yrow = y.row(i);
+        std::vector<double> pvec (prow.data(), prow.data() + prow.rows() * prow.cols());
+        std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
+        size_t predict_class = std::max_element(pvec.begin(), pvec.end()) - pvec.begin();
+        size_t target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
+        if (predict_class == target_class)
             pos++;
         else
-            neg++;        
+            neg++;    
+
+        // double bin_result = p(i, 0) > 0.5 ? 1.0 : 0.0;
+        // if (bin_result == y(i, 0))
+        //     pos++;
+        // else
+        //     neg++;        
     }
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }

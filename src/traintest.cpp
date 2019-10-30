@@ -9,11 +9,11 @@ void test_train::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen
     size_t train_size = y.rows() - test_size;
 
     x_train.resize(train_size, x.cols());
-    y_train.resize(train_size, 1);
+    y_train.resize(train_size, y.cols());
     x_test.resize(test_size, x.cols());
-    y_test.resize(test_size, 1);
+    y_test.resize(test_size, y.cols());
 
-    std::vector<size_t> indices (y.size());
+    std::vector<size_t> indices (x.rows());
     std::iota(indices.begin(), indices.end(), 0);
 
     std::random_device rd;
@@ -24,21 +24,20 @@ void test_train::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen
     {
         auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
 
-        for (auto j = 0; j < x.cols(); j++) {
+        for (auto j = 0; j < x.cols(); j++)
             x_train(i, j) = x(*index, j);
-        }
-        
-        y_train(i, 0) = y(*index, 0);
+        for (auto j = 0; j < y.cols(); j++)
+            y_train(i, j) = y(*index, j);
         indices.erase(index);
     }
 
     for (auto i = 0; i < test_size; i++)
     {
         auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
-        for (auto j = 0; j < x.cols(); j++) {
+        for (auto j = 0; j < x.cols(); j++)
             x_test(i, j) = x(*index, j);
-        }
-        y_test(i, 0) = y(*index, 0);
+        for (auto j = 0; j < y.cols(); j++)
+            y_test(i, j) = y(*index, j);
         indices.erase(index);
     }
 }
