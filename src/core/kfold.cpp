@@ -1,6 +1,7 @@
 #include "kfold.h"
 #include <random>
 #include <numeric>
+#include <iostream>
 
 kfold::kfold(size_t k, bool shuffle)
     : m_k(k)
@@ -23,8 +24,8 @@ void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd&
     if (index >= m_k)
         throw std::out_of_range ("invalid split index");
 
-    auto test_begin = std::next(m_indices.begin() + index * m_blockSize);
-    auto test_end   = std::next(test_begin + m_blockSize - 1);
+    auto test_begin = std::next(m_indices.begin(), index * m_blockSize);
+    auto test_end   = std::next(test_begin, m_blockSize - 1);
     test_end = std::min(test_end, m_indices.end());
 
     Eigen::MatrixXd _x_train(x.rows(), x.cols());
@@ -36,7 +37,7 @@ void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd&
     size_t test_idx = 0;
     for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
     {
-        if (it < test_begin || it >= test_end) {
+        if (it < test_begin || it > test_end) {
             for (auto j = 0; j < x.cols(); j++)
                 _x_train(train_idx, j) = x(*it, j);
             for (auto j = 0; j < y.cols(); j++)
@@ -46,10 +47,11 @@ void kfold::split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd&
             for (auto j = 0; j < x.cols(); j++)
                 _x_test(test_idx, j) = x(*it, j);
             for (auto j = 0; j < y.cols(); j++)
-                _y_test(train_idx, j) = y(*it, j);
+                _y_test(test_idx, j) = y(*it, j);
             test_idx++;
         }
     }
+
     x_train = _x_train.block(0, 0, train_idx, x.cols());
     y_train = _y_train.block(0, 0, train_idx, y.cols());
     x_test = _x_test.block(0, 0, test_idx, x.cols());

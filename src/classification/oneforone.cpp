@@ -3,7 +3,6 @@
 #include <iostream>
 
 one_for_one::one_for_one()
-    : model_interface()
 {
 }
 

@@ -1,10 +1,10 @@
-#include "../src/oneforone.h"
-#include "../src/logreg.h"
-#include "../src/multinomial_logreg.h"
-#include "../src/traintest.h"
-#include "../src/normalize.h"
-#include "../src/one_hot.h"
-#include "../test/testdata.h"
+#include <classification/oneforone.h>
+#include <classification/logreg.h>
+#include <classification/multinomial_logreg.h>
+#include <core/traintest.h>
+#include <core/normalize.h>
+#include <core/one_hot.h>
+#include <core/testdata.h>
 #include <iostream>
 #include <numeric>
 #include <chrono>

@@ -1,4 +1,4 @@
-#include "../src/linreg.h"
+#include <regression/linreg.h>
 
 #include <gtest/gtest.h>
 #include <numeric>
