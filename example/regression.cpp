@@ -1,37 +1,48 @@
 #include <regression/linreg.h>
 #include <core/traintest.h>
 #include <core/kfold.h>
-#include <core/testdata.h>
+#include <core/csv_reader.h>
 #include <core/polyfeatures.h>
 #include <iostream>
 
 int main(int argc, char** args)
 {
-    Eigen::MatrixXd data;
+    Eigen::MatrixXd x_datas;
+    Eigen::MatrixXd y_datas;
+
+    csv_reader csv(
+        [&](size_t lines) {
+            x_datas = Eigen::MatrixXd::Ones(lines, 4);
+            y_datas = Eigen::MatrixXd::Zero(lines, 1);
+        }, 
+        [&](size_t line, std::vector<std::string> tokens) {
+            try {
+            x_datas(line, 0) = stod(tokens[0]);
+            for (auto i = 0; i < 3; i++)
+                x_datas(line, i + 1) = stod(tokens[i + 7]);
+            y_datas(line, 0) = stod(tokens[6]);
+            } catch (...) {
+                std::cout << "PANIC " << std::endl;
+            }
+        });
+    std::cout << "reading data ... ";
+    csv.read("diamonds.csv");
+    std::cout << "done" << std::endl;
+
     linear_regression lr;
     bool shuffle = true;
     double split = 0.25;
-
-    // parse csv
-    std::cout << "reading data ... ";
-    test_data::parse("diamonds.csv", {0, 4, 5, 6, 7, 8, 9}, data);
-    std::cout << "done" << std::endl;
-
-    // prepare y matrix to price
-    Eigen::MatrixXd m_y(data.rows(), 1);
-    m_y.col(0) = data.col(3);
     
-    // prepare x matrix to use carat
-    Eigen::MatrixXd m_x(data.rows(), 2);
-    m_x.col(0) = data.col(0);
-    m_x.col(1) = Eigen::VectorXd::Ones(data.rows());
-    
+    Eigen::MatrixXd x_datas_subset (x_datas.rows(), 2);
+    x_datas_subset.col(0) = x_datas.col(0);
+    x_datas_subset.col(1) = Eigen::MatrixXd::Ones(x_datas.rows(), 1);
+
     // regression train-test-split
     {
         std::cout << "regression with one feature and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(m_x, m_y, x_train, x_test, y_train, y_test, split, shuffle);
+        test_train::split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;
         std::cout << "  score: " << lr.score(x_test, y_test) << std::endl;
@@ -45,7 +56,7 @@ int main(int argc, char** args)
         kfold kf(4, shuffle);
 
         for (auto i = 0; i < kf.k(); ++i) {
-            kf.split(i, m_x, m_y, x_train, x_test, y_train, y_test);
+            kf.split(i, x_datas_subset, y_datas, x_train, x_test, y_train, y_test);
             lr.train(x_train, y_train);
             
             std::cout << "  fold " << i + 1 << std::endl;
@@ -66,17 +77,17 @@ int main(int argc, char** args)
     }
 
     // regression with multi vars
-    m_x.resize(data.rows(), 4);
-    m_x.col(0) = data.col(4);
-    m_x.col(1) = data.col(5);
-    m_x.col(2) = data.col(6);
-    m_x.col(3) = Eigen::VectorXd::Ones(data.rows());    
+    x_datas_subset.resize (x_datas.rows(), 4);
+    x_datas_subset.col(0) = x_datas.col(1);
+    x_datas_subset.col(1) = x_datas.col(2);
+    x_datas_subset.col(2) = x_datas.col(3);
+    x_datas_subset.col(3) = Eigen::MatrixXd::Ones(x_datas.rows(), 1);
     
     {
         std::cout << "regression with multiple features and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(m_x, m_y, x_train, x_test, y_train, y_test, split, shuffle);
+        test_train::split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
 
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;
@@ -85,17 +96,17 @@ int main(int argc, char** args)
 
     // regression with polynoms of features
     polynomial_features pf (2, true);
-    m_x.resize(data.rows(), 3);
-    m_x.col(0) = data.col(4);
-    m_x.col(1) = data.col(5);
-    m_x.col(2) = data.col(6);
-    auto m_x_poly = pf.transform(m_x);
+    x_datas_subset.resize (x_datas.rows(), 3);
+    x_datas_subset.col(0) = x_datas.col(1);
+    x_datas_subset.col(1) = x_datas.col(2);
+    x_datas_subset.col(2) = x_datas.col(3);
+    auto m_x_poly = pf.transform(x_datas_subset);
 
     {
         std::cout << "regression with polynomial features and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(m_x_poly, m_y, x_train, x_test, y_train, y_test, split, shuffle);
+        test_train::split(m_x_poly, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
 
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;

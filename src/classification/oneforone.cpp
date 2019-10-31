@@ -2,7 +2,8 @@
 #include "logreg.h"
 #include <iostream>
 
-one_for_one::one_for_one()
+one_for_one::one_for_one() 
+    : classifier()
 {
 }
 
@@ -48,18 +49,21 @@ Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
     return prediction_result;
 }
 
-void one_for_one::train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations)
+void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
 {
     for (auto lr : m_models)
         delete lr;
 
-    m_classes = y.cols();
+    m_classes = classes.size();
     for (auto i = 0; i < m_classes - 1; i++) {
         for (auto j = i + 1; j < m_classes; j++) {
             Eigen::MatrixXd y_, x_;
             for (auto k = 0; k < y.rows(); k++)
             {
-                if (y(k, i) > 0.0 || y(k, j) > 0.0)
+                bool include_data = y.cols() > 1 ? 
+                    y(k, i) > 0.0 || y(k, j) > 0.0 :
+                    y(k, 0) == i || y(k, 0) == j;
+                if (include_data)
                 {                
                     if (x_.size()) {
                         x_.conservativeResize(x_.rows() + 1, Eigen::NoChange);
@@ -75,18 +79,27 @@ void one_for_one::train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t max
             y_ = (y_.array() > 0.0).cast<double>();
             logistic_regression *lr = new logistic_regression();
             m_models.push_back(lr);
-            lr->train(x_, y_);
+            lr->train(x_, y_, classes);
         }
     }
 }
 
-double one_for_one::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+double one_for_one::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     size_t pos = 0, neg = 0;
 
     auto p = predict(x);
     for (auto i = 0; i < p.rows(); i++) {
-        if (y(i, p(i, 1)) > 0.0)
+        size_t predict_class = p(i, 1);
+        size_t target_class = 0;
+        auto yrow = y.row(i);
+        if (y.cols() > 1) {
+            std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
+            target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
+        } else
+            target_class = static_cast<size_t>(yrow(0));
+
+        if (predict_class == target_class)
             pos++;
         else
             neg++;        

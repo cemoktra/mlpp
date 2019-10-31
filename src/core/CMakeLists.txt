@@ -9,7 +9,7 @@ set(HEADER
     normalize.h
     kfold.h
     one_hot.h
-    testdata.h
+    csv_reader.h
 )
 
 set(SOURCES
@@ -18,6 +18,7 @@ set(SOURCES
     normalize.cpp
     kfold.cpp
     one_hot.cpp
+    csv_reader.cpp
 )
 
 add_library(mlpp_core ${HEADER} ${SOURCES})

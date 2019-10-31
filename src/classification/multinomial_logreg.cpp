@@ -1,7 +1,5 @@
 #include "multinomial_logreg.h"
 
-#include <iostream>
-
 multinomial_logistic_regression::multinomial_logistic_regression() 
     : logistic_regression()
 {

@@ -1,9 +1,11 @@
 #include "logreg.h"
+#include <core/one_hot.h>
 #include <stdexcept>
 #include <iostream>
 
 logistic_regression::logistic_regression() 
-    : m_rate(0.02)
+    : classifier()
+    , m_rate(0.02)
     , m_threshold(0.0001)
 {
 }
@@ -17,9 +19,10 @@ Eigen::MatrixXd logistic_regression::predict(const Eigen::MatrixXd& x)
 }
 
 
-void logistic_regression::train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations)
+void logistic_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
 {
-    calc_weights(x, y);
+    auto y_onehot = (y.cols() == classes.size()) ? y : one_hot::transform(y, classes);
+    calc_weights(x, y_onehot);
 }
 
 void logistic_regression::set_weights(const Eigen::MatrixXd& weights)
@@ -32,19 +35,23 @@ Eigen::MatrixXd logistic_regression::weights()
     return m_weights;
 }
 
-double logistic_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+double logistic_regression::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     size_t pos = 0, neg = 0;
-
     auto p = predict(x);
     
     for (auto i = 0; i < p.rows(); i++) {
         auto prow = p.row(i);
         auto yrow = y.row(i);
         std::vector<double> pvec (prow.data(), prow.data() + prow.rows() * prow.cols());
-        std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
         size_t predict_class = std::max_element(pvec.begin(), pvec.end()) - pvec.begin();
-        size_t target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
+        size_t target_class = 0;
+        if (y.cols() > 1) {
+            std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
+            target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
+        } else
+            target_class = static_cast<size_t>(yrow(0));
+        
         if (predict_class == target_class)
             pos++;
         else
@@ -54,7 +61,7 @@ double logistic_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
 }
 
 
-void logistic_regression::calc_weights(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+void logistic_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     double current_cost, last_cost;
     m_weights = Eigen::MatrixXd::Ones(x.cols(), y.cols());
