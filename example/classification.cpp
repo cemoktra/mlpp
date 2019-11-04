@@ -69,8 +69,8 @@ std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, std::vector<std::string>> read_canc
 
 int main(int argc, char** args)
 {
-    //auto [x_datas, y_datas, classes] = read_foods();
-    auto [x_datas, y_datas, classes] = read_cancer();
+    auto [x_datas, y_datas, classes] = read_foods();
+    // auto [x_datas, y_datas, classes] = read_cancer();
 
     x_datas = normalize::transform(x_datas);
 

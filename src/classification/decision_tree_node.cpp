@@ -1,7 +1,7 @@
 #include "decision_tree_node.h"
-#include <iostream>
 #include <random>
 #include <numeric>
+#include <thread>
 
 decision_tree_node::decision_tree_node(size_t layer, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, size_t classes, decision_tree_node *parent, bool positives)
     : m_entropy(1.0)
@@ -78,7 +78,7 @@ double decision_tree_node::entropy() const
 
 size_t decision_tree_node::decide(const Eigen::VectorXd& x)
 {
-    if (m_child[0] == nullptr && m_child[1] == nullptr)
+    if (!m_child[0] && !m_child[1])
         return m_class;
     
     auto value = x(m_split_feature);
@@ -153,8 +153,10 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t r
     m_split_threshold = bestSplitThreshold;
 
     if (m_child[0] && m_child[1]) {
-        m_child[0]->split(max_depth, min_leaf_items);
-        m_child[1]->split(max_depth, min_leaf_items);
+        std::thread t1([&]() { m_child[0]->split(max_depth, min_leaf_items, randomly_ignored_features); });
+        std::thread t2([&]() { m_child[1]->split(max_depth, min_leaf_items, randomly_ignored_features); });
+        t1.join();
+        t2.join();
     }
 }
 
