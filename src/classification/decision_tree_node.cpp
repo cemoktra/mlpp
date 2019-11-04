@@ -1,5 +1,7 @@
 #include "decision_tree_node.h"
 #include <iostream>
+#include <random>
+#include <numeric>
 
 decision_tree_node::decision_tree_node(size_t layer, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, size_t classes, decision_tree_node *parent, bool positives)
     : m_entropy(1.0)
@@ -86,8 +88,9 @@ size_t decision_tree_node::decide(const Eigen::VectorXd& x)
         return m_child[1]->decide(x);
 }
 
-void decision_tree_node::split(size_t max_depth, size_t min_leaf_items)
+void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t randomly_ignored_features)
 {
+    std::vector<size_t> ignored_features;
     double bestSplit = std::numeric_limits<double>::max();
     auto bestSplitFeature = m_split_feature;
     auto bestSplitThreshold = m_split_threshold;
@@ -96,9 +99,27 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items)
         return;
     if (max_depth > 0 && m_layer >= max_depth)
         return;
+    if (randomly_ignored_features >= m_x.cols())
+        // TODO: ERROR
+        return;
+
+    if (randomly_ignored_features > 0) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, m_x.cols() - 1);
+
+        while (ignored_features.size() < randomly_ignored_features) {
+            auto ignored_feature = dis(gen);
+            if (std::find(ignored_features.begin(), ignored_features.end(), ignored_feature) == ignored_features.end())
+                ignored_features.push_back(ignored_feature);
+        }
+    }
 
     for (auto feature = 0; feature < m_x.cols(); feature++)
     {
+        if (std::find(ignored_features.begin(), ignored_features.end(), feature) != ignored_features.end())
+            continue;
+
         auto feature_col = m_x.col(feature);
         auto min = feature_col.minCoeff();
         auto max = feature_col.maxCoeff();
@@ -131,7 +152,7 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items)
     m_split_feature = bestSplitFeature;
     m_split_threshold = bestSplitThreshold;
 
-    if (m_layer < max_depth && m_child[0] && m_child[1]) {
+    if (m_child[0] && m_child[1]) {
         m_child[0]->split(max_depth, min_leaf_items);
         m_child[1]->split(max_depth, min_leaf_items);
     }

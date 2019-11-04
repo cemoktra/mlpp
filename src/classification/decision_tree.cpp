@@ -1,8 +1,11 @@
 #include "decision_tree.h"
 #include "decision_tree_node.h"
 
-decision_tree::decision_tree()
+decision_tree::decision_tree(size_t max_depth, size_t min_leaf_items)
     : m_root(nullptr)
+    , m_max_depth(max_depth)
+    , m_min_leaf_items(min_leaf_items)
+    , m_ignored_features(0)
 {}
 
 decision_tree::~decision_tree()
@@ -47,7 +50,7 @@ double decision_tree::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 void decision_tree::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
 {
     m_root = new decision_tree_node(0, x, y, classes.size(), nullptr, true);
-    m_root->split(100);
+    m_root->split(m_max_depth, m_min_leaf_items);
 }
 
 void decision_tree::set_weights(const Eigen::MatrixXd& weights)
@@ -57,4 +60,9 @@ void decision_tree::set_weights(const Eigen::MatrixXd& weights)
 Eigen::MatrixXd decision_tree::weights()
 {
     return Eigen::MatrixXd();
+}
+
+void decision_tree::ignore_random_features(size_t count)
+{
+    m_ignored_features = count;
 }

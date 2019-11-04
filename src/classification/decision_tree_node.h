@@ -3,13 +3,6 @@
 
 #include <Eigen/Dense>
 
-struct split_properties 
-{
-    size_t feature;
-    double value;
-    bool under;
-};
-
 class decision_tree_node
 {
 public:
@@ -18,7 +11,7 @@ public:
     
     double entropy() const;
 
-    void split(size_t max_depth = 0, size_t min_leaf_items = 1);
+    void split(size_t max_depth = 0, size_t min_leaf_items = 1, size_t randomly_ignored_features = 0);
     size_t count();
 
     size_t decide(const Eigen::VectorXd& x);

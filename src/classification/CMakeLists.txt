@@ -10,6 +10,7 @@ set(HEADER
     oneforone.h
     decision_tree.h
     decision_tree_node.h
+    random_forest.h
     knn.h
 )
 
@@ -19,6 +20,7 @@ set(SOURCES
     oneforone.cpp
     decision_tree.cpp
     decision_tree_node.cpp
+    random_forest.cpp
     knn.cpp
 )
 
