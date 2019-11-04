@@ -13,6 +13,7 @@ set(HEADER
     parameters.h
     model.h
     validation_curve.h
+    learning_curve.h
 )
 
 set(SOURCES
@@ -24,6 +25,7 @@ set(SOURCES
     csv_reader.cpp
     parameters.cpp
     validation_curve.cpp
+    learning_curve.cpp
 )
 
 add_library(mlpp_core ${HEADER} ${SOURCES})

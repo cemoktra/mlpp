@@ -2,6 +2,7 @@
 #include <core/normalize.h>
 #include <core/csv_reader.h>
 #include <core/validation_curve.h>
+#include <core/learning_curve.h>
 #include <iostream>
 #include <numeric>
 #include <chrono>
@@ -42,8 +43,11 @@ int main(int argc, char** args)
 
     logistic_regression m;
     m.init_classes(classes);
-    Eigen::MatrixXd result = validation_curve::create(&m, x_datas, y_datas, "max_iterations", { 1, 10, 100, 1000, 10000});
 
+    Eigen::MatrixXd result = learning_curve::create(&m, x_datas, y_datas);
+    std::cout << result.transpose() << std::endl;
+
+    result = validation_curve::create(&m, x_datas, y_datas, "max_iterations", { 1, 10, 100, 1000, 10000});
     std::cout << result.transpose() << std::endl;
 
     return 0;
