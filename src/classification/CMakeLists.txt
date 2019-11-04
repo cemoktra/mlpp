@@ -8,12 +8,18 @@ set(HEADER
     logreg.h
     multinomial_logreg.h
     oneforone.h
+    decision_tree.h
+    decision_tree_node.h
+    knn.h
 )
 
 set(SOURCES
     logreg.cpp
     multinomial_logreg.cpp
     oneforone.cpp
+    decision_tree.cpp
+    decision_tree_node.cpp
+    knn.cpp
 )
 
 add_library(mlpp_classification ${HEADER} ${SOURCES})
