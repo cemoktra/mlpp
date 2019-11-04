@@ -2,8 +2,6 @@
 #include <stdexcept>
 
 linear_regression::linear_regression() 
-    : m_rate(0.0002)
-    , m_threshold(0.0001)
 {
 }
 
@@ -15,13 +13,13 @@ Eigen::MatrixXd linear_regression::predict(const Eigen::MatrixXd& x)
     throw std::invalid_argument("x dimension is wrong");
 }
 
-void linear_regression::train(const Eigen::MatrixXd& x, Eigen::MatrixXd& y, size_t maxIterations)
+void linear_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     calc_weights(x, y);
 }
 
 
-double linear_regression::score(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+double linear_regression::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     auto p = predict(x);
     auto e = y - p;
@@ -40,7 +38,7 @@ Eigen::MatrixXd linear_regression::weights()
     return m_weights;
 }
 
-void linear_regression::calc_weights(const Eigen::MatrixXd& x, Eigen::MatrixXd& y)
+void linear_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     Eigen::MatrixXd xTx = (x.transpose() * x);
     Eigen::MatrixXd xTy = (x.transpose() * y);

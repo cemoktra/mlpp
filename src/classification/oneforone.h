@@ -2,6 +2,7 @@
 #define _ONEFORONE_H_
 
 #include "classifier.h"
+#include <core/parameters.h>
 #include <vector>
 #include <map>
 
@@ -15,7 +16,8 @@ public:
 
     Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
 
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations = 0) override;
+    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    void init_classes(const std::vector<std::string>& classes) override;
     double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
     
     void set_weights(const Eigen::MatrixXd& weights) override;
@@ -23,7 +25,8 @@ public:
     
 protected:
     std::vector<logistic_regression*> m_models;
-    size_t m_classes;
+    std::vector<std::string> m_classes;
+    size_t m_class_count;
 };
 
 #endif

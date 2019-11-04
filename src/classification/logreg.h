@@ -2,6 +2,7 @@
 #define _LOGREG_H_
 
 #include "classifier.h"
+#include <core/parameters.h>
 
 class logistic_regression : public classifier
 {
@@ -11,7 +12,8 @@ public:
 
     virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
     double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations = 0) override;
+    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    void init_classes(const std::vector<std::string>& classes) override;
 
     void set_weights(const Eigen::MatrixXd& weights) override;
     Eigen::MatrixXd weights() override;
@@ -23,9 +25,7 @@ protected:
     Eigen::MatrixXd sigmoid(const Eigen::MatrixXd& x);
     void calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y);
 
-    double m_rate;
-    double m_threshold;
-
+    std::vector<std::string> m_classes;
     Eigen::MatrixXd m_weights;
 };
 

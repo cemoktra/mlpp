@@ -5,9 +5,10 @@
 
 logistic_regression::logistic_regression() 
     : classifier()
-    , m_rate(0.02)
-    , m_threshold(0.0001)
 {
+    register_param("learning_rate", 0.02);
+    register_param("threshold", 0.0001);
+    register_param("max_iterations", 0);
 }
 
 Eigen::MatrixXd logistic_regression::predict(const Eigen::MatrixXd& x) 
@@ -18,10 +19,14 @@ Eigen::MatrixXd logistic_regression::predict(const Eigen::MatrixXd& x)
     throw std::invalid_argument("x dimension is wrong");
 }
 
-
-void logistic_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
+void logistic_regression::init_classes(const std::vector<std::string>& classes)
 {
-    auto y_onehot = (y.cols() == classes.size()) ? y : one_hot::transform(y, classes);
+    m_classes = classes;
+}
+
+void logistic_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+{
+    auto y_onehot = (y.cols() == m_classes.size()) ? y : one_hot::transform(y, m_classes);
     calc_weights(x, y_onehot);
 }
 
@@ -65,7 +70,8 @@ void logistic_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::Ma
 {
     double current_cost, last_cost;
     m_weights = Eigen::MatrixXd::Ones(x.cols(), y.cols());
-
+    size_t max_iterations = static_cast<size_t>(get_param("max_iterations"));
+    size_t iteration = 0;
     last_cost = std::numeric_limits<double>::max();
 
     while (true) {
@@ -74,9 +80,12 @@ void logistic_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::Ma
         m_weights -= g;
 
         current_cost = cost(y, p);
-        if (last_cost - current_cost <  m_threshold)
+        if (last_cost - current_cost < get_param("threshold"))
             break;
         last_cost = current_cost;
+        iteration++;
+        if (max_iterations > 0 && iteration >= max_iterations)
+            break;
     }
 }
 
@@ -96,7 +105,7 @@ double logistic_regression::cost(const Eigen::MatrixXd& y, const Eigen::MatrixXd
 Eigen::MatrixXd logistic_regression::gradient(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const Eigen::MatrixXd& p)
 {
     Eigen::MatrixXd gradient = x.transpose() * (p - y);
-    return m_rate * gradient / x.rows();
+    return get_param("learning_rate") * gradient / x.rows();
 }
 
 

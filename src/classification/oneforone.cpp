@@ -5,6 +5,9 @@
 one_for_one::one_for_one() 
     : classifier()
 {
+    register_param("learning_rate", 0.02);
+    register_param("threshold", 0.0001);
+    register_param("max_iterations", 0);
 }
 
 one_for_one::~one_for_one()
@@ -15,11 +18,11 @@ one_for_one::~one_for_one()
 
 Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
 {
-    Eigen::MatrixXd prediction_count = Eigen::MatrixXd::Constant(x.rows(), m_classes, 0);
+    Eigen::MatrixXd prediction_count = Eigen::MatrixXd::Constant(x.rows(), m_class_count, 0);
 
     size_t model = 0;
-    for (auto i = 0; i < m_classes - 1; i++) {
-        for (auto j = i + 1; j < m_classes; j++) {
+    for (auto i = 0; i < m_class_count - 1; i++) {
+        for (auto j = i + 1; j < m_class_count; j++) {
             auto p = m_models[model]->predict(x);
 
             for (auto k = 0; k < x.rows(); k++) {
@@ -38,7 +41,7 @@ Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
     prediction_result.col(1) = Eigen::MatrixXd::Constant(x.rows(), 1, -1);
 
     for (auto k = 0; k < x.rows(); k++) {
-        for (auto i = 0; i < m_classes; i++) {
+        for (auto i = 0; i < m_class_count; i++) {
             if (prediction_count(k, i) > prediction_result(k, 0))
             {
                 prediction_result(k, 0) = prediction_count(k, i);
@@ -49,14 +52,19 @@ Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
     return prediction_result;
 }
 
-void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
+void one_for_one::init_classes(const std::vector<std::string>& classes)
+{
+    m_classes = classes;
+    m_class_count = classes.size();
+}
+
+void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
     for (auto lr : m_models)
         delete lr;
 
-    m_classes = classes.size();
-    for (auto i = 0; i < m_classes - 1; i++) {
-        for (auto j = i + 1; j < m_classes; j++) {
+    for (auto i = 0; i < m_class_count - 1; i++) {
+        for (auto j = i + 1; j < m_class_count; j++) {
             Eigen::MatrixXd y_, x_;
             for (auto k = 0; k < y.rows(); k++)
             {
@@ -78,8 +86,12 @@ void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, cons
             }
             y_ = (y_.array() > 0.0).cast<double>();
             logistic_regression *lr = new logistic_regression();
+            lr->set_param("learning_rate", get_param("learning_rate"));
+            lr->set_param("threshold", get_param("threshold"));
+            lr->set_param("max_iterations", get_param("max_iterations"));
             m_models.push_back(lr);
-            lr->train(x_, y_, classes);
+            lr->init_classes(m_classes);
+            lr->train(x_, y_);
         }
     }
 }

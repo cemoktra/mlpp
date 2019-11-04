@@ -80,7 +80,8 @@ int main(int argc, char** args)
 
     logistic_regression lr;
     auto s_ova = std::chrono::high_resolution_clock::now();
-    lr.train(x_train, y_train, classes);
+    lr.init_classes(classes);
+    lr.train(x_train, y_train);
     score = lr.score(x_test, y_test);
     auto e_ova = std::chrono::high_resolution_clock::now();
     auto dur_ova = std::chrono::duration_cast<std::chrono::milliseconds> (e_ova - s_ova);
@@ -88,7 +89,8 @@ int main(int argc, char** args)
 
     one_for_one ofo;
     auto s_ovo = std::chrono::high_resolution_clock::now();
-    ofo.train(x_train, y_train, classes);
+    ofo.init_classes(classes);
+    ofo.train(x_train, y_train);
     score = ofo.score(x_test, y_test);
     auto e_ovo = std::chrono::high_resolution_clock::now();
     auto dur_ovo = std::chrono::duration_cast<std::chrono::milliseconds> (e_ovo - s_ovo);
@@ -96,31 +98,42 @@ int main(int argc, char** args)
 
     multinomial_logistic_regression mlr;
     auto s_mlr = std::chrono::high_resolution_clock::now();
-    mlr.train(x_train, y_train, classes);
+    mlr.init_classes(classes);
+    mlr.train(x_train, y_train);
     score = mlr.score(x_test, y_test);
     auto e_mlr = std::chrono::high_resolution_clock::now();
     auto dur_mlr = std::chrono::duration_cast<std::chrono::milliseconds> (e_mlr - s_mlr);
     std::cout << "score - multinomial: " << score << ", took " << dur_mlr.count() << "ms" << std::endl;
 
-    knn k (3);
+    knn k;
+    k.set_param("k", 3);
     auto s_knn = std::chrono::high_resolution_clock::now();
-    k.train(x_train, y_train, classes);
+    k.init_classes(classes);
+    k.train(x_train, y_train);
     score = k.score(x_test, y_test);
     auto e_knn = std::chrono::high_resolution_clock::now();
     auto dur_knn = std::chrono::duration_cast<std::chrono::milliseconds> (e_knn - s_knn);
     std::cout << "score - k nearest neighbours: " << score << ", took " << dur_mlr.count() << "ms" << std::endl;
 
-    decision_tree dt (10, 1);
+    decision_tree dt;
+    dt.set_param("max_depth", 10);
+    dt.set_param("min_leaf_items", 1);
     auto s_dt = std::chrono::high_resolution_clock::now();
-    dt.train(x_train, y_train, classes);
+    dt.init_classes(classes);
+    dt.train(x_train, y_train);
     score = dt.score(x_test, y_test);
     auto e_dt = std::chrono::high_resolution_clock::now();
     auto dur_dt = std::chrono::duration_cast<std::chrono::milliseconds> (e_dt - s_dt);
     std::cout << "score - decision tree: " << score << ", took " << dur_dt.count() << "ms" << std::endl;
 
-    random_forest rf (5, 10, 1);
+    random_forest rf;
+    rf.set_param("trees", 5);
+    rf.set_param("max_depth", 10);
+    rf.set_param("min_leaf_items", 1);
+    rf.set_param("ignored_features", 1);    
     auto s_rf = std::chrono::high_resolution_clock::now();
-    rf.train(x_train, y_train, classes);
+    rf.init_classes(classes);
+    rf.train(x_train, y_train);
     score = rf.score(x_test, y_test);
     auto e_rf = std::chrono::high_resolution_clock::now();
     auto dur_rf = std::chrono::duration_cast<std::chrono::milliseconds> (e_rf - s_rf);

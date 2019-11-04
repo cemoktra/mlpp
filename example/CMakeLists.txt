@@ -8,3 +8,6 @@ target_link_libraries(ex_regression mlpp_regression)
 
 add_executable(ex_classification classification.cpp)
 target_link_libraries(ex_classification mlpp_classification)
+
+add_executable(ex_curves curves.cpp)
+target_link_libraries(ex_curves mlpp_classification)

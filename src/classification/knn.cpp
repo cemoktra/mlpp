@@ -2,14 +2,12 @@
 #include <algorithm>
 #include <iterator>
 
-knn::knn(size_t k)
-    : m_k(k)
-    , m_classes(0)
+knn::knn()
+    : m_classes(0)
+    , m_kdistances(nullptr)
+    , m_knearest_classes(nullptr)
 {
-    if (m_k % 2 == 0)
-        m_k++;
-    m_kdistances = new double[m_k];
-    m_knearest_classes = new size_t[m_k];
+    register_param("k", 3);
     m_class_count = nullptr;
 }
 
@@ -23,11 +21,12 @@ knn::~knn()
 Eigen::MatrixXd knn::predict(const Eigen::MatrixXd& x)
 {
     Eigen::MatrixXd result (x.rows(), 1);
+    auto kneighbors = static_cast<size_t>(get_param("k"));
 
     for (auto i = 0; i < x.rows(); i++)
     {
         auto x_row = x.row(i);
-        for (auto k = 0; k < m_k; k++)
+        for (auto k = 0; k < kneighbors; k++)
             m_kdistances[k] = std::numeric_limits<double>::max();
         memset(m_class_count, 0, m_classes * sizeof(size_t));
         
@@ -35,12 +34,12 @@ Eigen::MatrixXd knn::predict(const Eigen::MatrixXd& x)
         {
             double distance = (m_x_train.row(j) - x_row).norm();
             
-            if (distance < m_kdistances[m_k - 1]) {
-                m_kdistances[m_k - 1] = distance;
-                m_knearest_classes[m_k - 1] = static_cast<size_t>(m_y_train(i, 0));
+            if (distance < m_kdistances[kneighbors - 1]) {
+                m_kdistances[kneighbors - 1] = distance;
+                m_knearest_classes[kneighbors - 1] = static_cast<size_t>(m_y_train(i, 0));
             }
 
-            for (auto k = m_k - 1; k > 0; k--)
+            for (auto k = kneighbors - 1; k > 0; k--)
             {
                 if (m_kdistances[k] < m_kdistances[k - 1]) {
                     std::swap(m_kdistances[k], m_kdistances[k - 1]);
@@ -49,7 +48,7 @@ Eigen::MatrixXd knn::predict(const Eigen::MatrixXd& x)
             }
         }
 
-        for (auto k = 0; k < m_k; k++)
+        for (auto k = 0; k < kneighbors; k++)
             m_class_count[m_knearest_classes[k]]++;
         auto max_elem = std::max_element(m_class_count, m_class_count + m_classes);
         result(i, 0) = max_elem - m_class_count;
@@ -73,9 +72,18 @@ double knn::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
 
-void knn::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
+void knn::init_classes(const std::vector<std::string>& classes)
 {
     m_classes = classes.size();
+}
+
+void knn::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+{
+    auto k = static_cast<size_t>(get_param("k"));
+
+    m_kdistances = new double[k];
+    m_knearest_classes = new size_t[k];
+
     m_class_count = new size_t[m_classes];
     m_x_train = x;
     m_y_train = y;
