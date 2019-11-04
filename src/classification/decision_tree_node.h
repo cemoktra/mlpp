@@ -18,7 +18,10 @@ public:
     
     double entropy() const;
 
-    void split(size_t max_depth = 0);
+    void split(size_t max_depth = 0, size_t min_leaf_items = 1);
+    size_t count();
+
+    size_t decide(const Eigen::VectorXd& x);
 
 protected:
     bool filter(const Eigen::VectorXd& row);
@@ -35,6 +38,7 @@ private:
     size_t *m_class_counts;
     double *m_class_propabilities;
     size_t m_layer;
+    size_t m_item_count;
 
     bool m_positives;
     size_t m_split_feature;

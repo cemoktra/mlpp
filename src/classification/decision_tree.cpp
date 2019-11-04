@@ -13,12 +13,35 @@ decision_tree::~decision_tree()
 Eigen::MatrixXd decision_tree::predict(const Eigen::MatrixXd& x)
 {
     Eigen::MatrixXd result (x.rows(), 1);
+
+    for (auto r = 0; r < x.rows(); r++) {
+        result (r, 0) = m_root->decide(x.row(r));
+    }
+
     return result;
 }
 
 double decision_tree::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
-    return 0.0;
+    size_t pos = 0, neg = 0;
+    auto p = predict(x);
+    
+    for (auto i = 0; i < p.rows(); i++) {
+        auto yrow = y.row(i);
+        size_t predict_class = p(i, 0);
+        size_t target_class = 0;
+        if (y.cols() > 1) {
+            std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
+            target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
+        } else
+            target_class = static_cast<size_t>(yrow(0));
+        
+        if (predict_class == target_class)
+            pos++;
+        else
+            neg++;        
+    }
+    return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
 
 void decision_tree::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const std::vector<std::string>& classes, size_t maxIterations)
