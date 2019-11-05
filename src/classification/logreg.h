@@ -8,6 +8,7 @@ class logistic_regression : public classifier
 {
 public:
     logistic_regression();
+    logistic_regression(const logistic_regression&) = delete;
     ~logistic_regression() = default;
 
     virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;

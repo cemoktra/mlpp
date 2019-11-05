@@ -14,7 +14,7 @@ void random_forest::set_param(const std::string& name, double new_value)
 {
     auto tree_count = static_cast<size_t>(get_param("trees"));
 
-    if (name == "trees") {
+    if (name == "trees" && m_trees) {
         for (auto i = 0; i < tree_count; i++)
             delete m_trees[i];
         delete [] m_trees;

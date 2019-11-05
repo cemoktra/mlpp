@@ -4,6 +4,7 @@
 #include <classification/knn.h>
 #include <classification/decision_tree.h>
 #include <classification/random_forest.h>
+#include <classification/naive_bayes_gauss.h>
 #include <core/traintest.h>
 #include <core/normalize.h>
 #include <core/csv_reader.h>
@@ -69,13 +70,13 @@ std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, std::vector<std::string>> read_canc
 
 int main(int argc, char** args)
 {
-    auto [x_datas, y_datas, classes] = read_foods();
-    // auto [x_datas, y_datas, classes] = read_cancer();
+    // auto [x_datas, y_datas, classes] = read_foods();
+    auto [x_datas, y_datas, classes] = read_cancer();
 
     x_datas = normalize::transform(x_datas);
 
     Eigen::MatrixXd x_train, x_test, y_train, y_test;
-    test_train::split(x_datas, y_datas, x_train, x_test, y_train, y_test);
+    test_train::split(x_datas, y_datas, x_train, x_test, y_train, y_test, 0.25, true);
     double score;
 
     logistic_regression lr;
@@ -138,6 +139,15 @@ int main(int argc, char** args)
     auto e_rf = std::chrono::high_resolution_clock::now();
     auto dur_rf = std::chrono::duration_cast<std::chrono::milliseconds> (e_rf - s_rf);
     std::cout << "score - random forest: " << score << ", took " << dur_rf.count() << "ms" << std::endl;
+
+    naive_bayes_gauss nbg;
+    auto s_nbg = std::chrono::high_resolution_clock::now();
+    nbg.init_classes(classes);
+    nbg.train(x_train, y_train);
+    score = nbg.score(x_test, y_test);
+    auto e_nbg = std::chrono::high_resolution_clock::now();
+    auto dur_nbg = std::chrono::duration_cast<std::chrono::milliseconds> (e_nbg - s_nbg);
+    std::cout << "score - naive bayes gauss: " << score << ", took " << dur_nbg.count() << "ms" << std::endl;
 
     return 0;
 }
