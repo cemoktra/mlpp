@@ -64,12 +64,24 @@ std::vector<double> csv_data::col(size_t index) const
     return result;
 }
 
-Eigen::MatrixXd csv_data::matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion)
+xt::xarray<double> csv_data::matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion)
 {
-    Eigen::MatrixXd matrix = Eigen::MatrixXd::Zero(rows(), cols.size());
+    auto matrix = xt::zeros<double>({rows(), cols.size()});
     m_stringConversion = conversion;
     size_t index = 0;
-    for (auto c : cols)
-        matrix.col(index++) = Eigen::Map<Eigen::VectorXd>(this->col<double>(c).data(), matrix.rows());
+    for (auto c : cols) 
+    {
+        std::cout << xt::view(matrix, xt::range(1, xt::placeholders::_), xt::all()) << std::endl;
+        // matrix.col(index++) = Eigen::Map<Eigen::VectorXd>(this->col<double>(c).data(), matrix.rows());
+    }
     return matrix;
 }
+// Eigen::MatrixXd csv_data::matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion)
+// {
+//     Eigen::MatrixXd matrix = Eigen::MatrixXd::Zero(rows(), cols.size());
+//     m_stringConversion = conversion;
+//     size_t index = 0;
+//     for (auto c : cols)
+//         matrix.col(index++) = Eigen::Map<Eigen::VectorXd>(this->col<double>(c).data(), matrix.rows());
+//     return matrix;
+// }
