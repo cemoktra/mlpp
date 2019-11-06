@@ -2,6 +2,7 @@
 #include <random>
 #include <numeric>
 #include <thread>
+#include <cmath>
 
 decision_tree_node::decision_tree_node(size_t layer, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, size_t classes, decision_tree_node *parent, bool positives)
     : m_entropy(1.0)
@@ -135,7 +136,7 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t r
             auto child1 = new decision_tree_node(m_layer + 1, m_x, m_y, m_classes, this, false);
             
             auto entropy = child0->entropy() + child1->entropy();
-            if (child0->count() >= min_leaf_items && child1->count() >= min_leaf_items && !_isnan(entropy) && entropy < bestSplit) {
+            if (child0->count() >= min_leaf_items && child1->count() >= min_leaf_items && !std::isnan(entropy) && entropy < bestSplit) {
                 delete m_child[0];
                 delete m_child[1];
                 m_child[0] = child0;
