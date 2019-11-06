@@ -12,7 +12,9 @@ set(HEADER
     decision_tree_node.h
     random_forest.h
     knn.h
-    naive_bayes_gauss.h
+    naive_bayes.h
+    distribution.h
+    gauss_distribution.h
 )
 
 set(SOURCES
@@ -23,7 +25,8 @@ set(SOURCES
     decision_tree_node.cpp
     random_forest.cpp
     knn.cpp
-    naive_bayes_gauss.cpp
+    naive_bayes.cpp
+    gauss_distribution.cpp
 )
 
 add_library(mlpp_classification ${HEADER} ${SOURCES})

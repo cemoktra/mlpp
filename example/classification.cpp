@@ -4,7 +4,8 @@
 #include <classification/knn.h>
 #include <classification/decision_tree.h>
 #include <classification/random_forest.h>
-#include <classification/naive_bayes_gauss.h>
+#include <classification/naive_bayes.h>
+#include <classification/gauss_distribution.h>
 #include <core/traintest.h>
 #include <core/normalize.h>
 #include <core/csv_data.h>
@@ -33,32 +34,6 @@ std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, size_t> read_foods()
     Eigen::MatrixXd y_datas = data.matrixFromCols({8}, csv_data::UniqueStringIndex);
     std::cout << "done" << std::endl;
     return std::make_tuple(x_datas, y_datas, static_cast<size_t>(y_datas.maxCoeff() + 1));
-
-
-    // Eigen::MatrixXd x_datas;
-    // std::vector<std::string> classes;
-    // Eigen::MatrixXd y_datas;
-
-    // csv_reader csv(
-    //     [&](size_t lines) {
-    //         x_datas = Eigen::MatrixXd::Zero(lines, 5);
-    //         y_datas = Eigen::MatrixXd::Zero(lines, 1);
-    //     }, 
-    //     [&](size_t line, std::vector<std::string> tokens) {
-    //         for (auto i = 0; i < 5; i++)
-    //             x_datas(line, i) = stod(tokens[i + 3]);
-    //         auto class_name = tokens[8];
-    //         auto it = std::find(classes.begin(), classes.end(), class_name);
-    //         if (it == classes.end()) {
-    //             y_datas(line, 0) = classes.size();
-    //             classes.push_back(class_name);
-    //         } else
-    //             y_datas(line, 0) = it - classes.begin();
-    //     });
-    
-    // csv.read("foods.csv");
-    
-    // return std::make_tuple(x_datas, y_datas, classes);
 }
 
 std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, size_t> read_cancer()
@@ -74,31 +49,6 @@ std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, size_t> read_cancer()
     Eigen::MatrixXd y_datas = data.matrixFromCols({1}, csv_data::UniqueStringIndex);
     std::cout << "done" << std::endl;
     return std::make_tuple(x_datas, y_datas, static_cast<size_t>(y_datas.maxCoeff() + 1));
-
-    // Eigen::MatrixXd x_datas;
-    // std::vector<std::string> classes;
-    // Eigen::MatrixXd y_datas;
-
-    // csv_reader csv(
-    //     [&](size_t lines) {
-    //         x_datas = Eigen::MatrixXd::Zero(lines, 30);
-    //         y_datas = Eigen::MatrixXd::Zero(lines, 1);
-    //     }, 
-    //     [&](size_t line, std::vector<std::string> tokens) {
-    //         for (auto i = 0; i < 30; i++)
-    //             x_datas(line, i) = stod(tokens[i + 2]);
-    //         auto class_name = tokens[1];
-    //         auto it = std::find(classes.begin(), classes.end(), class_name);
-    //         if (it == classes.end()) {
-    //             y_datas(line, 0) = classes.size();
-    //             classes.push_back(class_name);
-    //         } else
-    //             y_datas(line, 0) = it - classes.begin();
-    //     });
-    // std::cout << "reading data ... ";
-    // csv.read("cancer.csv");
-    // std::cout << "done" << std::endl;
-    // return std::make_tuple(x_datas, y_datas, classes);
 }
 
 int main(int argc, char** args)
@@ -137,7 +87,7 @@ int main(int argc, char** args)
     rf.set_param("ignored_features", 1);
     do_classification(&rf, "random forest", classes, x_train, x_test, y_train, y_test);
 
-    naive_bayes_gauss nbg;
+    naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, x_train, x_test, y_train, y_test);
 
     return 0;

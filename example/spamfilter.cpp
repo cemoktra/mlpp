@@ -1,4 +1,5 @@
-#include <classification/naive_bayes_gauss.h>
+#include <classification/naive_bayes.h>
+#include <classification/gauss_distribution.h>
 #include <core/traintest.h>
 #include <core/csv_data.h>
 #include <core/vocabulary.h>
@@ -38,7 +39,7 @@ int main(int argc, char** args)
     tts.split(y, y_train, y_test);
     std::cout << "done" << std::endl;
 
-    naive_bayes_gauss nbg;
+    naive_bayes nbg (std::make_shared<gauss_distribution>());
     auto s_nbg = std::chrono::high_resolution_clock::now();
     nbg.init_classes(static_cast<size_t>(y.maxCoeff() + 1));
     nbg.train(x_train, y_train);

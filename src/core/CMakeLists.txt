@@ -16,6 +16,7 @@ set(HEADER
     validation_curve.h
     learning_curve.h
     vocabulary.h
+    pseudo_inverse.h
 )
 
 set(SOURCES
@@ -30,6 +31,7 @@ set(SOURCES
     validation_curve.cpp
     learning_curve.cpp
     vocabulary.cpp
+    pseudo_inverse.cpp
 )
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
