@@ -13,6 +13,9 @@ public:
     ~vocabulary() = default;
 
     void add(const std::vector<std::string>& data);
+    
+    void filter_counts(size_t min_occurences = 0, size_t max_occurences = 0);
+    void filter_perc(double min_occurences = 0, double max_occurences = 0);
 
     Eigen::SparseMatrix<double> transform(const std::vector<std::string>& data);
 

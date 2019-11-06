@@ -11,7 +11,7 @@ void gauss_distribution::calc_weights(const Eigen::MatrixXd& x, const Eigen::Mat
         m_mean.col(c) = (x.array().colwise() * y.col(c).array()).colwise().sum() / y.col(c).sum();
         m_var.col(c)  = ((x.array().rowwise() - m_mean.col(c).transpose().array()).square().colwise() * y.col(c).array()).colwise().sum() / y.col(c).sum();
         m_pre_prop(c) = y.col(c).sum() / y.rows();
-    }    
+    }
 }
 
 Eigen::MatrixXd gauss_distribution::predict(const Eigen::MatrixXd& x)

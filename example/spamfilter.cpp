@@ -1,5 +1,6 @@
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
+#include <classification/binomial_distribution.h>
 #include <core/traintest.h>
 #include <core/csv_data.h>
 #include <core/vocabulary.h>
@@ -22,6 +23,7 @@ int main(int argc, char** args)
     std::cout << "preparing vocabulary ... ";
     vocabulary voc;
     voc.add(train_strings);
+    voc.filter_counts(3, 50);
     std::cout << "done" << std::endl;
 
     std::cout << "preparing data ... ";
@@ -29,6 +31,21 @@ int main(int argc, char** args)
     auto y = csv.matrixFromCols({ 0 }, csv_data::UniqueStringIndex);
     auto x_train = voc.transform(train_strings);
     auto x_test = voc.transform(test_strings);
+    tts.split(y, y_train, y_test);
+    std::cout << "done" << std::endl;
+
+    double score;
+
+    naive_bayes nbb (std::make_shared<binomial_distribution>());
+    auto s_nbb = std::chrono::high_resolution_clock::now();
+    nbb.init_classes(static_cast<size_t>(y.maxCoeff() + 1));
+    nbb.train(x_train, y_train);
+    score = nbb.score(x_test, y_test);
+    auto e_nbb = std::chrono::high_resolution_clock::now();
+    auto dur_nbb = std::chrono::duration_cast<std::chrono::milliseconds> (e_nbb - s_nbb);
+    std::cout << "naive bayes binomial score: " << score << ", took " << dur_nbb.count() << "ms" << std::endl;
+
+
     for (auto k = 0; k < x_train.outerSize(); ++k)
     {
         for (Eigen::SparseMatrix<double>::InnerIterator it(x_train, k); it; ++it)
@@ -36,14 +53,12 @@ int main(int argc, char** args)
         for (Eigen::SparseMatrix<double>::InnerIterator it(x_test, k); it; ++it)
             it.valueRef() = 1.0;
     }
-    tts.split(y, y_train, y_test);
-    std::cout << "done" << std::endl;
-
+    
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     auto s_nbg = std::chrono::high_resolution_clock::now();
     nbg.init_classes(static_cast<size_t>(y.maxCoeff() + 1));
     nbg.train(x_train, y_train);
-    double score = nbg.score(x_test, y_test);
+    score = nbg.score(x_test, y_test);
     auto e_nbg = std::chrono::high_resolution_clock::now();
     auto dur_nbg = std::chrono::duration_cast<std::chrono::milliseconds> (e_nbg - s_nbg);
     std::cout << "naive bayes gauss score: " << score << ", took " << dur_nbg.count() << "ms" << std::endl;

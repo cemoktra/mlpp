@@ -15,6 +15,7 @@ set(HEADER
     naive_bayes.h
     distribution.h
     gauss_distribution.h
+    binomial_distribution.h
 )
 
 set(SOURCES
@@ -27,6 +28,7 @@ set(SOURCES
     knn.cpp
     naive_bayes.cpp
     gauss_distribution.cpp
+    binomial_distribution.cpp
 )
 
 add_library(mlpp_classification ${HEADER} ${SOURCES})
