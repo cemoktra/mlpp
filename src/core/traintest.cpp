@@ -3,41 +3,65 @@
 #include <random>
 #include <numeric>
 
-void test_train::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test, double test_proportion, bool shuffle)
+void train_test_split::init(size_t rows, double test_proportion, bool shuffle)
 {
-    size_t test_size = y.rows() * test_proportion;
-    size_t train_size = y.rows() - test_size;
+    std::vector<size_t> indices(rows);
 
-    x_train.resize(train_size, x.cols());
-    y_train.resize(train_size, y.cols());
-    x_test.resize(test_size, x.cols());
-    y_test.resize(test_size, y.cols());
-
-    std::vector<size_t> indices (x.rows());
     std::iota(indices.begin(), indices.end(), 0);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 0.9999);
-
-    for (auto i = 0; i < train_size; i++)
-    {
-        auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
-
-        for (auto j = 0; j < x.cols(); j++)
-            x_train(i, j) = x(*index, j);
-        for (auto j = 0; j < y.cols(); j++)
-            y_train(i, j) = y(*index, j);
-        indices.erase(index);
+    if (shuffle) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::shuffle(indices.begin(), indices.end(), gen);
     }
 
-    for (auto i = 0; i < test_size; i++)
+    size_t test_size = rows * test_proportion;
+    size_t train_size = rows - test_size;
+    
+    m_test_indices = { indices.begin(), std::next(indices.begin(), test_size) };
+    m_train_indices = { std::next(indices.begin(), test_size), indices.end() };
+}
+
+void train_test_split::split(const Eigen::MatrixXd& x, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test)
+{
+    if (x.rows() != m_train_indices.size() + m_test_indices.size())
+        throw std::invalid_argument("vector x size does not match initialized size");
+
+    size_t train_idx = 0;
+    size_t test_idx = 0;
+
+    x_train.resize(m_train_indices.size(), x.cols());
+    x_test.resize(m_test_indices.size(), x.cols());
+
+    for (auto i : m_train_indices)
     {
-        auto index = shuffle ? indices.begin() + floor(dis(gen) * indices.size()) : indices.begin();
         for (auto j = 0; j < x.cols(); j++)
-            x_test(i, j) = x(*index, j);
-        for (auto j = 0; j < y.cols(); j++)
-            y_test(i, j) = y(*index, j);
-        indices.erase(index);
+            x_train(train_idx, j) = x(i, j);
+        train_idx++;
     }
+    for (auto i : m_test_indices)
+    {
+        for (auto j = 0; j < x.cols(); j++)
+            x_test(test_idx, j) = x(i, j);
+        test_idx++;
+    }
+}
+
+
+void train_test_split::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test)
+{
+    if (x.rows() != y.rows())
+        throw std::invalid_argument("vector x size does not match initialized size");
+
+    split(x, x_train, x_test);
+    split(y, y_train, y_test);
+}
+
+std::vector<size_t> train_test_split::train_indices() const
+{
+    return m_train_indices;
+}
+
+std::vector<size_t> train_test_split::test_indices() const
+{
+    return m_test_indices;
 }

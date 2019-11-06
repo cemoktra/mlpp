@@ -17,7 +17,7 @@ public:
     Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
 
     void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void init_classes(const std::vector<std::string>& classes) override;
+    void init_classes(size_t number_of_classes) override;
     double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
     
     void set_weights(const Eigen::MatrixXd& weights) override;
@@ -25,8 +25,7 @@ public:
     
 protected:
     std::vector<logistic_regression*> m_models;
-    std::vector<std::string> m_classes;
-    size_t m_class_count;
+    size_t m_number_of_classes;
 };
 
 #endif

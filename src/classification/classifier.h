@@ -10,7 +10,7 @@ public:
     classifier(const classifier&) = delete;
     ~classifier() = default;
     
-    virtual void init_classes(const std::vector<std::string>& classes) = 0;
+    virtual void init_classes(size_t number_of_classes) = 0;    
 };
 
 #endif

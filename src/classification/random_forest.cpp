@@ -84,10 +84,9 @@ double random_forest::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
 
-void random_forest::init_classes(const std::vector<std::string>& classes)
+void random_forest::init_classes(size_t number_of_classes)
 {
-    m_classes = classes;
-    m_class_count = classes.size();
+    m_class_count = number_of_classes;
 }
 
 void random_forest::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
@@ -99,7 +98,7 @@ void random_forest::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
         m_trees[i]->set_param("max_depth", get_param("max_depth"));
         m_trees[i]->set_param("min_leaf_items", get_param("min_leaf_items"));
         m_trees[i]->set_param("ignored_features", get_param("ignored_features"));
-        m_trees[i]->init_classes(m_classes);
+        m_trees[i]->init_classes(m_class_count);
         m_trees[i]->train(x, y);
     }
 }

@@ -13,7 +13,7 @@ Eigen::MatrixXd learning_curve::create(model *m, const Eigen::MatrixXd& x, const
         test_score = 0.0;
         train_score = 0.0;
         for (auto i = 0; i < 3; i++) {
-            test_train::split(x, y, x_train, x_test, y_train, y_test, split, true);
+            do_train_test_split(x, y, x_train, x_test, y_train, y_test, split, true);
             m->train(x_train, y_train);
             train_score += m->score(x_train, y_train);
             test_score += m->score(x_test, y_test);

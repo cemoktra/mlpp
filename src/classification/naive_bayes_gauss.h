@@ -3,6 +3,9 @@
 
 #include "classifier.h"
 
+// TODO: move distribution to an interface so we can easily change the distribution
+// TODO: add function for sparse matrices
+
 class naive_bayes_gauss : public classifier
 {
 public:
@@ -13,7 +16,7 @@ public:
     virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
     double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
     void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void init_classes(const std::vector<std::string>& classes) override;
+    void init_classes(size_t number_of_classes) override;
 
     void set_weights(const Eigen::MatrixXd& weights) override;
     Eigen::MatrixXd weights() override;    
@@ -24,7 +27,7 @@ private:
     Eigen::VectorXd pfc(const Eigen::MatrixXd& x, size_t _class);
     Eigen::MatrixXd pinv(const Eigen::MatrixXd& x);
 
-    std::vector<std::string> m_classes;
+    size_t m_number_of_classes;
 
     Eigen::VectorXd m_pre_prop;
     Eigen::MatrixXd m_var;

@@ -42,7 +42,7 @@ int main(int argc, char** args)
         std::cout << "regression with one feature and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
+        do_train_test_split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;
         std::cout << "  score: " << lr.score(x_test, y_test) << std::endl;
@@ -87,7 +87,7 @@ int main(int argc, char** args)
         std::cout << "regression with multiple features and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
+        do_train_test_split(x_datas_subset, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
 
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;
@@ -106,7 +106,7 @@ int main(int argc, char** args)
         std::cout << "regression with polynomial features and train-test-split:" << std::endl;
 
         Eigen::MatrixXd x_train, x_test, y_train, y_test;
-        test_train::split(m_x_poly, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
+        do_train_test_split(m_x_poly, y_datas, x_train, x_test, y_train, y_test, split, shuffle);
         lr.train(x_train, y_train);
 
         std::cout << "  weights: " << lr.weights().transpose() << std::endl;

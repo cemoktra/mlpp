@@ -18,11 +18,11 @@ one_for_one::~one_for_one()
 
 Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
 {
-    Eigen::MatrixXd prediction_count = Eigen::MatrixXd::Constant(x.rows(), m_class_count, 0);
+    Eigen::MatrixXd prediction_count = Eigen::MatrixXd::Constant(x.rows(), m_number_of_classes, 0);
 
     size_t model = 0;
-    for (auto i = 0; i < m_class_count - 1; i++) {
-        for (auto j = i + 1; j < m_class_count; j++) {
+    for (auto i = 0; i < m_number_of_classes - 1; i++) {
+        for (auto j = i + 1; j < m_number_of_classes; j++) {
             auto p = m_models[model]->predict(x);
 
             for (auto k = 0; k < x.rows(); k++) {
@@ -41,7 +41,7 @@ Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
     prediction_result.col(1) = Eigen::MatrixXd::Constant(x.rows(), 1, -1);
 
     for (auto k = 0; k < x.rows(); k++) {
-        for (auto i = 0; i < m_class_count; i++) {
+        for (auto i = 0; i < m_number_of_classes; i++) {
             if (prediction_count(k, i) > prediction_result(k, 0))
             {
                 prediction_result(k, 0) = prediction_count(k, i);
@@ -52,10 +52,9 @@ Eigen::MatrixXd one_for_one::predict(const Eigen::MatrixXd& x)
     return prediction_result;
 }
 
-void one_for_one::init_classes(const std::vector<std::string>& classes)
+void one_for_one::init_classes(size_t number_of_classes)
 {
-    m_classes = classes;
-    m_class_count = classes.size();
+    m_number_of_classes = number_of_classes;
 }
 
 void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
@@ -63,8 +62,8 @@ void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     for (auto lr : m_models)
         delete lr;
 
-    for (auto i = 0; i < m_class_count - 1; i++) {
-        for (auto j = i + 1; j < m_class_count; j++) {
+    for (auto i = 0; i < m_number_of_classes - 1; i++) {
+        for (auto j = i + 1; j < m_number_of_classes; j++) {
             Eigen::MatrixXd y_, x_;
             for (auto k = 0; k < y.rows(); k++)
             {
@@ -90,7 +89,7 @@ void one_for_one::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
             lr->set_param("threshold", get_param("threshold"));
             lr->set_param("max_iterations", get_param("max_iterations"));
             m_models.push_back(lr);
-            lr->init_classes(m_classes);
+            lr->init_classes(m_number_of_classes);
             lr->train(x_, y_);
         }
     }

@@ -48,14 +48,14 @@ double decision_tree::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
 
-void decision_tree::init_classes(const std::vector<std::string>& classes)
+void decision_tree::init_classes(size_t number_of_classes)
 {
-    m_classes = classes.size();
+    m_number_of_classes = number_of_classes;
 }
 
 void decision_tree::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
-    m_root = new decision_tree_node(0, x, y, m_classes, nullptr, true);
+    m_root = new decision_tree_node(0, x, y, m_number_of_classes, nullptr, true);
     m_root->split(static_cast<size_t>(get_param("max_depth")), static_cast<size_t>(get_param("min_leaf_items")), static_cast<size_t>(get_param("ignored_features")));
 }
 

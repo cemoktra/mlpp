@@ -9,7 +9,7 @@ public:
     one_hot() = delete;
     ~one_hot() = delete;
 
-    static Eigen::MatrixXd transform(const Eigen::MatrixXd& x, const std::vector<std::string>& classes);
+    static Eigen::MatrixXd transform(const Eigen::MatrixXd& x, size_t classes);
 };
 
 #endif

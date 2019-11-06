@@ -14,7 +14,7 @@ public:
     Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
     double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
     void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void init_classes(const std::vector<std::string>& classes) override;
+    void init_classes(size_t number_of_classes) override;
 
     void set_weights(const Eigen::MatrixXd& weights) override;
     Eigen::MatrixXd weights() override;

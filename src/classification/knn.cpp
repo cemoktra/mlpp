@@ -72,9 +72,9 @@ double knn::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     return static_cast<double>(pos) / static_cast<double>(pos + neg);
 }
 
-void knn::init_classes(const std::vector<std::string>& classes)
+void knn::init_classes(size_t number_of_classes)
 {
-    m_classes = classes.size();
+    m_classes = number_of_classes;
 }
 
 void knn::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)

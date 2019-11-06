@@ -69,6 +69,6 @@ void csv_reader::parse_line(const std::string& line)
             break;        
     }
 
-    if (m_lineCB)
+    if (m_lineCB && tokens.size())
         m_lineCB(m_line_index++, tokens);
 }

@@ -10,10 +10,12 @@ set(HEADER
     kfold.h
     one_hot.h
     csv_reader.h
+    csv_data.h
     parameters.h
     model.h
     validation_curve.h
     learning_curve.h
+    vocabulary.h
 )
 
 set(SOURCES
@@ -23,9 +25,11 @@ set(SOURCES
     kfold.cpp
     one_hot.cpp
     csv_reader.cpp
+    csv_data.cpp
     parameters.cpp
     validation_curve.cpp
     learning_curve.cpp
+    vocabulary.cpp
 )
 
 add_library(mlpp_core ${HEADER} ${SOURCES})

@@ -11,3 +11,6 @@ target_link_libraries(ex_classification mlpp_classification)
 
 add_executable(ex_curves curves.cpp)
 target_link_libraries(ex_curves mlpp_classification)
+
+add_executable(ex_spam spamfilter.cpp)
+target_link_libraries(ex_spam mlpp_classification)

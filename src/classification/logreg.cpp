@@ -19,14 +19,14 @@ Eigen::MatrixXd logistic_regression::predict(const Eigen::MatrixXd& x)
     throw std::invalid_argument("x dimension is wrong");
 }
 
-void logistic_regression::init_classes(const std::vector<std::string>& classes)
+void logistic_regression::init_classes(size_t number_of_classes)
 {
-    m_classes = classes;
+    m_classes = number_of_classes;
 }
 
 void logistic_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
-    auto y_onehot = (y.cols() == m_classes.size()) ? y : one_hot::transform(y, m_classes);
+    auto y_onehot = (y.cols() == m_classes) ? y : one_hot::transform(y, m_classes);
     calc_weights(x, y_onehot);
 }
 

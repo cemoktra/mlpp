@@ -42,7 +42,7 @@ int main(int argc, char** args)
     x_datas = normalize::transform(x_datas);
 
     logistic_regression m;
-    m.init_classes(classes);
+    m.init_classes(classes.size());
 
     Eigen::MatrixXd result = learning_curve::create(&m, x_datas, y_datas);
     std::cout << result.transpose() << std::endl;

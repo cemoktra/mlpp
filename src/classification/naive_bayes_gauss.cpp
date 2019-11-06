@@ -8,17 +8,17 @@ naive_bayes_gauss::naive_bayes_gauss()
 
 Eigen::MatrixXd naive_bayes_gauss::predict(const Eigen::MatrixXd& x)
 {    
-    Eigen::MatrixXd m_pfc (x.rows(), m_classes.size());
-    Eigen::MatrixXd m_pcf (x.rows(), m_classes.size());
+    Eigen::MatrixXd m_pfc (x.rows(), m_number_of_classes);
+    Eigen::MatrixXd m_pcf (x.rows(), m_number_of_classes);
     Eigen::VectorXd v_total_prop = Eigen::VectorXd::Zero(x.rows());
 
     
-    for (auto c = 0; c < m_classes.size(); c++) {
+    for (auto c = 0; c < m_number_of_classes; c++) {
         m_pfc.col(c) = pfc(x, c);
         v_total_prop = v_total_prop.array() + (m_pfc.col(c).array() * m_pre_prop(c));
     }
 
-    for (auto c = 0; c < m_classes.size(); c++)
+    for (auto c = 0; c < m_number_of_classes; c++)
         m_pcf.col(c) = (m_pfc.col(c).array() * m_pre_prop(c)) / v_total_prop.array();
     return m_pcf;
 }
@@ -50,7 +50,7 @@ double naive_bayes_gauss::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd&
 
 void naive_bayes_gauss::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
-    auto y_onehot = (y.cols() == m_classes.size()) ? y : one_hot::transform(y, m_classes);
+    auto y_onehot = (y.cols() == m_number_of_classes) ? y : one_hot::transform(y, m_number_of_classes);
 
     m_mean.resize(x.cols(), y_onehot.cols());
     m_var.resize(x.cols(), y_onehot.cols());
@@ -99,9 +99,9 @@ Eigen::VectorXd naive_bayes_gauss::pfc(const Eigen::MatrixXd& x, size_t _class)
 }
 
 
-void naive_bayes_gauss::init_classes(const std::vector<std::string>& classes)
+void naive_bayes_gauss::init_classes(size_t number_of_classes)
 {
-    m_classes = classes;
+    m_number_of_classes = number_of_classes;
 }
 
 void naive_bayes_gauss::set_weights(const Eigen::MatrixXd& weights)
