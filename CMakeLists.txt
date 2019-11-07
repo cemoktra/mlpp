@@ -15,6 +15,7 @@ list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build/xtensor/")
 add_subdirectory(googletest)
 add_subdirectory(xtl)
 add_subdirectory(xtensor)
+# CHANGE IN XTENSOR-BLAS set(XTENSOR_BLAS_INCLUDE_DIR ${INCLUDE_DIR} PARENT_SCOPE)
 add_subdirectory(xtensor-blas)
 
 # mlpp

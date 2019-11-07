@@ -10,6 +10,3 @@
 [submodule "googletest"]
 	path = googletest
 	url = https://github.com/google/googletest.git
-[submodule "lapack-release"]
-	path = lapack-release
-	url = https://github.com/Reference-LAPACK/lapack-release.git
