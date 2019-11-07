@@ -3,6 +3,10 @@
 #include <stdexcept>
 #include <iostream>
 
+#include <xtensor/xadapt.hpp>
+#include <xtensor/xview.hpp>
+#include <xtensor/xio.hpp>
+
 void csv_data::read(const std::string& file)
 {
     csv_reader csv (nullptr, std::bind(&csv_data::add_row, this, std::placeholders::_1, std::placeholders::_2));
@@ -23,6 +27,7 @@ void csv_data::add_row(size_t row, std::vector<std::string> tokens)
     size_t index = 0;
     for (auto token : tokens)
         m_data[index++].push_back(token);
+    
 }
 
 size_t csv_data::rows() const 
@@ -66,22 +71,16 @@ std::vector<double> csv_data::col(size_t index) const
 
 xt::xarray<double> csv_data::matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion)
 {
-    auto matrix = xt::zeros<double>({rows(), cols.size()});
+    xt::xarray<double> matrix = xt::zeros<double>({rows(), cols.size()});
     m_stringConversion = conversion;
     size_t index = 0;
+    
     for (auto c : cols) 
     {
-        std::cout << xt::view(matrix, xt::range(1, xt::placeholders::_), xt::all()) << std::endl;
-        // matrix.col(index++) = Eigen::Map<Eigen::VectorXd>(this->col<double>(c).data(), matrix.rows());
+        auto col_view = xt::view(matrix, xt::all(), xt::range(index, index + 1));
+        index++;
+        auto adapt = xt::adapt(this->col<double>(c));
+        std::copy(adapt.begin(), adapt.end(), col_view.begin());
     }
     return matrix;
 }
-// Eigen::MatrixXd csv_data::matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion)
-// {
-//     Eigen::MatrixXd matrix = Eigen::MatrixXd::Zero(rows(), cols.size());
-//     m_stringConversion = conversion;
-//     size_t index = 0;
-//     for (auto c : cols)
-//         matrix.col(index++) = Eigen::Map<Eigen::VectorXd>(this->col<double>(c).data(), matrix.rows());
-//     return matrix;
-// }

@@ -19,5 +19,5 @@ add_subdirectory(xtensor-blas)
 
 # mlpp
 add_subdirectory(src)
-#add_subdirectory(example)
+add_subdirectory(example)
 #add_subdirectory(test)

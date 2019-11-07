@@ -1,7 +1,6 @@
 #ifndef _LINREG_H_
 #define _LINREG_H_
 
-#include "Eigen/Dense"
 #include <core/model.h>
 #include <core/parameters.h>
 
@@ -11,18 +10,18 @@ public:
     linear_regression();
     ~linear_regression() = default;
 
-    Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) override;
 
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
 
-    void set_weights(const Eigen::MatrixXd& weights) override;
-    Eigen::MatrixXd weights() override;
+    void set_weights(const xt::xarray<double>& weights) override;
+    xt::xarray<double> weights() override;
 
 private:
-    void calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y);
+    void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y);
 
-    Eigen::MatrixXd m_weights;
+    xt::xarray<double> m_weights;
 };
 
 #endif

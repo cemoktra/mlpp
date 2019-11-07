@@ -1,18 +1,12 @@
 
 #include "normalize.h"
 
-Eigen::MatrixXd normalize::transform(const Eigen::MatrixXd& x)
+xt::xarray<double> normalize::transform(const xt::xarray<double>& x)
 {
-    Eigen::MatrixXd result = x;
-
-    for (auto i = 0; i < result.cols(); ++i)
-    {
-        auto mean = result.col(i).mean();
-        result.col(i) -= Eigen::VectorXd::Constant(result.rows(), mean);
-        auto min = result.col(i).minCoeff();
-        auto max = result.col(i).maxCoeff();
-        auto scale = std::max(std::fabs(min), std::fabs(max));
-        result.col(i) /= scale;
-    }
-    return result;
+    xt::xarray<double> mean = xt::mean(x, { 0 });
+    xt::xarray<double> result = x - mean;
+    xt::xarray<double> min = xt::abs(xt::amin(result, { 0 }));
+    xt::xarray<double> max = xt::amax(result, { 0 });
+    xt::xarray<double> scale = xt::maximum(min, max);
+    return result / scale;
 }

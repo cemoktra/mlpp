@@ -1,5 +1,7 @@
 #include "random_forest.h"
 #include "decision_tree.h"
+#include <xtensor/xview.hpp>
+#include <xtensor/xsort.hpp>
 
 random_forest::random_forest()
     : m_trees(nullptr)
@@ -32,20 +34,21 @@ random_forest::~random_forest()
     delete [] m_trees;
 }
 
-Eigen::MatrixXd random_forest::predict(const Eigen::MatrixXd& x)
+xt::xarray<double> random_forest::predict(const xt::xarray<double>& x)
 {
     auto tree_count = static_cast<size_t>(get_param("trees"));
+    auto s = x.shape();
+    s[1] = tree_count;
+    xt::xarray<double> tmp (s);
+    s[1] = 1;
+    xt::xarray<double> result (s);
 
-    Eigen::MatrixXd tmp (x.rows(), tree_count);
-    Eigen::MatrixXd result (x.rows(), 1);
+    for (auto i = 0; i < tree_count; i++) 
+        xt::view(tmp, xt::all(), xt::range(i, i + 1)) = m_trees[i]->predict(x);
 
-    for (auto i = 0; i < tree_count; i++) {
-        tmp.col(i) = m_trees[i]->predict(x);
-    }
-
-    for (auto r = 0; r < x.rows(); r++) {
-        auto row = tmp.row(r);
-        std::vector<double> rvec (row.data(), row.data() + row.rows() * row.cols());
+    for (auto r = 0; r < x.shape()[0]; r++) {
+        auto row = xt::view(tmp, xt::range(r, r + 1), xt::all());
+        std::vector<double> rvec (row.data(), row.data() + row.shape()[0] * row.shape()[1]);
         size_t max = 0;
         size_t result_class = 0;
         for (auto c = 0; c < m_class_count; c++) {
@@ -61,27 +64,17 @@ Eigen::MatrixXd random_forest::predict(const Eigen::MatrixXd& x)
     return result;    
 }
 
-double random_forest::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+double random_forest::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    size_t pos = 0, neg = 0;
-    auto p = predict(x);
+    xt::xarray<double> p = predict(x);
+    xt::xarray<size_t> target_class;
     
-    for (auto i = 0; i < p.rows(); i++) {
-        auto yrow = y.row(i);
-        size_t predict_class = p(i, 0);
-        size_t target_class = 0;
-        if (y.cols() > 1) {
-            std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
-            target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
-        } else
-            target_class = static_cast<size_t>(yrow(0));
-        
-        if (predict_class == target_class)
-            pos++;
-        else
-            neg++;        
-    }
-    return static_cast<double>(pos) / static_cast<double>(pos + neg);
+    if (y.shape()[1] > 1)
+        target_class = xt::argmax(p, {1});
+    else
+        target_class = y;
+    target_class.reshape(p.shape());
+    return xt::sum(xt::equal(p, target_class))(0) / static_cast<double>(y.shape()[0]);
 }
 
 void random_forest::init_classes(size_t number_of_classes)
@@ -89,7 +82,7 @@ void random_forest::init_classes(size_t number_of_classes)
     m_class_count = number_of_classes;
 }
 
-void random_forest::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+void random_forest::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     auto tree_count = static_cast<size_t>(get_param("trees"));
     m_trees = new decision_tree*[tree_count];
@@ -103,11 +96,11 @@ void random_forest::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
     }
 }
 
-void random_forest::set_weights(const Eigen::MatrixXd& weights)
+void random_forest::set_weights(const xt::xarray<double>& weights)
 {
 }
 
-Eigen::MatrixXd random_forest::weights()
+xt::xarray<double> random_forest::weights()
 {
-    return Eigen::MatrixXd();
+    return xt::xarray<double>();
 }

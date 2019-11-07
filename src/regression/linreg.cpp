@@ -1,49 +1,49 @@
 #include "linreg.h"
 #include <stdexcept>
+#include <xtensor/xview.hpp>
+#include <xtensor-blas/xlinalg.hpp>
+#include <xtensor/xio.hpp>
 
 linear_regression::linear_regression() 
 {
 }
 
-Eigen::MatrixXd linear_regression::predict(const Eigen::MatrixXd& x) 
+xt::xarray<double> linear_regression::predict(const xt::xarray<double>& x) 
 {
-    if (x.cols() == m_weights.rows()) {
-        return x * m_weights;
-    }
-    throw std::invalid_argument("x dimension is wrong");
+    if (x.shape()[1] != m_weights.shape()[0])
+        throw std::invalid_argument("x dimension is wrong");
+    return xt::linalg::dot(x, m_weights);
 }
 
-void linear_regression::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+void linear_regression::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     calc_weights(x, y);
 }
 
 
-double linear_regression::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+double linear_regression::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    auto p = predict(x);
-    auto e = y - p;
-    auto mean = y.col(0).mean();
-    auto ymean = y - Eigen::MatrixXd::Constant(y.rows(), y.cols(), mean);
-    return 1.0 - (e.squaredNorm() / ymean.squaredNorm());
+    xt::xarray<double> p = predict(x);
+    xt::xarray<double> e = y - p;
+    xt::xarray<double> mean = xt::mean(xt::view(y, xt::all(), xt::range(0, 1)));
+    xt::xarray<double> ymean = y - mean;
+    return 1.0 - (pow(xt::linalg::norm(e), 2) / pow(xt::linalg::norm(ymean), 2));
 }
 
-void linear_regression::set_weights(const Eigen::MatrixXd& weights)
+void linear_regression::set_weights(const xt::xarray<double>& weights)
 {
     m_weights = weights;
 }
 
-Eigen::MatrixXd linear_regression::weights()
+xt::xarray<double> linear_regression::weights()
 {
     return m_weights;
 }
 
-void linear_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+void linear_regression::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    Eigen::MatrixXd xTx = (x.transpose() * x);
-    Eigen::MatrixXd xTy = (x.transpose() * y);
-
-    Eigen::JacobiSVD<Eigen::MatrixXd> svd(xTx, Eigen::ComputeThinU | Eigen::ComputeThinV);
-    Eigen::MatrixXd xTx_inverse = svd.solve(Eigen::MatrixXd::Identity(xTx.rows(), xTx.cols()));
-    m_weights = xTx_inverse * xTy;
+    xt::xarray<double> xTx = xt::linalg::dot(xt::transpose(x), x);
+    xt::xarray<double> xTy = xt::linalg::dot(xt::transpose(x), y);
+    xt::xarray<double> xTx_inverse = xt::linalg::inv(xTx);
+    m_weights = xt::linalg::dot(xTx_inverse, xTy);
 }

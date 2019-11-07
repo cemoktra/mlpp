@@ -1,6 +1,7 @@
 #ifndef _PARAMETERS_H_
 #define _PARAMETERS_H_
 
+#include <string>
 #include <map>
 
 class parameters

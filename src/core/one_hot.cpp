@@ -1,10 +1,14 @@
 
 #include "one_hot.h"
+#include <xtensor/xview.hpp>
+#include <xtensor/xio.hpp>
 
-Eigen::MatrixXd one_hot::transform(const Eigen::MatrixXd& x, size_t classes)
+xt::xarray<double> one_hot::transform(const xt::xarray<double>& x, size_t classes)
 {
-    Eigen::MatrixXd result (x.rows(), classes);
+    auto shape = x.shape();
+    shape[1] = classes;
+    xt::xarray<double> result ( shape );
     for (auto i = 0; i < classes; i++)
-        result.col(i) = (x.array() == i).cast<double>();
+        xt::view(result, xt::all(), xt::range(i, i + 1)) = xt::where(xt::equal(x, i), 1, 0);
     return result;
 }
