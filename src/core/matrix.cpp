@@ -57,3 +57,23 @@ const matrix& matrix::operator+=(const matrix& rhs)
 
     throw invalid_matrix_op();
 }
+
+void matrix::set_col(size_t col, const std::vector<double>& data)
+{
+    if (data.size() != m_cols)
+        throw invalid_matrix_op();
+
+    // TODO: create col iterator
+    for (auto i = 0; i < data.size(); i++)
+    {
+        auto[block, offset] = index_to_internal(i * m_cols + col);        
+        _mm256_store_pd(m_buffer, m_data[block]);
+        m_buffer[offset] = data[i];
+        m_data[block] = _mm256_load_pd(m_buffer);
+    }
+}
+
+std::pair<size_t, size_t> matrix::index_to_internal(size_t index)
+{
+    return std::make_pair(index / 4, index % 4);
+}

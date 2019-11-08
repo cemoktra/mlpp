@@ -3,6 +3,7 @@
 
 #include <immintrin.h>
 #include <exception>
+#include <vector>
 
 class invalid_matrix_op : std::exception
 {
@@ -23,9 +24,13 @@ public:
     const matrix  operator+(const matrix& rhs);
     const matrix& operator+=(const matrix& rhs);
 
+    void set_col(size_t col, const std::vector<double>& data);
 
 
 private:
+    std::pair<size_t, size_t> index_to_internal(size_t index);
+
+    double __attribute__ ((aligned (4))) m_buffer[4];
     __m256d *m_data;
 
     size_t m_int_size;
