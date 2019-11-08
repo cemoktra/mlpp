@@ -6,6 +6,7 @@
 #include <classification/random_forest.h>
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
+#include <classification/svm.h>
 #include <core/traintest.h>
 #include <core/normalize.h>
 #include <core/csv_data.h>
@@ -60,7 +61,6 @@ int main(int argc, char** args)
 
     Eigen::MatrixXd x_train, x_test, y_train, y_test;
     do_train_test_split(x_datas, y_datas, x_train, x_test, y_train, y_test, 0.25, true);
-    double score;
 
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, x_train, x_test, y_train, y_test);
@@ -89,6 +89,9 @@ int main(int argc, char** args)
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, x_train, x_test, y_train, y_test);
+
+    svm s;
+    do_classification(&s, "support vector machine", classes, x_train, x_test, y_train, y_test);
 
     return 0;
 }
