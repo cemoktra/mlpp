@@ -10,6 +10,8 @@ multinomial_logistic_regression::multinomial_logistic_regression()
 
 xt::xarray<double> multinomial_logistic_regression::predict(const xt::xarray<double>& x) 
 {
+    if (x.shape()[1] != m_weights.shape()[0])
+        throw std::invalid_argument("x dimension is wrong");
     return softmax(xt::linalg::dot(x, m_weights));
 }
 
@@ -21,5 +23,5 @@ xt::xarray<double> multinomial_logistic_regression::softmax(const xt::xarray<dou
 
 double multinomial_logistic_regression::cost(const xt::xarray<double>& y, const xt::xarray<double>& p)
 {
-    return xt::sum(-y * xt::log(p))(0) / y.shape()[0];
+    return xt::sum(xt::eval(-y * xt::eval(xt::log(p))))(0) / y.shape()[0];
 }

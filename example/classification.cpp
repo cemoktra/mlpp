@@ -4,8 +4,8 @@
 #include <classification/knn.h>
 #include <classification/decision_tree.h>
 #include <classification/random_forest.h>
-// #include <classification/naive_bayes.h>
-// #include <classification/gauss_distribution.h>
+#include <classification/naive_bayes.h>
+#include <classification/gauss_distribution.h>
 #include <core/traintest.h>
 #include <core/normalize.h>
 #include <core/csv_data.h>
@@ -54,25 +54,25 @@ std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_cancer()
 
 int main(int argc, char** args)
 {
-    // auto [x_datas, y_datas, classes] = read_foods();
+    // auto [X, y, classes] = read_foods();
     auto [X, y, classes] = read_cancer();
     X = normalize::transform(X);
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
     do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, true);
 
-    logistic_regression lr;
-    do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
+    // logistic_regression lr;
+    // do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
 
-    one_for_one ofo;
-    do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
+    // one_for_one ofo;
+    // do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
 
     multinomial_logistic_regression mlr;
     do_classification(&mlr, "multinomial", classes, X_train, X_test, y_train, y_test);
 
-    knn k;
-    k.set_param("k", 3);
-    do_classification(&k, "k nearest neighbours", classes, X_train, X_test, y_train, y_test);
+    // knn k;
+    // k.set_param("k", 3);
+    // do_classification(&k, "k nearest neighbours", classes, X_train, X_test, y_train, y_test);
 
     // TODO: slow with xtensor
     // decision_tree dt;

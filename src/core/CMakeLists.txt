@@ -16,7 +16,6 @@ set(HEADER
     #validation_curve.h
     #learning_curve.h
     #vocabulary.h
-    #pseudo_inverse.h
 )
 
 set(SOURCES
@@ -31,9 +30,10 @@ set(SOURCES
     #validation_curve.cpp
     #learning_curve.cpp
     #vocabulary.cpp
-    #pseudo_inverse.cpp
 )
 
+include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
+
 add_library(mlpp_core ${HEADER} ${SOURCES})
-target_link_libraries(mlpp_core tbb xtensor)
+target_link_libraries(mlpp_core tbb xtensor xsimd)
 target_include_directories(mlpp_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

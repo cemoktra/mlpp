@@ -12,7 +12,7 @@ set(SOURCES
     linreg.cpp
 )
 
-include_directories(${XTENSOR_BLAS_INCLUDE_DIR})
+include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
 
 add_library(mlpp_regression ${HEADER} ${SOURCES})
 target_link_libraries(mlpp_regression mlpp_core)

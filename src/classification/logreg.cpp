@@ -82,9 +82,9 @@ void logistic_regression::calc_weights(const xt::xarray<double>& x, const xt::xa
 
 double logistic_regression::cost(const xt::xarray<double>& y, const xt::xarray<double>& p)
 {
-    xt::xarray<double> c1 = -y * xt::log(p);
-    xt::xarray<double> c2 = (1 - y) * xt::log(1.0 - p);
-    return xt::sum(c1 - c2)(0) / p.shape()[0];
+    xt::xarray<double> c1 = -y * xt::eval(xt::log(p));
+    xt::xarray<double> c2 = xt::eval(1 - y) * xt::eval(xt::log(xt::eval(1 - p)));
+    return xt::eval(xt::sum(xt::eval(c1 - 2)))(0) / p.shape()[0];
 }
 
 xt::xarray<double> logistic_regression::gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p)
@@ -96,10 +96,5 @@ xt::xarray<double> logistic_regression::gradient(const xt::xarray<double>& x, co
 
 xt::xarray<double> logistic_regression::sigmoid(const xt::xarray<double>& x)
 {    
-    xt::xarray<double> e = xt::exp(-x);
-    xt::xarray<double> q = e + 1;
-    xt::xarray<double> result = 1.0 / q;
-    if (xt::any(result < 0.0) || xt::any(result > 1.0))
-        throw std::out_of_range("ERROR IN SIGMOID");    
-    return result;
+    return 1.0 / (xt::exp(-x) + 1);
 }
