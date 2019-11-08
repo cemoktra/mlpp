@@ -17,6 +17,7 @@ set(HEADER
     learning_curve.h
     vocabulary.h
     pseudo_inverse.h
+    matrix.h
 )
 
 set(SOURCES
@@ -32,7 +33,10 @@ set(SOURCES
     learning_curve.cpp
     vocabulary.cpp
     pseudo_inverse.cpp
+    matrix.cpp
 )
+
+add_definitions("-mavx")
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
 target_link_libraries(mlpp_core tbb eigen)
