@@ -42,7 +42,7 @@ const matrix& matrix::operator+=(const matrix& rhs)
         // TODO: create iterator
         for (auto i = 0; i < m_int_size; i++)
         {
-            _mm256_add_pd(m_data[i], rhs.m_data[i]);
+            m_data[i] = _mm256_add_pd(m_data[i], rhs.m_data[i]);
         }
         return *this;
     }
@@ -65,15 +65,25 @@ void matrix::set_col(size_t col, const std::vector<double>& data)
 
     // TODO: create col iterator
     for (auto i = 0; i < data.size(); i++)
-    {
-        auto[block, offset] = index_to_internal(i * m_cols + col);        
-        _mm256_store_pd(m_buffer, m_data[block]);
-        m_buffer[offset] = data[i];
-        m_data[block] = _mm256_load_pd(m_buffer);
-    }
+        set_at(i / m_cols, i % m_cols, data[i]);
 }
 
 std::pair<size_t, size_t> matrix::index_to_internal(size_t index)
 {
     return std::make_pair(index / 4, index % 4);
+}
+
+double matrix::get_at(size_t row, size_t col)
+{
+    auto[block, offset] = index_to_internal(row * m_cols + col);        
+    _mm256_store_pd(m_buffer, m_data[block]);
+    return m_buffer[offset];
+}
+
+void matrix::set_at(size_t row, size_t col, double value)
+{
+    auto[block, offset] = index_to_internal(row * m_cols + col);        
+    _mm256_store_pd(m_buffer, m_data[block]);
+    m_buffer[offset] = value;
+    m_data[block] = _mm256_load_pd(m_buffer);
 }

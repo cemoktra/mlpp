@@ -26,6 +26,8 @@ public:
 
     void set_col(size_t col, const std::vector<double>& data);
 
+    double get_at(size_t row, size_t col);
+    void set_at(size_t row, size_t col, double value);
 
 private:
     std::pair<size_t, size_t> index_to_internal(size_t index);
