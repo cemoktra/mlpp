@@ -31,6 +31,11 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/eigen-src
                  ${CMAKE_CURRENT_BINARY_DIR}/eigen-build
                  EXCLUDE_FROM_ALL)
 
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/benchmark-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/benchmark-build
+                 EXCLUDE_FROM_ALL)          
+
 add_subdirectory(src)
 add_subdirectory(example)
 add_subdirectory(test)
+add_subdirectory(benchmark)

@@ -1,27 +1,22 @@
 #include "matrix.h"
 #include <math.h>
 #include <cstring>
-
-// _mm256_load_pd
-// _mm256_store_pd
-// _mm256_mul_pd
-// ...
+#include <algorithm>
+#include <execution>
 
 matrix::matrix(size_t rows, size_t cols)
     : m_rows(rows)
     , m_cols(cols)
 {
-    m_int_size = ceil((rows * cols) / 4.0);
-    m_data = new __m256d[m_int_size];
+    m_data = new double[rows * cols];
 }
 
 matrix::matrix(const matrix& rhs)
     : m_rows(rhs.m_rows)
     , m_cols(rhs.m_cols)
-    , m_int_size(rhs.m_int_size)
 {
-    m_data = new __m256d[m_int_size];
-    memcpy(m_data, rhs.m_data, m_int_size * sizeof(__m256d));
+    m_data = new double[m_rows * m_cols];
+    memcpy(m_data, rhs.m_data, m_rows * m_cols * sizeof(double));
 }
 
 matrix::~matrix()
@@ -39,11 +34,7 @@ const matrix matrix::operator+(const matrix& rhs)
 const matrix& matrix::operator+=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        // TODO: create iterator
-        for (auto i = 0; i < m_int_size; i++)
-        {
-            m_data[i] = _mm256_add_pd(m_data[i], rhs.m_data[i]);
-        }
+        std::transform(begin(), end(), rhs.begin(), begin(), [&](const double& a, const double& b) { return a + b; });
         return *this;
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
@@ -58,32 +49,73 @@ const matrix& matrix::operator+=(const matrix& rhs)
     throw invalid_matrix_op();
 }
 
-void matrix::set_col(size_t col, const std::vector<double>& data)
+matrix_iterator matrix::begin() const
 {
-    if (data.size() != m_cols)
-        throw invalid_matrix_op();
-
-    // TODO: create col iterator
-    for (auto i = 0; i < data.size(); i++)
-        set_at(i / m_cols, i % m_cols, data[i]);
+    return matrix_iterator(m_data);
 }
 
-std::pair<size_t, size_t> matrix::index_to_internal(size_t index)
+matrix_iterator matrix::end() const
 {
-    return std::make_pair(index / 4, index % 4);
+    return matrix_iterator(m_data + (m_rows * m_cols));
+}
+
+matrix_iterator matrix::row_begin(size_t row) const
+{
+    return matrix_iterator(&m_data[row * m_cols]);
+}
+
+matrix_iterator matrix::row_end(size_t row) const
+{
+    return matrix_iterator(&m_data[row * m_cols + m_cols]);
+}
+
+matrix_iterator matrix::col_begin(size_t col) const
+{
+    return matrix_iterator(&m_data[m_cols], m_cols);
+}
+
+matrix_iterator matrix::col_end(size_t col) const
+{
+    return matrix_iterator(&m_data[m_rows * m_cols + m_cols], m_cols);
+}
+
+matrix_avx_iterator matrix::avx_begin() const
+{
+    return matrix_avx_iterator(m_data, m_data + (m_rows * m_cols));
+}
+
+matrix_avx_iterator matrix::avx_end() const
+{
+    return matrix_avx_iterator(m_data + (m_rows * m_cols));
 }
 
 double matrix::get_at(size_t row, size_t col)
 {
-    auto[block, offset] = index_to_internal(row * m_cols + col);        
-    _mm256_store_pd(m_buffer, m_data[block]);
-    return m_buffer[offset];
+    return m_data[row * m_cols + col];
 }
 
 void matrix::set_at(size_t row, size_t col, double value)
 {
-    auto[block, offset] = index_to_internal(row * m_cols + col);        
-    _mm256_store_pd(m_buffer, m_data[block]);
-    m_buffer[offset] = value;
-    m_data[block] = _mm256_load_pd(m_buffer);
+    m_data[row * m_cols + col] = value;
 }
+
+void matrix::avx_add(const matrix& rhs)
+{
+    if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
+        std::transform(avx_begin(), avx_end(), rhs.avx_begin(), avx_begin(), [&](const __m256d& a, const __m256d& b) { return _mm256_add_pd(a, b); });
+        return;
+    }
+    else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
+    }
+    else if (m_cols == 1 && rhs.m_rows == m_rows) {
+    }
+    else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+    else if (m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+
+    throw invalid_matrix_op();
+}
+
+
+

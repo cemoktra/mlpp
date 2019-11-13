@@ -18,6 +18,7 @@ set(HEADER
     vocabulary.h
     pseudo_inverse.h
     matrix.h
+    matrix_iterator.h
 )
 
 set(SOURCES
@@ -34,6 +35,7 @@ set(SOURCES
     vocabulary.cpp
     pseudo_inverse.cpp
     matrix.cpp
+    matrix_iterator.cpp
 )
 
 add_definitions("-mavx")
