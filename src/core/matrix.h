@@ -25,6 +25,8 @@ public:
     const matrix  operator+(const matrix& rhs);
     const matrix& operator+=(const matrix& rhs);
 
+    inline size_t cols() const { return m_cols; };
+
     matrix_iterator begin() const;
     matrix_iterator end() const;
 

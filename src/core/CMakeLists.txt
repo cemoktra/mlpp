@@ -35,7 +35,6 @@ set(SOURCES
     vocabulary.cpp
     pseudo_inverse.cpp
     matrix.cpp
-    matrix_iterator.cpp
 )
 
 add_definitions("-mavx")

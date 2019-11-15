@@ -25,6 +25,19 @@ TEST_F (matrix_test, add) {
         ASSERT_EQ(m3.get_at(i / 3, i % 3), 3);
 }
 
+TEST_F (matrix_test, add_col) { 
+    matrix m1(3, 3), m2(3, 1);
+
+    for (auto i = 0; i < 9; i++) {
+        m1.set_at(i / 3, i % 3, 1 + i % 3);
+        m2.set_at(i / 3, i % 3, 1);
+    }
+
+    auto m3 = m1 + m2;
+    for (auto i = 0; i < 9; i++)
+        ASSERT_EQ(m3.get_at(i / 3, i % 3), 2 + i % 3);
+}
+
 TEST_F (matrix_test, add_avx) { 
     matrix m1(3, 3), m2(3, 3);
 
