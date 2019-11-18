@@ -7,7 +7,7 @@
 #include <xtensor/xio.hpp>
 #include <iostream>
 
-std::pair<Eigen::MatrixXd, Eigen::MatrixXd> read_diamonds()
+std::pair<xt::xarray<double>, xt::xarray<double>> read_diamonds()
 {
     std::cout << "reading data ... ";
     csv_data data;
