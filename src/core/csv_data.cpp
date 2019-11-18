@@ -10,16 +10,15 @@ void csv_data::read(const std::string& file)
     csv.read(file);
 }
 
-void csv_data::add_row(size_t row, std::vector<std::string> tokens)
+void csv_data::add_row(size_t row, std::list<std::string> tokens)
 {
     if (!m_data.size())
         m_data.resize(tokens.size());
     if (m_data.size() != tokens.size()) {
         std::cout << "row " << row << ": " << m_data.size() << " vs " << tokens.size() << std::endl;
-        std::cout << tokens[0] << std::endl;
         throw std::invalid_argument("rows have different number of columns");
     }
-
+    
     size_t index = 0;
     for (auto token : tokens)
         m_data[index++].push_back(token);

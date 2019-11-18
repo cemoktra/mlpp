@@ -1,38 +1,25 @@
 #include <classification/logreg.h>
 #include <core/normalize.h>
-#include <core/csv_reader.h>
+#include <core/csv_data.h>
 #include <core/validation_curve.h>
 #include <core/learning_curve.h>
 #include <iostream>
 #include <numeric>
 #include <chrono>
 
-std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, std::vector<std::string>> read_cancer()
+std::tuple<Eigen::MatrixXd, Eigen::MatrixXd, size_t> read_cancer()
 {
-    Eigen::MatrixXd x_datas;
-    std::vector<std::string> classes;
-    Eigen::MatrixXd y_datas;
-
-    csv_reader csv(
-        [&](size_t lines) {
-            x_datas = Eigen::MatrixXd::Zero(lines, 30);
-            y_datas = Eigen::MatrixXd::Zero(lines, 1);
-        }, 
-        [&](size_t line, std::vector<std::string> tokens) {
-            for (auto i = 0; i < 30; i++)
-                x_datas(line, i) = stod(tokens[i + 2]);
-            auto class_name = tokens[1];
-            auto it = std::find(classes.begin(), classes.end(), class_name);
-            if (it == classes.end()) {
-                y_datas(line, 0) = classes.size();
-                classes.push_back(class_name);
-            } else
-                y_datas(line, 0) = it - classes.begin();
-        });
     std::cout << "reading data ... ";
-    csv.read("cancer.csv");
+    csv_data data;
+    data.read("cancer.csv");
+
+    std::vector<size_t> columns(30);
+    std::iota(columns.begin(), columns.end(), 2);
+
+    Eigen::MatrixXd x_datas = data.matrixFromCols(columns);
+    Eigen::MatrixXd y_datas = data.matrixFromCols({1}, csv_data::UniqueStringIndex);
     std::cout << "done" << std::endl;
-    return std::make_tuple(x_datas, y_datas, classes);
+    return std::make_tuple(x_datas, y_datas, static_cast<size_t>(y_datas.maxCoeff() + 1));
 }
 
 int main(int argc, char** args)
@@ -42,7 +29,7 @@ int main(int argc, char** args)
     x_datas = normalize::transform(x_datas);
 
     logistic_regression m;
-    m.init_classes(classes.size());
+    m.init_classes(classes);
 
     Eigen::MatrixXd result = learning_curve::create(&m, x_datas, y_datas);
     std::cout << result.transpose() << std::endl;

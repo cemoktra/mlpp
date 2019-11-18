@@ -47,7 +47,7 @@ size_t csv_reader::count_lines(std::ifstream& fs)
 
 void csv_reader::parse_line(const std::string& line)
 {
-    std::vector<std::string> tokens;
+    std::list<std::string> tokens;
     std::string token;
     size_t pos = 0;
     while (true) {

@@ -1,33 +1,25 @@
 #include <regression/linreg.h>
 #include <core/traintest.h>
 #include <core/kfold.h>
-#include <core/csv_reader.h>
+#include <core/csv_data.h>
 #include <core/polyfeatures.h>
 #include <iostream>
 
+std::pair<Eigen::MatrixXd, Eigen::MatrixXd> read_diamonds()
+{
+    std::cout << "reading data ... ";
+    csv_data data;
+    data.read("diamonds.csv");
+
+    Eigen::MatrixXd x_datas = data.matrixFromCols({0, 7, 8, 9});
+    Eigen::MatrixXd y_datas = data.matrixFromCols({6});
+    std::cout << "done" << std::endl;
+    return std::pair(x_datas, y_datas);
+}
+
 int main(int argc, char** args)
 {
-    Eigen::MatrixXd x_datas;
-    Eigen::MatrixXd y_datas;
-
-    csv_reader csv(
-        [&](size_t lines) {
-            x_datas = Eigen::MatrixXd::Ones(lines, 4);
-            y_datas = Eigen::MatrixXd::Zero(lines, 1);
-        }, 
-        [&](size_t line, std::vector<std::string> tokens) {
-            try {
-            x_datas(line, 0) = stod(tokens[0]);
-            for (auto i = 0; i < 3; i++)
-                x_datas(line, i + 1) = stod(tokens[i + 7]);
-            y_datas(line, 0) = stod(tokens[6]);
-            } catch (...) {
-                std::cout << "PANIC " << std::endl;
-            }
-        });
-    std::cout << "reading data ... ";
-    csv.read("diamonds.csv");
-    std::cout << "done" << std::endl;
+    auto [x_datas, y_datas] = read_diamonds();
 
     linear_regression lr;
     bool shuffle = true;
