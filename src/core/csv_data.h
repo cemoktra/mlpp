@@ -1,7 +1,7 @@
 #ifndef _CSV_DATA_H_
 #define _CSV_DATA_H_
 
-#include <vector>
+#include <list>
 #include <string>
 #include <xtensor/xarray.hpp>
 
@@ -27,7 +27,7 @@ public:
     xt::xarray<double> matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion = ParseValue);
 
 private:
-    void add_row(size_t row, std::vector<std::string> tokens);
+    void add_row(size_t row, std::list<std::string> tokens);
 
     typedef std::vector<std::string> col_type;
     typedef std::vector<col_type> csv_data_type;

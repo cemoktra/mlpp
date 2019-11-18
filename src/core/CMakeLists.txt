@@ -35,5 +35,5 @@ set(SOURCES
 include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
-target_link_libraries(mlpp_core tbb xtensor xsimd)
+target_link_libraries(mlpp_core tbb xtensor)
 target_include_directories(mlpp_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

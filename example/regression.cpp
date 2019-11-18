@@ -7,7 +7,7 @@
 #include <xtensor/xio.hpp>
 #include <iostream>
 
-int main(int argc, char** args)
+std::pair<Eigen::MatrixXd, Eigen::MatrixXd> read_diamonds()
 {
     std::cout << "reading data ... ";
     csv_data data;
@@ -17,6 +17,12 @@ int main(int argc, char** args)
     xt::xarray<double> X = data.matrixFromCols({0, 7, 8, 9});
 
     std::cout << "done" << std::endl;
+    return std::pair(x_datas, y_datas);
+}
+
+int main(int argc, char** args)
+{
+    auto [x_datas, y_datas] = read_diamonds();
 
     linear_regression lr;
     bool shuffle = true;

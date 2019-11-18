@@ -4,9 +4,10 @@
 #include <string>
 #include <fstream>
 #include <functional>
+#include <list>
 
 typedef std::function<void(size_t)> LineCountCB;
-typedef std::function<void(size_t, std::vector<std::string>)> LineCB;
+typedef std::function<void(size_t, std::list<std::string>)> LineCB;
 
 class csv_reader
 {
