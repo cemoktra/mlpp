@@ -24,6 +24,8 @@ public:
 
     const matrix  operator+(const matrix& rhs);
     const matrix& operator+=(const matrix& rhs);
+    const matrix  operator*(const matrix& rhs);
+    const matrix& operator*=(const matrix& rhs);
 
     inline size_t cols() const { return m_cols; };
 
@@ -43,9 +45,13 @@ public:
     void set_at(size_t row, size_t col, double value);
 
     void avx_add(const matrix& rhs);
+    void avx_mul(const matrix& rhs);
 
 private:
-    double *m_data;
+    typedef double aligned_double __attribute__ ((aligned (32)));
+
+    aligned_double *m_data;
+    // double *m_data;
 
     size_t m_rows;
     size_t m_cols;

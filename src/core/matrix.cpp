@@ -1,22 +1,20 @@
 #include "matrix.h"
 #include <math.h>
 #include <cstring>
-#include <algorithm>
-#include <execution>
 
 matrix::matrix(size_t rows, size_t cols)
     : m_rows(rows)
     , m_cols(cols)
 {
-    m_data = new double[rows * cols];
+    m_data = new aligned_double[rows * cols];
 }
 
 matrix::matrix(const matrix& rhs)
     : m_rows(rhs.m_rows)
     , m_cols(rhs.m_cols)
 {
-    m_data = new double[m_rows * m_cols];
-    memcpy(m_data, rhs.m_data, m_rows * m_cols * sizeof(double));
+    m_data = new aligned_double[m_rows * m_cols];
+    memcpy(m_data, rhs.m_data, m_rows * m_cols * sizeof(aligned_double));
 }
 
 matrix::~matrix()
@@ -34,7 +32,6 @@ const matrix matrix::operator+(const matrix& rhs)
 const matrix& matrix::operator+=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        //std::transform(begin(), end(), rhs.begin(), begin(), [&](const double& a, const double& b) { return a + b; });
         auto e = end();
         for (auto it1 = begin(), it2 = rhs.begin(); it1 != e; it1++, it2++)
         {
@@ -44,11 +41,47 @@ const matrix& matrix::operator+=(const matrix& rhs)
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
         for (auto c = 0; c < cols(); c++) {
-            // std::transform(col_begin(c), col_end(c), rhs.begin(), col_begin(c), [&](const double& a, const double& b) { return a + b; });
             auto e = col_end(c);
             for (auto it1 = col_begin(c), it2 = rhs.begin(); it1 != e; it1++, it2++)
             {
                 *it1 = *it1 + *it2;
+            }
+        }
+        return *this;
+    }
+    else if (m_cols == 1 && rhs.m_rows == m_rows) {
+    }
+    else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+    else if (m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+
+    throw invalid_matrix_op();
+}
+
+const matrix matrix::operator*(const matrix& rhs)
+{
+    matrix copy(*this);
+    copy *= rhs;
+    return copy;
+}
+
+const matrix& matrix::operator*=(const matrix& rhs)
+{
+    if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
+        auto e = end();
+        for (auto it1 = begin(), it2 = rhs.begin(); it1 != e; it1++, it2++)
+        {
+            *it1 = *it1 * *it2;
+        }
+        return *this;
+    }
+    else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
+        for (auto c = 0; c < cols(); c++) {
+            auto e = col_end(c);
+            for (auto it1 = col_begin(c), it2 = rhs.begin(); it1 != e; it1++, it2++)
+            {
+                *it1 = *it1 * *it2;
             }
         }
         return *this;
@@ -116,7 +149,6 @@ void matrix::set_at(size_t row, size_t col, double value)
 void matrix::avx_add(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        // std::transform(std::execution::par, avx_begin(), avx_end(), rhs.avx_begin(), avx_begin(), [&](const __m256d& a, const __m256d& b) { return _mm256_add_pd(a, b); });
         auto end = avx_end();
         for (auto it1 = avx_begin(), it2 = rhs.avx_begin(); it1 != end; it1++, it2++)
         {
@@ -136,3 +168,24 @@ void matrix::avx_add(const matrix& rhs)
     throw invalid_matrix_op();
 }
 
+void matrix::avx_mul(const matrix& rhs)
+{
+    if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
+        auto end = avx_end();
+        for (auto it1 = avx_begin(), it2 = rhs.avx_begin(); it1 != end; it1++, it2++)
+        {
+            *it1 = _mm256_mul_pd(*it1, *it2);
+        }
+        return;
+    }
+    else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
+    }
+    else if (m_cols == 1 && rhs.m_rows == m_rows) {
+    }
+    else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+    else if (m_rows == 1 && rhs.m_cols == m_cols) {
+    }
+
+    throw invalid_matrix_op();
+}

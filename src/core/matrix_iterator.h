@@ -16,6 +16,7 @@ public:
 
     matrix_iterator(pointer ptr, size_t step = 1) : m_ptr(ptr), m_step(step) { }
     matrix_iterator(const matrix_iterator& rhs) : m_ptr(rhs.m_ptr), m_step(rhs.m_step) { }
+    matrix_iterator(matrix_iterator&& rhs) : m_ptr(std::move(rhs.m_ptr)), m_step(std::move(rhs.m_step)) { }
 
     inline self_type operator++() { self_type i = *this; m_ptr += m_step; return i; };
     inline self_type operator++(int) { m_ptr += m_step; return *this; };
@@ -57,6 +58,14 @@ public:
         , m_int_values(rhs.m_int_values)
     {}
 
+    matrix_avx_iterator(matrix_avx_iterator&& rhs) 
+        : m_srcPtr(std::move(rhs.m_srcPtr))
+        , m_endPtr(std::move(rhs.m_endPtr)) 
+        , m_value(std::move(rhs.m_value)) 
+        , m_step(std::move(rhs.m_step)) 
+        , m_int_values(std::move(rhs.m_int_values)) 
+    { }
+
     inline self_type operator++() {
         save();
         self_type i = std::move(*this);
@@ -78,9 +87,10 @@ public:
     inline void save() { _mm256_storeu_pd(m_srcPtr, m_value); }
 
 private:
-    inline void update() { m_value = _mm256_loadu_pd(m_srcPtr); m_int_values = std::min(4l, m_endPtr - m_srcPtr); };
-
-    double __attribute__ ((aligned (4))) m_buffer[4];
+    inline void update() { 
+        m_value = _mm256_load_pd(m_srcPtr); 
+        m_int_values = std::min(4l, m_endPtr - m_srcPtr);
+    };
 
     double *m_srcPtr;
     double *m_endPtr;
