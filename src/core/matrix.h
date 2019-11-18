@@ -20,14 +20,22 @@ class matrix
 public:
     matrix(size_t rows, size_t cols);
     matrix(const matrix& rhs);
+    matrix(matrix&& rhs);
     ~matrix();
+
+    matrix& operator=(const double& val);
 
     const matrix  operator+(const matrix& rhs);
     const matrix& operator+=(const matrix& rhs);
+    const matrix  operator-(const matrix& rhs);
+    const matrix& operator-=(const matrix& rhs);
     const matrix  operator*(const matrix& rhs);
     const matrix& operator*=(const matrix& rhs);
+    const matrix  operator/(const matrix& rhs);
+    const matrix& operator/=(const matrix& rhs);
 
     inline size_t cols() const { return m_cols; };
+    inline size_t rows() const { return m_rows; };
 
     matrix_iterator begin() const;
     matrix_iterator end() const;
@@ -38,14 +46,8 @@ public:
     matrix_iterator col_begin(size_t col) const;
     matrix_iterator col_end(size_t col) const;
 
-    matrix_avx_iterator avx_begin() const;
-    matrix_avx_iterator avx_end() const;
-
-    double get_at(size_t row, size_t col);
+    double get_at(size_t row, size_t col) const;
     void set_at(size_t row, size_t col, double value);
-
-    void avx_add(const matrix& rhs);
-    void avx_mul(const matrix& rhs);
 
 private:
     typedef double aligned_double __attribute__ ((aligned (32)));

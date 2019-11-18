@@ -30,7 +30,7 @@ TEST_F (matrix_test, add_col) {
 
     for (auto i = 0; i < 9; i++) {
         m1.set_at(i / 3, i % 3, 1 + i % 3);
-        m2.set_at(i / 3, i % 3, 1);
+        m2.set_at(i / 3, 0, 1);
     }
 
     auto m3 = m1 + m2;
@@ -38,15 +38,15 @@ TEST_F (matrix_test, add_col) {
         ASSERT_EQ(m3.get_at(i / 3, i % 3), 2 + i % 3);
 }
 
-TEST_F (matrix_test, add_avx) { 
-    matrix m1(3, 3), m2(3, 3);
+TEST_F (matrix_test, add_row) { 
+    matrix m1(3, 3), m2(1, 3);
 
     for (auto i = 0; i < 9; i++) {
-        m1.set_at(i / 3, i % 3, 1);
-        m2.set_at(i / 3, i % 3, 2);
+        m1.set_at(i / 3, i % 3, 1 + i % 3);
+        m2.set_at(0, i % 3, 1);
     }
 
-    m1.avx_add(m2);
+    auto m3 = m1 + m2;
     for (auto i = 0; i < 9; i++)
-        ASSERT_EQ(m1.get_at(i / 3, i % 3), 3);
+        ASSERT_EQ(m3.get_at(i / 3, i % 3), 2 + i % 3);
 }
