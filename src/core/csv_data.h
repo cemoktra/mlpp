@@ -26,14 +26,19 @@ public:
 
     Eigen::MatrixXd matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion = ParseValue);
 
+    std::list<std::string> headers();
+
 private:
+    void add_header(std::list<std::string> tokens);
     void add_row(size_t row, std::list<std::string> tokens);
 
     typedef std::vector<std::string> col_type;
     typedef std::vector<col_type> csv_data_type;
+    typedef std::list<std::string> csv_headers;
 
     EStringToDoubleTypes m_stringConversion = ParseValue;
     csv_data_type m_data;
+    csv_headers m_headers;
 
     size_t m_rows;
 };

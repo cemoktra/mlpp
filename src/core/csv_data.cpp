@@ -5,8 +5,9 @@
 
 void csv_data::read(const std::string& file)
 {
-    csv_reader csv (nullptr, std::bind(&csv_data::add_row, this, std::placeholders::_1, std::placeholders::_2));
+    csv_reader csv (nullptr, std::bind(&csv_data::add_row, this, std::placeholders::_1, std::placeholders::_2), std::bind(&csv_data::add_header, this, std::placeholders::_1));
     m_data.clear();
+    m_headers.clear();
     csv.read(file);
 }
 
@@ -24,6 +25,11 @@ void csv_data::add_row(size_t row, std::list<std::string> tokens)
         m_data[index++].push_back(token);
 }
 
+void csv_data::add_header(std::list<std::string> tokens)
+{
+    m_headers = tokens;
+}
+
 size_t csv_data::rows() const 
 {
     if (!m_data.size())
@@ -34,6 +40,11 @@ size_t csv_data::rows() const
 size_t csv_data::cols() const
 {
     return m_data.size();
+}
+
+std::list<std::string> csv_data::headers()
+{
+    return m_headers;
 }
 
 template<>

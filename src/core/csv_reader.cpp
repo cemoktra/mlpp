@@ -1,8 +1,9 @@
 #include "csv_reader.h"
 
-csv_reader::csv_reader(LineCountCB lineCountCB, LineCB lineCB)
+csv_reader::csv_reader(LineCountCB lineCountCB, LineCB lineCB, HeaderCB headerCB)
     : m_lineCountCB(lineCountCB)
     , m_lineCB(lineCB)
+    , m_headerCB(headerCB)
     , m_delim(',')
 {
     
@@ -21,10 +22,13 @@ void csv_reader::read(const std::string& file)
 
     while (fs.good()) {
         std::getline(fs, line);
-        if (header)
+        auto line_tokens = parse_line(line);
+        if (header) {
             header = false;
-        else
-            parse_line(line);
+            if (m_headerCB && line_tokens.size())
+                m_headerCB(line_tokens);
+        } else if (m_lineCB && line_tokens.size())
+            m_lineCB(m_line_index++, line_tokens);
     }
 }
 
@@ -45,7 +49,7 @@ size_t csv_reader::count_lines(std::ifstream& fs)
     return line_count;
 }
 
-void csv_reader::parse_line(const std::string& line)
+std::list<std::string> csv_reader::parse_line(const std::string& line)
 {
     std::list<std::string> tokens;
     std::string token;
@@ -68,7 +72,5 @@ void csv_reader::parse_line(const std::string& line)
         if (pos >= line.size())
             break;        
     }
-
-    if (m_lineCB && tokens.size())
-        m_lineCB(m_line_index++, tokens);
+    return std::move(tokens);
 }
