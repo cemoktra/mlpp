@@ -20,10 +20,10 @@ matrix::matrix(const matrix& rhs)
 }
 
 matrix::matrix(matrix&& rhs)
-    : m_data(std::move(rhs.m_data))
-    , m_rows(rhs.m_rows)
-    , m_cols(rhs.m_cols)
 {
+    m_rows = std::exchange(rhs.m_rows, 0);
+    m_cols = std::exchange(rhs.m_cols, 0);
+    m_data = std::exchange(rhs.m_data, nullptr);
 }
 
 matrix::~matrix()
@@ -31,9 +31,31 @@ matrix::~matrix()
     delete [] m_data;
 }
 
-matrix& matrix::operator=(const double& val)
+matrix& matrix::operator=(const matrix& rhs)
 {
-    std::fill(begin(), end(), val);
+    if (&rhs != this) {
+        m_rows = rhs.m_rows;
+        m_cols = rhs.m_cols;
+        m_data = new double[m_rows * m_cols];
+        memcpy(m_data, rhs.m_data, m_rows * m_cols * sizeof(double));
+    }
+    return *this;
+}
+
+matrix& matrix::operator=(matrix&& rhs)
+{
+    if (&rhs != this) {
+        delete [] m_data;
+        m_rows = std::exchange(rhs.m_rows, 0);
+        m_cols = std::exchange(rhs.m_cols, 0);
+        m_data = std::exchange(rhs.m_data, nullptr);
+    }
+    return *this;
+}
+
+matrix& matrix::operator=(const double& rhs)
+{
+    std::fill(begin(), end(), rhs);
     return *this;
 }
 
@@ -53,17 +75,11 @@ const matrix& matrix::operator+=(const matrix& rhs)
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-        {
             std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a + *rhs_row; });
-        }
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
-        const auto rhs_end = rhs.end();
-        size_t col = 0;
-        for (auto rhs_col = rhs.begin(); rhs_col != rhs_end; ++rhs_col, ++col)
-        {
-            std::transform(std::execution::par, col_begin(col), col_end(col), col_begin(col), [&](const double& a) { return a + *rhs_col; });
-        }
+        for (auto row = 0; row < rows(); ++row)
+            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::plus<>());
     }
     else
         throw invalid_matrix_op();
@@ -87,14 +103,11 @@ const matrix& matrix::operator-=(const matrix& rhs)
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-        {
             std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a - *rhs_row; });
-        }
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
-        for (auto r = 0; r < rows(); r++) {
-            std::transform(std::execution::par, row_begin(r), row_end(r), rhs.begin(), row_begin(r), std::minus<>());
-        }
+        for (auto row = 0; row < rows(); ++row)
+            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::minus<>());
     }
     else
         throw invalid_matrix_op();
@@ -118,14 +131,11 @@ const matrix& matrix::operator*=(const matrix& rhs)
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-        {
             std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a * *rhs_row; });
-        }
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
-        for (auto r = 0; r < rows(); r++) {
-            std::transform(std::execution::par, row_begin(r), row_end(r), rhs.begin(), row_begin(r), std::multiplies<>());
-        }
+        for (auto row = 0; row < rows(); ++row)
+            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::multiplies<>());
     }
     else
         throw invalid_matrix_op();
@@ -148,14 +158,11 @@ const matrix& matrix::operator/=(const matrix& rhs)
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-        {
             std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a / *rhs_row; });
-        }
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
-        for (auto r = 0; r < rows(); r++) {
-            std::transform(std::execution::par, row_begin(r), row_end(r), rhs.begin(), row_begin(r), std::divides<>());
-        }
+        for (auto row = 0; row < rows(); ++row)
+            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::divides<>());
     }
     else
         throw invalid_matrix_op();
@@ -200,4 +207,36 @@ double matrix::get_at(size_t row, size_t col) const
 void matrix::set_at(size_t row, size_t col, double value)
 {
     m_data[row * m_cols + col] = value;
+}
+
+matrix matrix::matmul(const matrix& rhs)
+{
+    if (rhs.m_rows != m_cols)
+        throw invalid_matrix_op();
+    
+    matrix result (rows(), rhs.cols());
+
+    auto dst = result.begin();
+    for (auto i = 0; i < rows(); i++) {
+        for (auto j = 0; j < rows(); j++) {
+            *dst = std::transform_reduce(std::execution::par, row_begin(i), row_end(i), rhs.col_begin(j), 0.0);
+            ++dst;
+        }
+    }
+
+    return std::move(result);
+}
+
+matrix matrix::transpose()
+{
+    matrix result (cols(), rows());
+    for (auto i = 0; i < rows(); i++)
+        std::copy(row_begin(i), row_end(i), col_begin(i));
+    return std::move(result);
+}
+
+void matrix::exp()
+{
+    // TODO: speed-up
+    std::transform(std::execution::par, begin(), end(), begin(), [](const double& a) { return std::exp(a); });
 }

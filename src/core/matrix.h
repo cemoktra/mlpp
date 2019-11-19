@@ -3,8 +3,7 @@
 
 #include "matrix_iterator.h"
 #include <exception>
-#include <vector>
-
+#include <immintrin.h>
 
 class invalid_matrix_op : std::exception
 {
@@ -23,7 +22,9 @@ public:
     matrix(matrix&& rhs);
     ~matrix();
 
-    matrix& operator=(const double& val);
+    matrix& operator=(const matrix& rhs);
+    matrix& operator=(matrix&& rhs);
+    matrix& operator=(const double& rhs);
 
     const matrix  operator+(const matrix& rhs);
     const matrix& operator+=(const matrix& rhs);
@@ -34,20 +35,25 @@ public:
     const matrix  operator/(const matrix& rhs);
     const matrix& operator/=(const matrix& rhs);
 
-    inline size_t cols() const { return m_cols; };
-    inline size_t rows() const { return m_rows; };
+    inline virtual size_t cols() const { return m_cols; };
+    inline virtual size_t rows() const { return m_rows; };
 
-    matrix_iterator begin() const;
-    matrix_iterator end() const;
+    virtual matrix_iterator begin() const;
+    virtual matrix_iterator end() const;
 
-    matrix_iterator row_begin(size_t row) const;
-    matrix_iterator row_end(size_t row) const;
+    virtual matrix_iterator row_begin(size_t row) const;
+    virtual matrix_iterator row_end(size_t row) const;
 
-    matrix_iterator col_begin(size_t col) const;
-    matrix_iterator col_end(size_t col) const;
+    virtual matrix_iterator col_begin(size_t col) const;
+    virtual matrix_iterator col_end(size_t col) const;
 
-    double get_at(size_t row, size_t col) const;
-    void set_at(size_t row, size_t col, double value);
+    virtual double get_at(size_t row, size_t col) const;
+    virtual void set_at(size_t row, size_t col, double value);
+
+    matrix matmul(const matrix& rhs);
+    matrix transpose();
+
+    void exp();
 
 private:
     double *m_data;
@@ -55,6 +61,5 @@ private:
     size_t m_rows;
     size_t m_cols;
 };
-
 
 #endif

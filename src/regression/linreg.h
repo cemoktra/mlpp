@@ -4,6 +4,7 @@
 #include "Eigen/Dense"
 #include <core/model.h>
 #include <core/parameters.h>
+#include <core/matrix.h>
 
 class linear_regression : public model
 {
@@ -19,8 +20,18 @@ public:
     void set_weights(const Eigen::MatrixXd& weights) override;
     Eigen::MatrixXd weights() override;
 
+
+    matrix predict(const matrix& x);
+
+    void train(const matrix& x, const matrix& y);
+    double score(const matrix& x, const matrix& y);
+
+    void set_weights(const matrix& weights);
+    matrix get_weights();
+
 private:
     void calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y);
+    void calc_weights(const matrix& x, const matrix& y);
 
     Eigen::MatrixXd m_weights;
 };

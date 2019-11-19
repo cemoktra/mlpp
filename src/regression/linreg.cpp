@@ -40,8 +40,8 @@ Eigen::MatrixXd linear_regression::weights()
 
 void linear_regression::calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
-    Eigen::MatrixXd xTx = (x.transpose() * x);
-    Eigen::MatrixXd xTy = (x.transpose() * y);
+    Eigen::MatrixXd xTx = x.transpose() * x;
+    Eigen::MatrixXd xTy = x.transpose() * y;
 
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(xTx, Eigen::ComputeThinU | Eigen::ComputeThinV);
     Eigen::MatrixXd xTx_inverse = svd.solve(Eigen::MatrixXd::Identity(xTx.rows(), xTx.cols()));
