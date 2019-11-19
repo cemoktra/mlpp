@@ -2,7 +2,6 @@
 #define _MATRIX_ITERATOR_H_
 
 #include <iterator>
-#include <immintrin.h>
 
 class matrix_iterator
 {

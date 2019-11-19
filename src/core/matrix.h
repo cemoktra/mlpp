@@ -50,10 +50,7 @@ public:
     void set_at(size_t row, size_t col, double value);
 
 private:
-    typedef double aligned_double __attribute__ ((aligned (32)));
-
-    aligned_double *m_data;
-    // double *m_data;
+    double *m_data;
 
     size_t m_rows;
     size_t m_cols;
