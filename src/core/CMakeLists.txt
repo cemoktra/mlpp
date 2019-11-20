@@ -7,6 +7,7 @@ set(HEADER
     traintest.h
     polyfeatures.h
     normalize.h
+    standard_scale.h
     kfold.h
     one_hot.h
     csv_reader.h
@@ -22,6 +23,7 @@ set(SOURCES
     traintest.cpp
     polyfeatures.cpp
     normalize.cpp
+    standard_scale.cpp
     kfold.cpp
     one_hot.cpp
     csv_reader.cpp
@@ -35,5 +37,5 @@ set(SOURCES
 include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
-target_link_libraries(mlpp_core tbb xtensor)
+target_link_libraries(mlpp_core tbb)
 target_include_directories(mlpp_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

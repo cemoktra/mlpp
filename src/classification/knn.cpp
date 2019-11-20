@@ -36,8 +36,8 @@ xt::xarray<double> knn::predict(const xt::xarray<double>& x)
         
         for (auto j = 0; j < m_x_train.shape()[0]; j++)
         {
-            xt::xarray<double> x_train_row = xt::view(m_x_train, xt::range(j, j + 1), xt::all());
-            auto distance = xt::linalg::norm(x_train_row - x_row);
+            xt::xarray<double> x_train_row = xt::view(m_x_train, xt::range(j, j + 1), xt::all()) - x_row;
+            auto distance = xt::linalg::norm(x_train_row);
             
             if (distance < m_kdistances[kneighbors - 1]) {
                 m_kdistances[kneighbors - 1] = distance;
