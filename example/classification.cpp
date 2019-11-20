@@ -8,7 +8,7 @@
 #include <classification/gauss_distribution.h>
 #include <classification/svm.h>
 #include <core/traintest.h>
-#include <core/normalize.h>
+#include <core/standard_scale.h>
 #include <core/csv_data.h>
 #include <iostream>
 #include <numeric>
@@ -57,7 +57,7 @@ int main(int argc, char** args)
     // auto [x_datas, y_datas, classes] = read_foods();
     auto [x_datas, y_datas, classes] = read_cancer();
 
-    x_datas = normalize::transform(x_datas);
+    x_datas = standard_scale::transform(x_datas);
 
     Eigen::MatrixXd x_train, x_test, y_train, y_test;
     do_train_test_split(x_datas, y_datas, x_train, x_test, y_train, y_test, 0.25, true);

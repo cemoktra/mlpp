@@ -7,6 +7,7 @@ set(HEADER
     traintest.h
     polyfeatures.h
     normalize.h
+    standard_scale.h
     kfold.h
     one_hot.h
     csv_reader.h
@@ -23,6 +24,7 @@ set(SOURCES
     traintest.cpp
     polyfeatures.cpp
     normalize.cpp
+    standard_scale.cpp
     kfold.cpp
     one_hot.cpp
     csv_reader.cpp
