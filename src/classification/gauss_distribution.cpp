@@ -10,9 +10,9 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
     m_sigma = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
     m_class_prior.resize( { y.shape()[1] } );
 
-    // TODO: add parameter for epsilon
+    // TODO: add parameter for epsilon (on/off)
     m_epsilon = 0.0;
-    m_epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
+    // m_epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
         auto cls_col = xt::eval(xt::view(y, xt::all(), xt::range(cls, cls + 1)));

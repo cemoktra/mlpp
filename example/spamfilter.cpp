@@ -45,16 +45,6 @@ int main(int argc, char** args)
     auto e_nbb = std::chrono::high_resolution_clock::now();
     auto dur_nbb = std::chrono::duration_cast<std::chrono::milliseconds> (e_nbb - s_nbb);
     std::cout << "naive bayes binomial score: " << score << ", took " << dur_nbb.count() << "ms" << std::endl;
-    
-    
-    naive_bayes nbg (std::make_shared<gauss_distribution>());
-    auto s_nbg = std::chrono::high_resolution_clock::now();
-    nbg.init_classes(static_cast<size_t>(xt::amax(y)(0) + 1));
-    nbg.train(x_train, y_train);
-    score = nbg.score(x_test, y_test);
-    auto e_nbg = std::chrono::high_resolution_clock::now();
-    auto dur_nbg = std::chrono::duration_cast<std::chrono::milliseconds> (e_nbg - s_nbg);
-    std::cout << "naive bayes gauss score: " << score << ", took " << dur_nbg.count() << "ms" << std::endl;
 
     return 0;
 }
