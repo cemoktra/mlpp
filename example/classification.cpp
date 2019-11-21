@@ -10,6 +10,7 @@
 #include <classification/svm.h>
 #include <core/traintest.h>
 #include <core/standard_scale.h>
+#include <core/normalize.h>
 #include <core/csv_data.h>
 #include <iostream>
 #include <numeric>
@@ -58,10 +59,13 @@ int main(int argc, char** args)
 {
     // auto [X, y, classes] = read_foods();
     auto [X, y, classes] = read_cancer();
-    X = standard_scale::transform(X);
+    auto X_stdscale = standard_scale::transform(X);
+    auto X_norm = normalize::transform(X);
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
-    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, false);
+    train_test_split tts;
+    tts.init(X.shape()[0]);
+    tts.split(X_stdscale, y, X_train, X_test, y_train, y_test);
 
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
@@ -76,7 +80,15 @@ int main(int argc, char** args)
     k.set_param("k", 3);
     do_classification(&k, "k nearest neighbours", classes, X_train, X_test, y_train, y_test);
 
+    naive_bayes nbg (std::make_shared<gauss_distribution>());
+    do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
+
+    svm s;
+    do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
+
     // TODO: slow with xtensor
+    tts.split(X_norm, y, X_train, X_test, y_train, y_test);
+
     decision_tree dt;
     dt.set_param("max_depth", 10);
     dt.set_param("min_leaf_items", 1);
@@ -86,14 +98,8 @@ int main(int argc, char** args)
     rf.set_param("trees", 5);
     rf.set_param("max_depth", 10);
     rf.set_param("min_leaf_items", 1);
-    rf.set_param("ignored_features", 1);
+    rf.set_param("ignored_features", 3);
     do_classification(&rf, "random forest", classes, X_train, X_test, y_train, y_test);
-
-    naive_bayes nbg (std::make_shared<gauss_distribution>());
-    do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
-
-    svm s;
-    do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
 
     return 0;
 }

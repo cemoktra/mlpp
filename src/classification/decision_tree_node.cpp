@@ -103,8 +103,7 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t r
     if (max_depth > 0 && m_layer >= max_depth)
         return;
     if (randomly_ignored_features >= m_x.shape()[1])
-        // TODO: ERROR
-        return;
+        throw std::out_of_range ("randomly ignored feature out of range");
 
     if (randomly_ignored_features > 0) {
         std::random_device rd;
@@ -128,8 +127,7 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t r
         auto max = xt::amax(feature_col);
 
         if (fabs(min(0)) > 1.0 || fabs(max(0)) > 1.0)
-            // TODO: we require normalized data
-            return;
+            throw invalid_data_exception();
 
         for (auto i = min(0) + 0.1; i <= max(0); i += 0.1) {
             m_split_feature = feature;

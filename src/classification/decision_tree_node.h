@@ -2,6 +2,13 @@
 #define _DECISION_TREE_NODE_H_
 
 #include <xtensor/xarray.hpp>
+#include <stdexcept>
+
+class invalid_data_exception : public std::exception
+{
+public:
+    virtual char const* what() const noexcept override  { return "Decision tree requires normalized data."; }
+};
 
 class decision_tree_node
 {
