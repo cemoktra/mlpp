@@ -60,13 +60,13 @@ int main(int argc, char** args)
     X = standard_scale::transform(X);
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
-    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, true);
+    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, false);
 
-    logistic_regression lr;
-    do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
+    // logistic_regression lr;
+    // do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
 
-    one_for_one ofo;
-    do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
+    // one_for_one ofo;
+    // do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
 
     multinomial_logistic_regression mlr;
     do_classification(&mlr, "multinomial", classes, X_train, X_test, y_train, y_test);
