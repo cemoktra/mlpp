@@ -3,7 +3,7 @@
 
 #include <list>
 #include <string>
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 
 class csv_data {
 public:
@@ -24,7 +24,7 @@ public:
     template<typename T>
     std::vector<T> col(size_t index) const;
 
-    Eigen::MatrixXd matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion = ParseValue);
+    xt::xarray<double> matrixFromCols(std::vector<size_t> cols, EStringToDoubleTypes conversion = ParseValue);
 
 private:
     void add_row(size_t row, std::list<std::string> tokens);

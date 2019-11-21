@@ -1,7 +1,6 @@
 #ifndef _CLASSIFIER_H_
 #define _CLASSIFIER_H_
 
-#include <Eigen/Dense>
 #include <core/model.h>
 
 class classifier : public model {

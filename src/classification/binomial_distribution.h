@@ -10,16 +10,19 @@ public:
     binomial_distribution(const binomial_distribution&) = delete;
     ~binomial_distribution() = default;
 
-    void calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
+    void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) override;
     
-    Eigen::MatrixXd weights() override;
-    void set_weights(const Eigen::MatrixXd& weights) override;
+    xt::xarray<double> weights() override;
+    void set_weights(const xt::xarray<double>& weights) override;
 
 private:
-    Eigen::VectorXd m_pre_prop;
-    Eigen::VectorXd m_smooth;
-    Eigen::MatrixXd m_feature_prop;
+    void update_feature_log_prior(const xt::xarray<double>& feature_count);
+    void update_class_log_prior();
+
+    xt::xarray<double> m_class_prior;
+    xt::xarray<double> m_feature_log_prob;
+    xt::xarray<double> m_class_log_prior;
 };
 
 #endif

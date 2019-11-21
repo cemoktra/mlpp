@@ -10,16 +10,16 @@ public:
     svm(const svm&) = delete;
     ~svm() = default;
 
-    Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
-    double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) override;
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
+    void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     void init_classes(size_t number_of_classes) override;
 
-    void set_weights(const Eigen::MatrixXd& weights) override;
-    Eigen::MatrixXd weights() override;
+    void set_weights(const xt::xarray<double>& weights) override;
+    xt::xarray<double> weights() override;
 
 private:
-    Eigen::MatrixXd m_weights;
+    xt::xarray<double> m_weights;
 };
 
 #endif

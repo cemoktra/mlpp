@@ -14,14 +14,14 @@ public:
     one_for_one();
     ~one_for_one();
 
-    Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) override;
 
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     void init_classes(size_t number_of_classes) override;
-    double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     
-    void set_weights(const Eigen::MatrixXd& weights) override;
-    Eigen::MatrixXd weights() override;
+    void set_weights(const xt::xarray<double>& weights) override;
+    xt::xarray<double> weights() override;
     
 protected:
     std::vector<logistic_regression*> m_models;

@@ -2,6 +2,7 @@
 #define _MODEL_H_
 
 #include "parameters.h"
+#include <xtensor/xarray.hpp>
 
 class model : public parameters {
 public:
@@ -9,12 +10,12 @@ public:
     model(const model&) = delete;
     ~model() = default;
 
-    virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) = 0;
-    virtual double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) = 0;
-    virtual void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) = 0;
+    virtual xt::xarray<double> predict(const xt::xarray<double>& x) = 0;
+    virtual double score(const xt::xarray<double>& x, const xt::xarray<double>& y) = 0;
+    virtual void train(const xt::xarray<double>& x, const xt::xarray<double>& y) = 0;
 
-    virtual void set_weights(const Eigen::MatrixXd& weights) = 0;
-    virtual Eigen::MatrixXd weights() = 0;
+    virtual void set_weights(const xt::xarray<double>& weights) = 0;
+    virtual xt::xarray<double> weights() = 0;
 };
 
 #endif

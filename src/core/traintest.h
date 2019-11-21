@@ -1,7 +1,7 @@
 #ifndef _TRAINTEST_H_
 #define _TRAINTEST_H_
 
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 #include <vector>
 #include <stdexcept>
 
@@ -13,8 +13,8 @@ public:
     ~train_test_split() = default;
 
     void init(size_t rows, double test_proportion = 0.25, bool shuffle  = true);
-    void split(const Eigen::MatrixXd& x, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test);
-    void split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test);
+    void split(const xt::xarray<double>& x, xt::xarray<double>& x_train, xt::xarray<double>& x_test);
+    void split(const xt::xarray<double>& x, const xt::xarray<double>& y, xt::xarray<double>& x_train, xt::xarray<double>& x_test, xt::xarray<double>& y_train, xt::xarray<double>& y_test);
     
     template<typename T>
     void split(const std::vector<T>& x, std::vector<T>& train, std::vector<T>& test) {
@@ -36,10 +36,10 @@ private:
     std::vector<size_t> m_test_indices;
 };
 
-static void do_train_test_split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test, double test_proportion = 0.25, bool shuffle  = true)
+static void do_train_test_split(const xt::xarray<double>& x, const xt::xarray<double>& y, xt::xarray<double>& x_train, xt::xarray<double>& x_test, xt::xarray<double>& y_train, xt::xarray<double>& y_test, double test_proportion = 0.25, bool shuffle  = true)
 {
     train_test_split tt;
-    tt.init(x.rows(), test_proportion, shuffle);
+    tt.init(x.shape()[0], test_proportion, shuffle);
     tt.split(x, y, x_train, x_test, y_train, y_test);
 }
 

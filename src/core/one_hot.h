@@ -1,7 +1,7 @@
 #ifndef _ONEHOT_H_
 #define _ONEHOT_H_
 
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 
 class one_hot
 {
@@ -9,7 +9,7 @@ public:
     one_hot() = delete;
     ~one_hot() = delete;
 
-    static Eigen::MatrixXd transform(const Eigen::MatrixXd& x, size_t classes);
+    static xt::xarray<double> transform(const xt::xarray<double>& x, size_t classes);
 };
 
 #endif

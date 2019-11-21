@@ -1,16 +1,9 @@
-
 #include "standard_scale.h"
+#include <xtensor/xview.hpp>
 
-Eigen::MatrixXd standard_scale::transform(const Eigen::MatrixXd& x)
+xt::xarray<double> standard_scale::transform(const  xt::xarray<double>& x)
 {
-    Eigen::MatrixXd result = x;
-    for (auto i = 0; i < result.cols(); ++i)
-    {
-        auto col_array = result.col(i).array();
-        auto mean = col_array.mean();
-        auto std_dev = std::sqrt((col_array - mean).square().sum() / (col_array.size() - 1));
-        col_array -= mean;
-        col_array /= std_dev;
-    }
-    return result;
+    auto mean = xt::eval(xt::mean(x, {0}));
+    auto stddev = xt::eval(xt::stddev(x, {0}));
+    return (x - mean) / stddev;
 }

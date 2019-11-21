@@ -1,7 +1,7 @@
 #ifndef _POLYFEATURES_H_
 #define _POLYFEATURES_H_
 
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 
 class polynomial_features
 {
@@ -9,7 +9,7 @@ public:
     polynomial_features(size_t degree = 2, bool bias = false);
     ~polynomial_features() = default;
 
-    Eigen::MatrixXd transform(const Eigen::MatrixXd &x);
+    xt::xarray<double> transform(const xt::xarray<double> &x);
 
 private:
     size_t m_degree;

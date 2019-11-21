@@ -11,23 +11,23 @@ public:
     logistic_regression(const logistic_regression&) = delete;
     ~logistic_regression() = default;
 
-    virtual Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
-    double score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
-    void train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y) override;
+    virtual xt::xarray<double> predict(const xt::xarray<double>& x) override;
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
+    void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     void init_classes(size_t number_of_classes) override;
 
-    void set_weights(const Eigen::MatrixXd& weights) override;
-    Eigen::MatrixXd weights() override;
+    void set_weights(const xt::xarray<double>& weights) override;
+    xt::xarray<double> weights() override;
 
 protected:
-    virtual double cost(const Eigen::MatrixXd& y, const Eigen::MatrixXd& p);
-    virtual Eigen::MatrixXd gradient(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, const Eigen::MatrixXd& p);
+    virtual double cost(const xt::xarray<double>& y, const xt::xarray<double>& p);
+    virtual xt::xarray<double> gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p);
 
-    Eigen::MatrixXd sigmoid(const Eigen::MatrixXd& x);
-    void calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y);
+    xt::xarray<double> sigmoid(const xt::xarray<double>& x);
+    void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y);
 
     size_t m_classes;
-    Eigen::MatrixXd m_weights;
+    xt::xarray<double> m_weights;
 };
 
 #endif

@@ -1,4 +1,7 @@
 #include "svm.h"
+#include <xtensor/xview.hpp>
+#include <xtensor/xsort.hpp>
+#include <xtensor-blas/xlinalg.hpp>
 #include <iostream>
 
 svm::svm()
@@ -9,64 +12,54 @@ svm::svm()
     register_param("max_iterations", 0);
 }
 
-Eigen::MatrixXd svm::predict(const Eigen::MatrixXd& x)
+xt::xarray<double> svm::predict(const xt::xarray<double>& x)
 {
-    return x * m_weights;
+    return xt::linalg::dot(x, m_weights);
 }
 
-double svm::score(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+double svm::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    size_t pos = 0, neg = 0;
-    auto p = predict(x);
+    xt::xarray<double> p = predict(x);
+    xt::xarray<size_t> predict_class = xt::argmax(p, {1});
+    xt::xarray<size_t> target_class;
     
-    for (auto i = 0; i < p.rows(); i++) {
-        auto prow = p.row(i);
-        auto yrow = y.row(i);
-        std::vector<double> pvec (prow.data(), prow.data() + prow.rows() * prow.cols());
-        size_t predict_class = std::max_element(pvec.begin(), pvec.end()) - pvec.begin();
-        size_t target_class = 0;
-        if (y.cols() > 1) {
-            std::vector<double> yvec (yrow.data(), yrow.data() + yrow.rows() * yrow.cols());
-            target_class = std::max_element(yvec.begin(), yvec.end()) - yvec.begin();
-        } else
-            target_class = static_cast<size_t>(yrow(0));
-        
-        if (predict_class == target_class)
-            pos++;
-        else
-            neg++;        
-    }
-    return static_cast<double>(pos) / static_cast<double>(pos + neg);
+    if (y.shape()[1] > 1)
+        target_class = xt::argmax(y, {1});
+    else
+        target_class = y;
+    target_class.reshape(predict_class.shape());
+    return xt::sum(xt::equal(predict_class, target_class))(0) / static_cast<double>(y.shape()[0]);
 }
 
-void svm::train(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
+void svm::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     size_t max_iterations = static_cast<size_t>(get_param("max_iterations"));
     size_t iteration = 0;
     double current_cost, last_cost;
-    m_weights = Eigen::MatrixXd::Ones(x.cols(), y.cols());
+    m_weights = xt::ones<double>({x.shape()[1], y.shape()[1]});
     last_cost = std::numeric_limits<double>::max();
 
     while (true) {
         auto p = predict(x);
-        auto prod = p.array() * y.array();
+        auto prod = xt::eval(p * y);
 
         current_cost = 0;
-        for (auto c = 0; c < prod.cols(); c++) 
+        for (auto c = 0; c < prod.shape()[1]; c++) 
         {    
-            for (auto r = 0; r < prod.rows(); r++)
+            for (auto r = 0; r < prod.shape()[0]; r++)
             {
+                auto wcol= xt::view(m_weights, xt::all(),xt::range(c, c + 1));
                 if (prod(r, c) >= 1.0) {
-                    m_weights.col(c) = m_weights.col(c).array() - (get_param("learning_rate") * 2.0 * (1.0 / (iteration + 1)) * m_weights.col(c).array());
+                    wcol = wcol - get_param("learning_rate") * 2.0 * (1.0 / (iteration + 1)) * wcol;
                 }
                 else {
                     current_cost += 1 - prod(r, c);
-                    auto xy = (x.row(r).array() * y(r, c)).transpose();
-                    m_weights.col(c) = m_weights.col(c).array() + (get_param("learning_rate") * 2.0 * xy.array() * (1.0 / (iteration + 1)) * m_weights.col(c).array());
+                    auto xy = xt::eval(xt::view(x, xt::range(r, r + 1), xt::all()) * y(r, c));
+                    wcol = wcol + get_param("learning_rate") * xy - 2.0 * (1.0 / (iteration + 1)) * wcol;
                 }     
             }
         }
-        current_cost /= (y.cols() * y.rows());
+        current_cost /= (y.shape()[0] * y.shape()[1]);
 
         if (last_cost - current_cost < get_param("threshold"))
             break;
@@ -81,11 +74,11 @@ void svm::init_classes(size_t number_of_classes)
 {
 }
 
-void svm::set_weights(const Eigen::MatrixXd& weights)
+void svm::set_weights(const xt::xarray<double>& weights)
 {
 }
 
-Eigen::MatrixXd svm::weights()
+xt::xarray<double> svm::weights()
 {
-    return Eigen::MatrixXd();
+    return xt::xarray<double>();
 }

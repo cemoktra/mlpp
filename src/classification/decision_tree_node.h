@@ -1,12 +1,12 @@
 #ifndef _DECISION_TREE_NODE_H_
 #define _DECISION_TREE_NODE_H_
 
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 
 class decision_tree_node
 {
 public:
-    decision_tree_node(size_t layer, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, size_t classes, decision_tree_node *parent, bool positives);
+    decision_tree_node(size_t layer, const xt::xarray<double>& x, const xt::xarray<double>& y, size_t classes, decision_tree_node *parent, bool positives);
     ~decision_tree_node();
     
     double entropy() const;
@@ -14,16 +14,16 @@ public:
     void split(size_t max_depth = 0, size_t min_leaf_items = 1, size_t randomly_ignored_features = 0);
     size_t count();
 
-    size_t decide(const Eigen::VectorXd& x);
+    size_t decide(const xt::xarray<double>& x);
 
 protected:
-    bool filter(const Eigen::VectorXd& row);
+    bool filter(const xt::xarray<double>& row);
 
 private:
     void init();
     
-    Eigen::MatrixXd m_x;
-    Eigen::MatrixXd m_y;
+    xt::xarray<double> m_x;
+    xt::xarray<double> m_y;
 
     double m_entropy;
     size_t m_classes;

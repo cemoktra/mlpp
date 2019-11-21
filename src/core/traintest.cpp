@@ -21,35 +21,35 @@ void train_test_split::init(size_t rows, double test_proportion, bool shuffle)
     m_train_indices = { std::next(indices.begin(), test_size), indices.end() };
 }
 
-void train_test_split::split(const Eigen::MatrixXd& x, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test)
+void train_test_split::split(const xt::xarray<double>& x, xt::xarray<double>& x_train, xt::xarray<double>& x_test)
 {
-    if (x.rows() != m_train_indices.size() + m_test_indices.size())
+    if (x.shape()[0] != m_train_indices.size() + m_test_indices.size())
         throw std::invalid_argument("vector x size does not match initialized size");
 
     size_t train_idx = 0;
     size_t test_idx = 0;
 
-    x_train.resize(m_train_indices.size(), x.cols());
-    x_test.resize(m_test_indices.size(), x.cols());
+    x_train.resize({ m_train_indices.size(), x.shape()[1] });
+    x_test.resize({ m_test_indices.size(), x.shape()[1] });
 
     for (auto i : m_train_indices)
     {
-        for (auto j = 0; j < x.cols(); j++)
+        for (auto j = 0; j < x.shape()[1]; j++)
             x_train(train_idx, j) = x(i, j);
         train_idx++;
     }
     for (auto i : m_test_indices)
     {
-        for (auto j = 0; j < x.cols(); j++)
+        for (auto j = 0; j < x.shape()[1]; j++)
             x_test(test_idx, j) = x(i, j);
         test_idx++;
     }
 }
 
 
-void train_test_split::split(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test)
+void train_test_split::split(const xt::xarray<double>& x, const xt::xarray<double>& y, xt::xarray<double>& x_train, xt::xarray<double>& x_test, xt::xarray<double>& y_train, xt::xarray<double>& y_test)
 {
-    if (x.rows() != y.rows())
+    if (x.shape()[0] != y.shape()[0])
         throw std::invalid_argument("vector x size does not match initialized size");
 
     split(x, x_train, x_test);

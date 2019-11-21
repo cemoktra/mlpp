@@ -10,12 +10,12 @@ public:
     multinomial_logistic_regression();
     ~multinomial_logistic_regression() = default;
 
-    Eigen::MatrixXd predict(const Eigen::MatrixXd& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) override;
 
 protected:
-    Eigen::MatrixXd softmax(const Eigen::MatrixXd& z);
+    xt::xarray<double> softmax(const xt::xarray<double>& z);
 
-    double cost(const Eigen::MatrixXd& y, const Eigen::MatrixXd& p) override;
+    double cost(const xt::xarray<double>& y, const xt::xarray<double>& p) override;
     
     size_t m_classes;
     std::vector<double> m_class_values;

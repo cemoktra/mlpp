@@ -1,14 +1,14 @@
 #ifndef _KFOLD_H_
 #define _KFOLD_H_
 
-#include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
 
 class kfold {
 public:
     kfold(size_t k, bool shuffle = true);
     ~kfold() = default;
 
-    void split(size_t index, const Eigen::MatrixXd& x, const Eigen::MatrixXd& y, Eigen::MatrixXd& x_train, Eigen::MatrixXd& x_test, Eigen::MatrixXd& y_train, Eigen::MatrixXd& y_test);
+    void split(size_t index, const xt::xarray<double>& x, const xt::xarray<double>& y, xt::xarray<double>& x_train, xt::xarray<double>& x_test, xt::xarray<double>& y_train, xt::xarray<double>& y_test);
     size_t k();
 
 private:
