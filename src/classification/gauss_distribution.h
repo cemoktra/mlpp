@@ -17,11 +17,10 @@ public:
     void set_weights(const xt::xarray<double>& weights) override;
 
 private:
-    xt::xarray<double> calc_pfc(const xt::xarray<double>& x, size_t _class);
-
-    xt::xarray<double> m_pre_prop;
-    xt::xarray<double> m_var;
-    xt::xarray<double> m_mean;
+    double m_epsilon;
+    xt::xarray<double> m_class_prior;
+    xt::xarray<double> m_theta;
+    xt::xarray<double> m_sigma;
 };
 
 #endif

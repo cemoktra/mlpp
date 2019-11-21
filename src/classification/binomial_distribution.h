@@ -17,9 +17,12 @@ public:
     void set_weights(const xt::xarray<double>& weights) override;
 
 private:
-    xt::xarray<double> m_pre_prop;
-    xt::xarray<double> m_smooth;
-    xt::xarray<double> m_feature_prop;
+    void update_feature_log_prior(const xt::xarray<double>& feature_count);
+    void update_class_log_prior();
+
+    xt::xarray<double> m_class_prior;
+    xt::xarray<double> m_feature_log_prob;
+    xt::xarray<double> m_class_log_prior;
 };
 
 #endif

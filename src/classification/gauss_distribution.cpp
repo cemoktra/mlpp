@@ -1,12 +1,18 @@
 #include "gauss_distribution.h"
 #include <xtensor/xview.hpp>
+#include <xtensor/xsort.hpp>
+#include <xtensor/xio.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    m_mean.resize( { x.shape()[1], y.shape()[1] } );
-    m_var.resize( { x.shape()[1], y.shape()[1] } );
-    m_pre_prop.resize( { y.shape()[1] } );
+    m_theta = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
+    m_sigma = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
+    m_class_prior.resize( { y.shape()[1] } );
+
+    // TODO: add parameter for epsilon
+    m_epsilon = 0.0;
+    m_epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
         auto cls_col = xt::eval(xt::view(y, xt::all(), xt::range(cls, cls + 1)));
@@ -16,65 +22,37 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
 
         auto mean = xt::eval(xt::mean(x_class, {0}));
         mean.reshape({ mean.shape()[0], 1 });
-        xt::view(m_mean, xt::all(), xt::range(cls, cls + 1)) = mean;
+        xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)) = mean;
 
         auto var = xt::eval(xt::variance(x_class, {0}));
         var.reshape({ mean.shape()[0], 1 });
-        xt::view(m_var, xt::all(), xt::range(cls, cls + 1)) = var;
+        xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
 
-        m_pre_prop(cls) = xt::sum(cls_col)(0) / y.shape()[0];
+        m_class_prior(cls) = xt::sum(cls_col)(0) / y.shape()[0];
     }
 }
 
 xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x)
 {
-    auto s = x.shape();
-    s[1] = m_pre_prop.shape()[0];
-    xt::xarray<double> pfc (s);
-    xt::xarray<double> pcf (s);
-    xt::xarray<double> total_prop = xt::zeros<double>({ s[0] });
-    total_prop.reshape({ total_prop.shape()[0], 1 });
+    auto shape = x.shape();
+    shape[1] = m_class_prior.shape()[0];
+    xt::xarray<double> joint_log_likelihood (shape);
 
-    for (auto c = 0; c < m_pre_prop.shape()[0]; c++) {
-        xt::view(pfc, xt::all(), xt::range(c, c + 1)) = calc_pfc(x, c);
-        total_prop = total_prop + xt::view(pfc, xt::all(), xt::range(c, c + 1)) * m_pre_prop(c);
+    for (auto cls = 0; cls < m_class_prior.shape()[0]; cls++) {
+        auto jointi = std::log(m_class_prior(cls));
+        auto tmp1 = -0.5 * xt::sum(xt::square(x - xt::transpose(xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)))) / xt::transpose(xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1))), {1});
+        auto tmp2 = -0.5 * xt::sum(xt::log(2.0 * xt::numeric_constants<double>::PI * xt::transpose(xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)))));
+        xt::view(joint_log_likelihood, xt::all(), xt::range(cls, cls + 1)) = xt::transpose(xt::eval(tmp1 + tmp2) + jointi);
     }
 
-    for (auto c = 0; c < m_pre_prop.size(); c++)
-        xt::view(pcf, xt::all(), xt::range(c, c + 1)) = (xt::view(pfc, xt::all(), xt::range(c, c + 1)) * m_pre_prop(c)) / total_prop;
-    return pcf;    
+    return joint_log_likelihood;
 }
 
 xt::xarray<double> gauss_distribution::weights()
 {
-    auto s = m_mean.shape();
-    s[0] = 2 * s[0] + 1;
-    xt::xarray<double> weights (s);
-    xt::view(weights, xt::range(0, 1), xt::all()) = m_pre_prop;
-    xt::view(weights, xt::range(1, 1 + m_mean.shape()[0]), xt::all()) = m_mean;
-    xt::view(weights, xt::range(1 + m_mean.shape()[0], xt::placeholders::_), xt::all()) = m_var;
-    return weights;
+    return xt::xarray<double>();
 }
 
 void gauss_distribution::set_weights(const xt::xarray<double>& weights)
 {
-    auto meansize = (weights.shape()[0] - 1) / 2;
-    m_pre_prop = xt::view(weights, xt::range(0, 1), xt::all());
-    m_mean = xt::view(weights, xt::range(1, 1 + meansize), xt::all());
-    m_var = xt::view(weights, xt::range(1 + meansize, xt::placeholders::_), xt::all());
-}
-
-xt::xarray<double> gauss_distribution::calc_pfc(const xt::xarray<double>& x, size_t _class)
-{
-    static const double pi = 3.14159265359;
-    xt::xarray<double> product = xt::ones<double>( { x.shape()[0] } );
-    xt::xarray<double> denom = xt::sqrt(xt::view(m_var, xt::all(), xt::range(_class, _class + 1)) * 2.0 * pi);
-    xt::xarray<double> sqr = xt::square(x - xt::transpose(xt::view(m_mean, xt::all(), xt::range(_class, _class + 1))));
-    xt::xarray<double> var2_inv = xt::linalg::pinv(2.0 * xt::transpose(xt::view(m_var, xt::all(), xt::range(_class, _class + 1))));
-    xt::xarray<double> e = xt::exp((xt::linalg::dot(sqr, var2_inv) * -0.5));
-    
-    product.reshape({ product.shape()[0], 1 });
-    for (auto feature = 0; feature < x.shape()[1]; feature++)
-        product = product * (e / denom(feature, 0));
-    return product;
-}
+}    

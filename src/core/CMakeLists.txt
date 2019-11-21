@@ -16,7 +16,7 @@ set(HEADER
     #model.h
     #validation_curve.h
     #learning_curve.h
-    #vocabulary.h
+    vocabulary.h
 )
 
 set(SOURCES
@@ -31,7 +31,7 @@ set(SOURCES
     parameters.cpp
     #validation_curve.cpp
     #learning_curve.cpp
-    #vocabulary.cpp
+    vocabulary.cpp
 )
 
 include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")

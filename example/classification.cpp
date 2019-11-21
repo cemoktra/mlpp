@@ -61,7 +61,7 @@ int main(int argc, char** args)
     X = standard_scale::transform(X);
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
-    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, true);
+    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, false);
 
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
@@ -91,9 +91,6 @@ int main(int argc, char** args)
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
-
-    naive_bayes nbb (std::make_shared<binomial_distribution>());
-    do_classification(&nbb, "naive bayes (binomial)", classes, X_train, X_test, y_train, y_test);
 
     svm s;
     do_classification(&s, "svm", classes, X_train, X_test, y_train, y_test);

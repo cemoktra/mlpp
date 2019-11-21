@@ -18,11 +18,9 @@ void vocabulary::add(const std::vector<std::string>& data)
     }
 }
 
-Eigen::SparseMatrix<double> vocabulary::transform(const std::vector<std::string>& data)
+xt::xarray<double> vocabulary::transform(const std::vector<std::string>& data)
 {
-    Eigen::SparseMatrix<double> result(data.size(), m_vocabulary.size());
-    std::vector<Eigen::Triplet<double>> triplets;
-
+    xt::xarray<double> result (std::vector<size_t>({data.size(), m_vocabulary.size()}));
     for (auto i = 0; i < data.size(); i++)
     {
         for (auto j = strtok(strdup(data[i].c_str()), " "); j != nullptr; j = strtok(nullptr, " ")) {
@@ -33,11 +31,9 @@ Eigen::SparseMatrix<double> vocabulary::transform(const std::vector<std::string>
 
             auto it = m_vocabulary.find(word);
             if (it != m_vocabulary.end())
-                triplets.push_back(Eigen::Triplet<double>(i, std::distance(m_vocabulary.begin(), it), 1));
+                result(i, std::distance(m_vocabulary.begin(), it)) = 1.0;
         }
     }
-    result.setFromTriplets(triplets.begin(), triplets.end());
-    
     return result;
 }
 
