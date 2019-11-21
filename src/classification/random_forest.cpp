@@ -70,7 +70,7 @@ double random_forest::score(const xt::xarray<double>& x, const xt::xarray<double
     xt::xarray<size_t> target_class;
     
     if (y.shape()[1] > 1)
-        target_class = xt::argmax(p, {1});
+        target_class = xt::argmax(y, {1});
     else
         target_class = y;
     target_class.reshape(p.shape());

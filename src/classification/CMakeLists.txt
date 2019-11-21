@@ -15,7 +15,7 @@ set(HEADER
     naive_bayes.h
     distribution.h
     gauss_distribution.h
-    #binomial_distribution.h
+    binomial_distribution.h
     svm.h
 )
 
@@ -29,7 +29,7 @@ set(SOURCES
     random_forest.cpp
     naive_bayes.cpp
     gauss_distribution.cpp
-    #binomial_distribution.cpp
+    binomial_distribution.cpp
     svm.cpp
 )
 

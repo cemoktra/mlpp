@@ -47,19 +47,21 @@ xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x)
 
 xt::xarray<double> gauss_distribution::weights()
 {
-    return xt::xarray<double>();
-    // xt::xarray<double> weights (2 * m_mean.rows() + 1, m_mean.cols());
-    // weights.row(0) = m_pre_prop;
-    // weights.block(1, 0, m_mean.rows(), m_mean.cols()) = m_mean;
-    // weights.block(1 + m_mean.rows(), 0, m_var.rows(), m_var.cols()) = m_var;
-    // return weights;
+    auto s = m_mean.shape();
+    s[0] = 2 * s[0] + 1;
+    xt::xarray<double> weights (s);
+    xt::view(weights, xt::range(0, 1), xt::all()) = m_pre_prop;
+    xt::view(weights, xt::range(1, 1 + m_mean.shape()[0]), xt::all()) = m_mean;
+    xt::view(weights, xt::range(1 + m_mean.shape()[0], xt::placeholders::_), xt::all()) = m_var;
+    return weights;
 }
 
 void gauss_distribution::set_weights(const xt::xarray<double>& weights)
 {
-    // m_pre_prop = weights.row(0);
-    // m_mean = weights.block(1, 0, (weights.rows() - 1) / 2, weights.cols());
-    // m_var = weights.block(1 + m_mean.rows(), 0, (weights.rows() - 1) / 2, weights.cols());
+    auto meansize = (weights.shape()[0] - 1) / 2;
+    m_pre_prop = xt::view(weights, xt::range(0, 1), xt::all());
+    m_mean = xt::view(weights, xt::range(1, 1 + meansize), xt::all());
+    m_var = xt::view(weights, xt::range(1 + meansize, xt::placeholders::_), xt::all());
 }
 
 xt::xarray<double> gauss_distribution::calc_pfc(const xt::xarray<double>& x, size_t _class)

@@ -6,6 +6,7 @@
 #include <classification/random_forest.h>
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
+#include <classification/binomial_distribution.h>
 #include <classification/svm.h>
 #include <core/traintest.h>
 #include <core/standard_scale.h>
@@ -60,13 +61,13 @@ int main(int argc, char** args)
     X = standard_scale::transform(X);
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
-    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, false);
+    do_train_test_split(X, y, X_train, X_test, y_train, y_test, 0.25, true);
 
-    // logistic_regression lr;
-    // do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
+    logistic_regression lr;
+    do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
 
-    // one_for_one ofo;
-    // do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
+    one_for_one ofo;
+    do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
 
     multinomial_logistic_regression mlr;
     do_classification(&mlr, "multinomial", classes, X_train, X_test, y_train, y_test);
@@ -76,24 +77,26 @@ int main(int argc, char** args)
     do_classification(&k, "k nearest neighbours", classes, X_train, X_test, y_train, y_test);
 
     // TODO: slow with xtensor
-    // decision_tree dt;
-    // dt.set_param("max_depth", 10);
-    // dt.set_param("min_leaf_items", 1);
-    // do_classification(&dt, "decision tree", classes, X_train, X_test, y_train, y_test);
+    decision_tree dt;
+    dt.set_param("max_depth", 10);
+    dt.set_param("min_leaf_items", 1);
+    do_classification(&dt, "decision tree", classes, X_train, X_test, y_train, y_test);
 
-    // random_forest rf;
-    // rf.set_param("trees", 5);
-    // rf.set_param("max_depth", 10);
-    // rf.set_param("min_leaf_items", 1);
-    // rf.set_param("ignored_features", 1);
-    // do_classification(&rf, "random forest", classes, X_train, X_test, y_train, y_test);
+    random_forest rf;
+    rf.set_param("trees", 5);
+    rf.set_param("max_depth", 10);
+    rf.set_param("min_leaf_items", 1);
+    rf.set_param("ignored_features", 1);
+    do_classification(&rf, "random forest", classes, X_train, X_test, y_train, y_test);
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
 
+    naive_bayes nbb (std::make_shared<binomial_distribution>());
+    do_classification(&nbb, "naive bayes (binomial)", classes, X_train, X_test, y_train, y_test);
+
     svm s;
     do_classification(&s, "svm", classes, X_train, X_test, y_train, y_test);
-    // https://towardsdatascience.com/support-vector-machine-introduction-to-machine-learning-algorithms-934a444fca47
 
     return 0;
 }
