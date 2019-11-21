@@ -1,5 +1,6 @@
 #include "gauss_distribution.h"
 #include <core/pseudo_inverse.h>
+#include <iostream>
 
 void gauss_distribution::calc_weights(const Eigen::MatrixXd& x, const Eigen::MatrixXd& y)
 {
@@ -8,8 +9,9 @@ void gauss_distribution::calc_weights(const Eigen::MatrixXd& x, const Eigen::Mat
     m_pre_prop.resize(y.cols());
 
     for (auto c = 0; c < y.cols(); c++) {
-        m_mean.col(c) = (x.array().colwise() * y.col(c).array()).colwise().sum() / y.col(c).sum();
-        m_var.col(c)  = ((x.array().rowwise() - m_mean.col(c).transpose().array()).square().colwise() * y.col(c).array()).colwise().sum() / y.col(c).sum();
+        auto xy = (x.array().colwise() * y.col(c).array());
+        m_mean.col(c) = xy.colwise().sum() / y.col(c).sum();
+        m_var.col(c)  = ((xy.rowwise() - m_mean.col(c).transpose().array()).square().colwise() * y.col(c).array()).colwise().sum() / y.col(c).sum();
         m_pre_prop(c) = y.col(c).sum() / y.rows();
     }
 }

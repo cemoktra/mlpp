@@ -26,10 +26,6 @@ public:
 private:
     size_t m_number_of_classes;
     std::shared_ptr<distribution> m_distribution;
-
-    Eigen::VectorXd m_pre_prop;
-    Eigen::MatrixXd m_var;
-    Eigen::MatrixXd m_mean;
 };
 
 #endif

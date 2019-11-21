@@ -6,6 +6,7 @@
 #include <classification/random_forest.h>
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
+#include <classification/binomial_distribution.h>
 #include <classification/svm.h>
 #include <core/traintest.h>
 #include <core/standard_scale.h>
@@ -75,20 +76,23 @@ int main(int argc, char** args)
     k.set_param("k", 3);
     do_classification(&k, "k nearest neighbours", classes, x_train, x_test, y_train, y_test);
 
-    // decision_tree dt;
-    // dt.set_param("max_depth", 10);
-    // dt.set_param("min_leaf_items", 1);
-    // do_classification(&dt, "decision tree", classes, x_train, x_test, y_train, y_test);
+    decision_tree dt;
+    dt.set_param("max_depth", 10);
+    dt.set_param("min_leaf_items", 1);
+    do_classification(&dt, "decision tree", classes, x_train, x_test, y_train, y_test);
 
-    // random_forest rf;
-    // rf.set_param("trees", 5);
-    // rf.set_param("max_depth", 10);
-    // rf.set_param("min_leaf_items", 1);
-    // rf.set_param("ignored_features", 1);
-    // do_classification(&rf, "random forest", classes, x_train, x_test, y_train, y_test);
+    random_forest rf;
+    rf.set_param("trees", 5);
+    rf.set_param("max_depth", 10);
+    rf.set_param("min_leaf_items", 1);
+    rf.set_param("ignored_features", 1);
+    do_classification(&rf, "random forest", classes, x_train, x_test, y_train, y_test);
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, x_train, x_test, y_train, y_test);
+
+    naive_bayes nbb (std::make_shared<binomial_distribution>());
+    do_classification(&nbb, "naive bayes (binomial)", classes, x_train, x_test, y_train, y_test);
 
     svm s;
     do_classification(&s, "support vector machine", classes, x_train, x_test, y_train, y_test);

@@ -51,16 +51,10 @@ void naive_bayes::init_classes(size_t number_of_classes)
 
 void naive_bayes::set_weights(const Eigen::MatrixXd& weights)
 {
-    m_pre_prop = weights.row(0);
-    m_mean = weights.block(1, 0, (weights.rows() - 1) / 2, weights.cols());
-    m_var = weights.block(1 + m_mean.rows(), 0, (weights.rows() - 1) / 2, weights.cols());
+    m_distribution->set_weights(weights);
 }
 
 Eigen::MatrixXd naive_bayes::weights()
 {
-    Eigen::MatrixXd weights (2 * m_mean.rows() + 1, m_mean.cols());
-    weights.row(0) = m_pre_prop;
-    weights.block(1, 0, m_mean.rows(), m_mean.cols()) = m_mean;
-    weights.block(1 + m_mean.rows(), 0, m_var.rows(), m_var.cols()) = m_var;
-    return weights;
+    return m_distribution->weights();
 }
