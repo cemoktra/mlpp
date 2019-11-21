@@ -95,5 +95,11 @@ int main(int argc, char** args)
     svm s;
     do_classification(&s, "svm", classes, X_train, X_test, y_train, y_test);
 
+    naive_bayes nbb (std::make_shared<binomial_distribution>());
+    do_classification(&nbb, "naive bayes (binomial)", classes, x_train, x_test, y_train, y_test);
+
+    svm s;
+    do_classification(&s, "support vector machine", classes, x_train, x_test, y_train, y_test);
+
     return 0;
 }
