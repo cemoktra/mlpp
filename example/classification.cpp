@@ -86,7 +86,7 @@ int main(int argc, char** args)
     svm s;
     do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
 
-    // TODO: slow with xtensor
+    // we need normalized data for decision trees
     tts.split(X_norm, y, X_train, X_test, y_train, y_test);
 
     decision_tree dt;

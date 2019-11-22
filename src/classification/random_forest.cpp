@@ -2,6 +2,9 @@
 #include "decision_tree.h"
 #include <xtensor/xview.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xio.hpp>
+#include <thread>
+#include <mutex>
 
 random_forest::random_forest()
     : m_trees(nullptr)
@@ -37,22 +40,18 @@ random_forest::~random_forest()
 xt::xarray<double> random_forest::predict(const xt::xarray<double>& x)
 {
     auto tree_count = static_cast<size_t>(get_param("trees"));
-    auto s = x.shape();
-    s[1] = tree_count;
-    xt::xarray<double> tmp (s);
-    s[1] = 1;
-    xt::xarray<double> result (s);
+    xt::xarray<double> tmp (std::vector<size_t> ({x.shape()[0], tree_count}));
+    xt::xarray<double> result (std::vector<size_t> ({x.shape()[0], 1}));
 
     for (auto i = 0; i < tree_count; i++) 
         xt::view(tmp, xt::all(), xt::range(i, i + 1)) = m_trees[i]->predict(x);
 
     for (auto r = 0; r < x.shape()[0]; r++) {
         auto row = xt::view(tmp, xt::range(r, r + 1), xt::all());
-        std::vector<double> rvec (row.data(), row.data() + row.shape()[0] * row.shape()[1]);
         size_t max = 0;
         size_t result_class = 0;
         for (auto c = 0; c < m_class_count; c++) {
-            auto count = std::count(rvec.begin(), rvec.end(), c);
+            auto count = std::count(row.begin(), row.end(), c);
             if (count > max) {
                 max = count;
                 result_class = c;
@@ -86,13 +85,30 @@ void random_forest::train(const xt::xarray<double>& x, const xt::xarray<double>&
 {
     auto tree_count = static_cast<size_t>(get_param("trees"));
     m_trees = new decision_tree*[tree_count];
-    for (auto i = 0; i < tree_count; i++) {
-        m_trees[i] = new decision_tree();        
-        m_trees[i]->set_param("max_depth", get_param("max_depth"));
-        m_trees[i]->set_param("min_leaf_items", get_param("min_leaf_items"));
-        m_trees[i]->set_param("ignored_features", get_param("ignored_features"));
-        m_trees[i]->init_classes(m_class_count);
-        m_trees[i]->train(x, y);
+
+    const size_t thread_count = std::thread::hardware_concurrency();
+    {
+        std::vector<std::thread> threads(thread_count);
+        std::mutex critical;
+
+        for(auto t = 0; t < thread_count; t++)
+        {
+            threads[t] = std::thread(std::bind([&](const int start, const int end)
+            {
+                for (auto i = start; i < end; i++) {
+                    auto dtree = new decision_tree();
+                    dtree->set_param("max_depth", get_param("max_depth"));
+                    dtree->set_param("min_leaf_items", get_param("min_leaf_items"));
+                    dtree->set_param("ignored_features", get_param("ignored_features"));
+                    dtree->init_classes(m_class_count);
+                    dtree->train(x, y);
+                        
+                    std::lock_guard<std::mutex> lock(critical);
+                    m_trees[i] = dtree;
+                }
+            }, t * tree_count / thread_count, (t + 1) == thread_count ? tree_count : (t + 1) * tree_count / thread_count));
+        }
+        std::for_each(threads.begin(),threads.end(),[](std::thread& x){x.join();});
     }
 }
 
