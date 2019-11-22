@@ -32,7 +32,7 @@ double naive_bayes::score(const xt::xarray<double>& x, const xt::xarray<double>&
 
 void naive_bayes::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    auto y_onehot = (y.shape()[1] == m_number_of_classes) ? y : one_hot::transform(y, m_number_of_classes);
+    auto y_onehot = (y.size() > 1 && y.shape()[1] == m_number_of_classes) ? y : one_hot::transform(y, m_number_of_classes);
     m_distribution->calc_weights(x, y_onehot);
 }
 

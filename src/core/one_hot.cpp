@@ -5,10 +5,10 @@
 
 xt::xarray<double> one_hot::transform(const xt::xarray<double>& x, size_t classes)
 {
-    auto shape = x.shape();
-    shape[1] = classes;
-    xt::xarray<double> result ( shape );
-    for (auto i = 0; i < classes; i++)
-        xt::view(result, xt::all(), xt::range(i, i + 1)) = xt::where(xt::equal(x, i), 1, 0);
+    xt::xarray<double> result (std::vector<size_t>({x.shape()[0], classes}));
+    for (auto i = 0; i < classes; i++) 
+        for (auto r = 0; r < x.shape()[0]; r++) 
+            result(r, i) = x(r) == i ? 1 : 0;
+        
     return result;
 }

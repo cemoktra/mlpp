@@ -13,10 +13,11 @@ set(HEADER
     csv_reader.h
     csv_data.h
     parameters.h
-    #model.h
+    model.h
     #validation_curve.h
     #learning_curve.h
     vocabulary.h
+    mnist_data.h
 )
 
 set(SOURCES
@@ -32,10 +33,11 @@ set(SOURCES
     #validation_curve.cpp
     #learning_curve.cpp
     vocabulary.cpp
+    mnist_data.cpp
 )
 
 include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
-target_link_libraries(mlpp_core tbb)
+target_link_libraries(mlpp_core tbb zlib)
 target_include_directories(mlpp_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
