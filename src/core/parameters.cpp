@@ -1,7 +1,7 @@
 #include "parameters.h"
 #include <stdexcept>
 
-double parameters::get_param(const std::string& name)
+double parameters::get_param(const std::string& name) const
 {
     auto it = m_parameters.find(name);
     if (it == m_parameters.end())

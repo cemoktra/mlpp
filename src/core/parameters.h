@@ -11,7 +11,7 @@ public:
     parameters(const parameters&) = delete;
     ~parameters() = default;
     
-    double get_param(const std::string& name);
+    double get_param(const std::string& name) const;
     virtual void set_param(const std::string& name, double new_value);
 
 protected:

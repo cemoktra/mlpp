@@ -83,8 +83,9 @@ int main(int argc, char** args)
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
 
-    svm s;
-    do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
+    // TODO: SVM is not working at the moment
+    // svm s;
+    // do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
 
     // we need normalized data for decision trees
     tts.split(X_norm, y, X_train, X_test, y_train, y_test);
