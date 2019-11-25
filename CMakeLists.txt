@@ -2,12 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MachineLearning VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(XTENSOR_USE_XSIMD 1)
-set(XTENSOR_USE_TBB 1)
-set(XTENSOR_USE_OPENMP 1)
+add_definitions(-DXTENSOR_ENABLE_XSIMD)
+#add_definitions(-DXTENSOR_USE_TBB)
+#add_definitions(-DXTENSOR_USE_OPENMP)
 
 unset(CONDA_BIN_PATH)
 unset(CONDA_BIN_PATH CACHE)
@@ -47,7 +44,12 @@ else()
     link_directories("${CMAKE_SOURCE_DIR}/conda/lib")
 endif()
 
+# submodules
+add_subdirectory(submodules/googletest)
+add_subdirectory(submodules/benchmark)
+
 # mlpp
 add_subdirectory(src)
 add_subdirectory(example)
+add_subdirectory(benchmark)
 # #add_subdirectory(test)

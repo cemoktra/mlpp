@@ -2,6 +2,7 @@
 #include <xtensor/xview.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xio.hpp>
+#include "xtensor/xreducer.hpp"
 #include <xtensor-blas/xlinalg.hpp>
 
 void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
@@ -24,9 +25,9 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
         mean.reshape({ mean.shape()[0], 1 });
         xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)) = mean;
 
-        auto var = xt::eval(xt::variance(x_class, {0}));
-        var.reshape({ mean.shape()[0], 1 });
-        xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
+        auto var = xt::variance(x_class, {0}, xt::evaluation_strategy::immediate);
+        // var.reshape({ mean.shape()[0], 1 });
+        // xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
 
         m_class_prior(cls) = xt::sum(cls_col)(0) / y.shape()[0];
     }
