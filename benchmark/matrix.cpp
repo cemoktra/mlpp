@@ -134,7 +134,7 @@ static void BM_EigenMatMul(benchmark::State& state) {
   Eigen::MatrixXd m2 = Eigen::MatrixXd::Ones(matrix_size, matrix_size);
 
   for (auto _ : state) {
-    m1 *= m2;
+    m1 = m1 * m2;
   }
 
   state.SetItemsProcessed(state.iterations());
