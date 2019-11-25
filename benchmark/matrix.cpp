@@ -1,6 +1,8 @@
 #include <benchmark/benchmark.h>
 #include <core/matrix.h>
 #include <Eigen/Dense>
+#include <xtensor/xarray.hpp>
+#include <xtensor-blas/xlinalg.hpp>
 
 static const size_t matrix_size = 1000;
 
@@ -142,6 +144,82 @@ static void BM_EigenTranspose(benchmark::State& state) {
   state.SetItemsProcessed(state.iterations());
 }
 
+
+
+
+
+
+
+
+
+
+static void BM_XTensorAdd(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+  xt::xarray<double> m2 = xt::ones<double>({matrix_size, matrix_size});
+
+  for (auto _ : state) {
+    m1 += m2;
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+static void BM_XTensorAddCol(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+  xt::xarray<double> m2 = xt::ones<double>({matrix_size, 1ULL});
+
+  for (auto _ : state) {
+    m1 += m2;
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+static void BM_XTensorAddRow(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+  xt::xarray<double> m2 = xt::ones<double>({1ULL, matrix_size});
+
+  for (auto _ : state) {
+    m1 += m2;
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+static void BM_XTensorExp(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+
+  for (auto _ : state) {
+    m1 = xt::eval(xt::exp(m1));
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+static void BM_XTensorMatMul(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+  xt::xarray<double> m2 = xt::ones<double>({matrix_size, matrix_size});
+
+  for (auto _ : state) {
+    m1 = xt::eval(xt::linalg::dot(m1, m2));
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+static void BM_XTensorTranspose(benchmark::State& state) {
+  xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
+
+  for (auto _ : state) {
+    m1 = xt::eval(xt::transpose(m1));
+  }
+
+  state.SetItemsProcessed(state.iterations());
+}
+
+
+
+
 BENCHMARK(BM_MatrixAdd);
 BENCHMARK(BM_MatrixAddCol);
 BENCHMARK(BM_MatrixAddRow);
@@ -155,5 +233,12 @@ BENCHMARK(BM_EigenAddRow);
 BENCHMARK(BM_EigenExp);
 BENCHMARK(BM_EigenMatMul);
 BENCHMARK(BM_EigenTranspose);
+
+BENCHMARK(BM_XTensorAdd);
+BENCHMARK(BM_XTensorAddCol);
+BENCHMARK(BM_XTensorAddRow);
+BENCHMARK(BM_XTensorExp);
+BENCHMARK(BM_XTensorMatMul);
+BENCHMARK(BM_XTensorTranspose);
 
 BENCHMARK_MAIN();

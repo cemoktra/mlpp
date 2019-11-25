@@ -37,7 +37,8 @@ set(SOURCES
     matrix.cpp
 )
 
-add_definitions("-mavx")
+#add_definitions("-mavx")
+add_compile_options("-march=native")
 
 add_library(mlpp_core ${HEADER} ${SOURCES})
 target_link_libraries(mlpp_core tbb eigen)

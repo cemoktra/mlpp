@@ -8,4 +8,4 @@ set(SOURCES
 )
 
 add_executable(mlpp_benchmark ${SOURCES})
-target_link_libraries(mlpp_benchmark benchmark mlpp_regression)
+target_link_libraries(mlpp_benchmark benchmark mlpp_regression openblas)

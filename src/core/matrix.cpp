@@ -3,6 +3,7 @@
 #include <cstring>
 #include <algorithm>
 #include <execution>
+#include <xsimd/xsimd.hpp>
 
 matrix::matrix(size_t rows, size_t cols)
     : m_rows(rows)
@@ -237,6 +238,21 @@ matrix matrix::transpose()
 
 void matrix::exp()
 {
-    // TODO: speed-up
-    std::transform(std::execution::par, begin(), end(), begin(), [](const double& a) { return std::exp(a); });
+    using b_type = xsimd::batch<double, 2>;
+    std::size_t inc = b_type::size;
+    std::size_t size = rows() * cols();
+
+    // size for which the vectorization is possible
+    std::size_t vec_size = size - size % inc;
+    for(std::size_t i = 0; i < vec_size; i +=inc)
+    {        
+        b_type avec(&m_data[i]);
+        avec = xsimd::exp(avec);
+        avec.store_unaligned(&m_data[i]);
+    }
+    // Remaining part that cannot be vectorize
+    for(std::size_t i = vec_size; i < size; ++i)
+    {
+        m_data[i] = std::exp(m_data[i]);
+    }
 }

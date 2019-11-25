@@ -1,0 +1,9 @@
+name: mlpp
+channels:
+  - conda-forge
+dependencies:
+  - xsimd=7.4.1
+  - xtensor=0.20.10
+  - xtensor-blas=0.16.1
+  - xtl=0.6.8
+  - zlib=1.2.11
