@@ -37,9 +37,6 @@ set(SOURCES
     matrix.cpp
 )
 
-#add_definitions("-mavx")
-add_compile_options("-march=native")
-
 add_library(mlpp_core ${HEADER} ${SOURCES})
-target_link_libraries(mlpp_core tbb eigen)
+target_link_libraries(mlpp_core tbb eigen openblas)
 target_include_directories(mlpp_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

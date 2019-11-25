@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <execution>
 #include <xsimd/xsimd.hpp>
+#include <cblas.h>
 
 matrix::matrix(size_t rows, size_t cols)
     : m_rows(rows)
@@ -216,15 +217,7 @@ matrix matrix::matmul(const matrix& rhs)
         throw invalid_matrix_op();
     
     matrix result (rows(), rhs.cols());
-
-    auto dst = result.begin();
-    for (auto i = 0; i < rows(); i++) {
-        for (auto j = 0; j < rows(); j++) {
-            *dst = std::transform_reduce(std::execution::par, row_begin(i), row_end(i), rhs.col_begin(j), 0.0);
-            ++dst;
-        }
-    }
-
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows(), rhs.cols(), cols(), 1.0, m_data, cols(), rhs.m_data, rhs.cols(), 1.0, result.m_data, rhs.cols());
     return std::move(result);
 }
 
@@ -238,21 +231,16 @@ matrix matrix::transpose()
 
 void matrix::exp()
 {
-    using b_type = xsimd::batch<double, 2>;
+    using b_type = xsimd::simd_type<double>;
     std::size_t inc = b_type::size;
     std::size_t size = rows() * cols();
-
-    // size for which the vectorization is possible
     std::size_t vec_size = size - size % inc;
     for(std::size_t i = 0; i < vec_size; i +=inc)
     {        
-        b_type avec(&m_data[i]);
+        b_type avec = xsimd::load_aligned(&m_data[i]);
         avec = xsimd::exp(avec);
         avec.store_unaligned(&m_data[i]);
     }
-    // Remaining part that cannot be vectorize
     for(std::size_t i = vec_size; i < size; ++i)
-    {
         m_data[i] = std::exp(m_data[i]);
-    }
 }

@@ -80,6 +80,12 @@ static void BM_MatrixTranspose(benchmark::State& state) {
   state.SetItemsProcessed(state.iterations());
 }
 
+
+
+
+
+
+
 static void BM_EigenAdd(benchmark::State& state) {
   Eigen::MatrixXd m1 = Eigen::MatrixXd::Ones(matrix_size, matrix_size);
   Eigen::MatrixXd m2 = Eigen::MatrixXd::Ones(matrix_size, matrix_size);
@@ -221,24 +227,27 @@ static void BM_XTensorTranspose(benchmark::State& state) {
 
 
 BENCHMARK(BM_MatrixAdd);
-BENCHMARK(BM_MatrixAddCol);
-BENCHMARK(BM_MatrixAddRow);
-BENCHMARK(BM_MatrixExp);
-BENCHMARK(BM_MatrixMatMul);
-BENCHMARK(BM_MatrixTranspose);
-
 BENCHMARK(BM_EigenAdd);
-BENCHMARK(BM_EigenAddCol);
-BENCHMARK(BM_EigenAddRow);
-BENCHMARK(BM_EigenExp);
-BENCHMARK(BM_EigenMatMul);
-BENCHMARK(BM_EigenTranspose);
-
 BENCHMARK(BM_XTensorAdd);
+
+BENCHMARK(BM_MatrixAddCol);
+BENCHMARK(BM_EigenAddCol);
 BENCHMARK(BM_XTensorAddCol);
+
+BENCHMARK(BM_MatrixAddRow);
+BENCHMARK(BM_EigenAddRow);
 BENCHMARK(BM_XTensorAddRow);
+
+BENCHMARK(BM_MatrixExp);
+BENCHMARK(BM_EigenExp);
 BENCHMARK(BM_XTensorExp);
+
+BENCHMARK(BM_MatrixMatMul);
+BENCHMARK(BM_EigenMatMul);
 BENCHMARK(BM_XTensorMatMul);
+
+BENCHMARK(BM_MatrixTranspose);
+BENCHMARK(BM_EigenTranspose);
 BENCHMARK(BM_XTensorTranspose);
 
 BENCHMARK_MAIN();

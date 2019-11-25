@@ -56,7 +56,7 @@ public:
     void exp();
 
 private:
-    double *m_data;
+    alignas(16) double *m_data;
 
     size_t m_rows;
     size_t m_cols;

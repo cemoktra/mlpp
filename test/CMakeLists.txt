@@ -10,5 +10,5 @@ set(SOURCES
 )
 
 add_executable(UnitTests ${SOURCES})
-target_link_libraries(UnitTests gtest_main mlpp_regression)
+target_link_libraries(UnitTests gtest_main mlpp_regression openblas)
 add_test(NAME unit_tests COMMAND UnitTests)

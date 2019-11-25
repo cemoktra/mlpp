@@ -67,7 +67,7 @@ TEST_F (matrix_test, exp) {
     m1.exp();
     cnt = 0;
     for (auto it = m1.begin(); it != m1.end(); ++it, ++cnt)
-        ASSERT_EQ(*it, std::exp(cnt));
+        ASSERT_NEAR(*it, std::exp(cnt), 1e-6);
 }
 
 TEST_F (matrix_test, transpose) { 
