@@ -64,7 +64,7 @@ int main(int argc, char** args)
 
     xt::xarray<double> X_train, X_test, y_train, y_test;
     train_test_split tts;
-    tts.init(X.shape()[0]);
+    tts.init(X.shape()[0], 0.25, false);
     tts.split(X_stdscale, y, X_train, X_test, y_train, y_test);
 
     logistic_regression lr;

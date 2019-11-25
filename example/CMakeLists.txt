@@ -20,6 +20,6 @@ target_link_libraries(ex_mnist mlpp_classification)
 
 if (WIN32)
   add_custom_command(TARGET ex_mnist POST_BUILD 
-    COMMAND "${CMAKE_COMMAND}" -E copy "${CONDA_LIB_BIN}/zlib.dll" $<TARGET_FILE_DIR:ex_mnist>
+    COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:zlib> $<TARGET_FILE_DIR:ex_mnist>
   )  
 endif()

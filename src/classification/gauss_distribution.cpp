@@ -22,12 +22,15 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
         auto x_class = xt::view(x, xt::keep(idx), xt::all());
 
         auto mean = xt::eval(xt::mean(x_class, {0}));
+        // TODO: use xt::stddev when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
+        auto s1 = x_class.shape();
+        auto s2 = mean.shape();
+        auto var = xt::eval(xt::mean(xt::square(x_class - mean), {0}));
+
         mean.reshape({ mean.shape()[0], 1 });
         xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)) = mean;
-
-        auto var = xt::variance(x_class, {0}, xt::evaluation_strategy::immediate);
-        // var.reshape({ mean.shape()[0], 1 });
-        // xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
+        var.reshape({ mean.shape()[0], 1 });
+        xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
 
         m_class_prior(cls) = xt::sum(cls_col)(0) / y.shape()[0];
     }

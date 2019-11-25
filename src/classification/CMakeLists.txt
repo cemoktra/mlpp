@@ -33,9 +33,6 @@ set(SOURCES
     svm.cpp
 )
 
-include_directories("${PROJECT_SOURCE_DIR}/lib/xtensor-blas/include")
-include_directories("${PROJECT_SOURCE_DIR}/profiny")
-
 add_library(mlpp_classification ${HEADER} ${SOURCES})
 
 target_link_libraries(mlpp_classification mlpp_core)
