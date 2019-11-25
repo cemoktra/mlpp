@@ -2,7 +2,6 @@
 #include <math.h>
 #include <cstring>
 #include <algorithm>
-#include <execution>
 #include <xsimd/xsimd.hpp>
 #include <cblas.h>
 
@@ -71,17 +70,17 @@ const matrix matrix::operator+(const matrix& rhs)
 const matrix& matrix::operator+=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        std::transform(std::execution::par, begin(), end(), rhs.begin(), begin(), std::plus<>());
+        std::transform(begin(), end(), rhs.begin(), begin(), std::plus<>());
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a + *rhs_row; });
+            std::transform(row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a + *rhs_row; });
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
         for (auto row = 0; row < rows(); ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::plus<>());
+            std::transform(row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::plus<>());
     }
     else
         throw invalid_matrix_op();
@@ -99,17 +98,17 @@ const matrix matrix::operator-(const matrix& rhs)
 const matrix& matrix::operator-=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        std::transform(std::execution::par, begin(), end(), rhs.begin(), begin(), std::minus<>());
+        std::transform(begin(), end(), rhs.begin(), begin(), std::minus<>());
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a - *rhs_row; });
+            std::transform(row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a - *rhs_row; });
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
         for (auto row = 0; row < rows(); ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::minus<>());
+            std::transform(row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::minus<>());
     }
     else
         throw invalid_matrix_op();
@@ -127,17 +126,17 @@ const matrix matrix::operator*(const matrix& rhs)
 const matrix& matrix::operator*=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        std::transform(std::execution::par, begin(), end(), rhs.begin(), begin(), std::multiplies<>());
+        std::transform(begin(), end(), rhs.begin(), begin(), std::multiplies<>());
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a * *rhs_row; });
+            std::transform(row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a * *rhs_row; });
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
         for (auto row = 0; row < rows(); ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::multiplies<>());
+            std::transform(row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::multiplies<>());
     }
     else
         throw invalid_matrix_op();
@@ -154,17 +153,17 @@ const matrix matrix::operator/(const matrix& rhs)
 const matrix& matrix::operator/=(const matrix& rhs)
 {
     if (rhs.m_cols == m_cols && rhs.m_rows == m_rows) {
-        std::transform(std::execution::par, begin(), end(), rhs.begin(), begin(), std::divides<>());
+        std::transform(begin(), end(), rhs.begin(), begin(), std::divides<>());
     }
     else if (rhs.m_cols == 1 && rhs.m_rows == m_rows) {
         const auto rhs_end = rhs.end();
         size_t row = 0;
         for (auto rhs_row = rhs.begin(); rhs_row != rhs_end; ++rhs_row, ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a / *rhs_row; });
+            std::transform(row_begin(row), row_end(row), row_begin(row), [&](const double& a) { return a / *rhs_row; });
     }
     else if (rhs.m_rows == 1 && rhs.m_cols == m_cols) {
         for (auto row = 0; row < rows(); ++row)
-            std::transform(std::execution::par, row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::divides<>());
+            std::transform(row_begin(row), row_end(row), rhs.begin(), row_begin(row), std::divides<>());
     }
     else
         throw invalid_matrix_op();

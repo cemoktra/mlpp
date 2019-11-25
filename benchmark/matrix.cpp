@@ -134,7 +134,7 @@ static void BM_EigenMatMul(benchmark::State& state) {
   Eigen::MatrixXd m2 = Eigen::MatrixXd::Ones(matrix_size, matrix_size);
 
   for (auto _ : state) {
-    m1 = m1 * m2;
+    m1 *= m2;
   }
 
   state.SetItemsProcessed(state.iterations());
@@ -172,7 +172,7 @@ static void BM_XTensorAdd(benchmark::State& state) {
 
 static void BM_XTensorAddCol(benchmark::State& state) {
   xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
-  xt::xarray<double> m2 = xt::ones<double>({matrix_size, 1ULL});
+  xt::xarray<double> m2 = xt::ones<double>({matrix_size, size_t(1)});
 
   for (auto _ : state) {
     m1 += m2;
@@ -183,7 +183,7 @@ static void BM_XTensorAddCol(benchmark::State& state) {
 
 static void BM_XTensorAddRow(benchmark::State& state) {
   xt::xarray<double> m1 = xt::ones<double>({matrix_size, matrix_size});
-  xt::xarray<double> m2 = xt::ones<double>({1ULL, matrix_size});
+  xt::xarray<double> m2 = xt::ones<double>({size_t(1), matrix_size});
 
   for (auto _ : state) {
     m1 += m2;
