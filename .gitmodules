@@ -4,3 +4,18 @@
 [submodule "submodules/googletest"]
 	path = submodules/googletest
 	url = https://github.com/google/googletest.git
+[submodule "submodules/xtensor"]
+	path = submodules/xtensor
+	url = https://github.com/xtensor-stack/xtensor.git
+[submodule "submodules/xsimd"]
+	path = submodules/xsimd
+	url = https://github.com/xtensor-stack/xsimd.git
+[submodule "submodules/xtensor-blas"]
+	path = submodules/xtensor-blas
+	url = https://github.com/xtensor-stack/xtensor-blas.git
+[submodule "submodules/xtl"]
+	path = submodules/xtl
+	url = https://github.com/xtensor-stack/xtl.git
+[submodule "submodules/zlib"]
+	path = submodules/zlib
+	url = https://github.com/madler/zlib.git
