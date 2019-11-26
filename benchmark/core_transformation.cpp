@@ -4,6 +4,7 @@
 #include <core/standard_scale.h>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xrandom.hpp>
+#include <xtensor/xio.hpp>
 
 static const size_t matrix_size = 1000;
 
@@ -18,10 +19,9 @@ static void BM_Normalize(benchmark::State& state) {
 }
 
 static void BM_One_Hot(benchmark::State& state) {
-  xt::xarray<int> test_data = xt::random::randint<int>(std::vector<size_t>({matrix_size, 1}), 10, 0);
-
+  xt::xarray<int> test_data = xt::random::randint<int>(std::vector<size_t>({matrix_size, 1}), 0, 10);
   for (auto _ : state) {
-    auto result = normalize::transform(test_data);
+    auto result = one_hot::transform(test_data, 10);
   }
 
   state.SetItemsProcessed(state.iterations());

@@ -21,12 +21,11 @@ double naive_bayes::score(const xt::xarray<double>& x, const xt::xarray<double>&
     xt::xarray<size_t> predict_class = xt::argmax(p, {1});
     xt::xarray<size_t> target_class;    
     
-    if (y.shape()[1] > 1)
+    if (y.shape().size() > 1 && y.shape()[1] > 1)
         target_class = xt::argmax(y, {1});
     else
         target_class = y;
     target_class.reshape(predict_class.shape());
-    
     return xt::sum(xt::equal(predict_class, target_class))(0) / static_cast<double>(y.shape()[0]);
 }
 

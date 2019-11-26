@@ -2,18 +2,18 @@
 #include <xtensor/xview.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xio.hpp>
-#include "xtensor/xreducer.hpp"
+#include <xtensor/xreducer.hpp>
+#include <xtensor/xbuilder.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    m_theta = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
-    m_sigma = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
     m_class_prior.resize( { y.shape()[1] } );
 
-    // TODO: add parameter for epsilon (on/off)
-    m_epsilon = 0.0;
-    // m_epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
+    auto all_means = xt::eval(xt::mean(x, {0}));
+    // TODO: use xt::variance when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
+    double epsilon = xt::eval(xt::amax(xt::mean(xt::square(x - all_means), {0})))[0];
+    // double epsilon = 0.0001;
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
         auto cls_col = xt::eval(xt::view(y, xt::all(), xt::range(cls, cls + 1)));
@@ -22,33 +22,41 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
         auto x_class = xt::view(x, xt::keep(idx), xt::all());
 
         auto mean = xt::eval(xt::mean(x_class, {0}));
-        // TODO: use xt::stddev when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
-        auto s1 = x_class.shape();
-        auto s2 = mean.shape();
+        // TODO: use xt::variance when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
         auto var = xt::eval(xt::mean(xt::square(x_class - mean), {0}));
 
         mean.reshape({ mean.shape()[0], 1 });
-        xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)) = mean;
         var.reshape({ mean.shape()[0], 1 });
-        xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)) = var;
 
-        m_class_prior(cls) = xt::sum(cls_col)(0) / y.shape()[0];
+        if (cls == 0) {
+            m_theta = mean;
+            m_sigma = var;
+        } else {
+            m_theta = xt::concatenate(std::make_tuple<>(m_theta, mean), 1);
+            m_sigma = xt::concatenate(std::make_tuple<>(m_sigma, var), 1);
+        }
+        m_class_prior(cls) = xt::sum(cls_col)(0) / x.shape()[0];
     }
+    m_sigma += epsilon;
 }
 
 xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x)
 {
-    auto shape = x.shape();
-    shape[1] = m_class_prior.shape()[0];
-    xt::xarray<double> joint_log_likelihood (shape);
+    xt::xarray<double> joint_log_likelihood;
+    auto sigma_t = xt::transpose(m_sigma);
 
     for (auto cls = 0; cls < m_class_prior.shape()[0]; cls++) {
-        auto jointi = std::log(m_class_prior(cls));
-        auto tmp1 = -0.5 * xt::sum(xt::square(x - xt::transpose(xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)))) / xt::transpose(xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1))), {1});
-        auto tmp2 = -0.5 * xt::sum(xt::log(2.0 * xt::numeric_constants<double>::PI * xt::transpose(xt::view(m_sigma, xt::all(), xt::range(cls, cls + 1)))));
-        xt::view(joint_log_likelihood, xt::all(), xt::range(cls, cls + 1)) = xt::transpose(xt::eval(tmp1 + tmp2) + jointi);
-    }
+        xt::xarray<double> jointi = std::log(m_class_prior(cls));
+        xt::xarray<double> tmp1 = -0.5 * xt::sum(xt::eval(xt::square(x - xt::transpose(xt::view(m_theta, xt::all(), xt::range(cls, cls + 1)))) / xt::view(sigma_t, xt::range(cls, cls + 1), xt::all())), {1});
+        xt::xarray<double> tmp2 = -0.5 * xt::sum(xt::eval(xt::log(2.0 * xt::numeric_constants<double>::PI * xt::transpose(xt::view(sigma_t, xt::range(cls, cls + 1), xt::all())))));
 
+        xt::xarray<double> log_likelihood = xt::transpose(xt::eval(tmp1 + tmp2) + jointi);
+        log_likelihood.reshape(std::vector<size_t>({log_likelihood.shape()[0], 1}));
+        if (cls == 0)
+            joint_log_likelihood = log_likelihood;
+        else
+            joint_log_likelihood = xt::concatenate(std::make_tuple<>(joint_log_likelihood, log_likelihood), 1);
+    }
     return joint_log_likelihood;
 }
 

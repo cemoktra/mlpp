@@ -48,7 +48,7 @@ double logistic_regression::score(const xt::xarray<double>& x, const xt::xarray<
     xt::xarray<size_t> predict_class = xt::argmax(p, {1});
     xt::xarray<size_t> target_class;
     
-    if (y.shape()[1] > 1)
+    if (y.shape().size() > 1 && y.shape()[1] > 1)
         target_class = xt::argmax(y, {1});
     else
         target_class = y;

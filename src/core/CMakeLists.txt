@@ -18,6 +18,7 @@ set(HEADER
     #learning_curve.h
     vocabulary.h
     mnist_data.h
+    scoped_timer.h
 )
 
 set(SOURCES

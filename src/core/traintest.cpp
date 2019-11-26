@@ -17,8 +17,8 @@ void train_test_split::init(size_t rows, double test_proportion, bool shuffle)
     size_t test_size = rows * test_proportion;
     size_t train_size = rows - test_size;
     
-    m_test_indices = { indices.begin(), std::next(indices.begin(), test_size) };
-    m_train_indices = { std::next(indices.begin(), test_size), indices.end() };
+    m_train_indices = { indices.begin(), std::next(indices.begin(), train_size) };
+    m_test_indices = { std::next(indices.begin(), train_size), indices.end() };
 }
 
 void train_test_split::split(const xt::xarray<double>& x, xt::xarray<double>& x_train, xt::xarray<double>& x_test)

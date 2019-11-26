@@ -17,7 +17,6 @@ public:
     void set_weights(const xt::xarray<double>& weights) override;
 
 private:
-    double m_epsilon;
     xt::xarray<double> m_class_prior;
     xt::xarray<double> m_theta;
     xt::xarray<double> m_sigma;
