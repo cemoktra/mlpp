@@ -20,6 +20,7 @@ public:
 
 private:
     xt::xarray<double> m_weights;
+    size_t m_classes;
 };
 
 #endif

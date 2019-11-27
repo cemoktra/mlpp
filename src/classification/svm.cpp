@@ -1,14 +1,16 @@
 #include "svm.h"
 #include <xtensor/xview.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xio.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 #include <iostream>
+#include <core/one_hot.h>
 
 svm::svm()
 {
     register_param("c", 1.0);
     register_param("learning_rate", 0.02);
-    register_param("threshold", 0.0001);
+    register_param("threshold", 0.001);
     register_param("max_iterations", 0);
 }
 
@@ -20,13 +22,14 @@ xt::xarray<double> svm::predict(const xt::xarray<double>& x)
 double svm::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     xt::xarray<double> p = predict(x);
-    xt::xarray<size_t> predict_class = xt::argmax(p, {1});
+    xt::xarray<size_t> predict_class = xt::greater(p, 0);
     xt::xarray<size_t> target_class;
     
     if (y.shape().size() > 1 && y.shape()[1] > 1)
         target_class = xt::argmax(y, {1});
     else
         target_class = y;
+
     target_class.reshape(predict_class.shape());
     return xt::sum(xt::equal(predict_class, target_class))(0) / static_cast<double>(y.shape()[0]);
 }
@@ -38,6 +41,9 @@ void svm::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
     double current_cost, last_cost;
     m_weights = xt::ones<double>({x.shape()[1], y.shape()[1]});
     last_cost = std::numeric_limits<double>::max();
+    
+    if (m_classes > 2)
+        throw std::exception();
 
     while (true) {
         auto p = predict(x);
@@ -61,7 +67,7 @@ void svm::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
         }
         current_cost /= (y.shape()[0] * y.shape()[1]);
 
-        if (last_cost - current_cost < get_param("threshold"))
+        if (fabs(last_cost - current_cost) < get_param("threshold"))
             break;
         last_cost = current_cost;
         iteration++;
@@ -72,6 +78,7 @@ void svm::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 
 void svm::init_classes(size_t number_of_classes)
 {
+    m_classes  = number_of_classes;
 }
 
 void svm::set_weights(const xt::xarray<double>& weights)

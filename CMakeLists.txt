@@ -7,17 +7,17 @@ add_definitions(-DXTENSOR_ENABLE_XSIMD)
 #add_definitions(-DXTENSOR_USE_OPENMP)
 
 # submodules
-add_subdirectory(submodules/googletest)
-add_subdirectory(submodules/benchmark)
-add_subdirectory(submodules/zlib)
+add_subdirectory(submodules/googletest EXCLUDE_FROM_ALL )
+add_subdirectory(submodules/benchmark EXCLUDE_FROM_ALL )
+add_subdirectory(submodules/zlib EXCLUDE_FROM_ALL )
 
-add_subdirectory(submodules/xtl)
+add_subdirectory(submodules/xtl EXCLUDE_FROM_ALL )
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/submodules/xtl")
 
-add_subdirectory(submodules/xtensor)
+add_subdirectory(submodules/xtensor EXCLUDE_FROM_ALL )
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/submodules/xtensor")
 
-add_subdirectory(submodules/xtensor-blas)
+add_subdirectory(submodules/xtensor-blas EXCLUDE_FROM_ALL )
 include_directories("${PROJECT_SOURCE_DIR}/submodules/xtensor-blas/include")
 
 include_directories(${xtl_INCLUDE_DIRS})

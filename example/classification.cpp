@@ -12,37 +12,38 @@
 #include <core/standard_scale.h>
 #include <core/normalize.h>
 #include <core/csv_data.h>
+#include <core/scoped_timer.h>
 #include <iostream>
 #include <numeric>
-#include <chrono>
 #include <xtensor/xio.hpp>
 
 void do_classification(classifier *c, const std::string& name, size_t classes, const xt::xarray<double> xtrain, const xt::xarray<double> xtest, const xt::xarray<double> ytrain, const xt::xarray<double> ytest) 
 {
-    auto start = std::chrono::high_resolution_clock::now();
-    c->init_classes(classes);
-    c->train(xtrain, ytrain);
-    double score = c->score(xtest, ytest);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto dur = std::chrono::duration_cast<std::chrono::milliseconds> (end - start);
-    std::cout << "score - " << name << ": " << score << ", took " << dur.count() << "ms" << std::endl;
+    double score;
+    {
+        scoped_timer st (name);
+        auto start = std::chrono::high_resolution_clock::now();
+        c->init_classes(classes);
+        c->train(xtrain, ytrain);
+        score = c->score(xtest, ytest);
+    }
+    std::cout << "  score = " << score << std::endl;
 }
 
 std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_foods()
 {
-    std::cout << "reading data ... ";
+    scoped_timer st ("reading data");
     csv_data data;
     data.read("foods.csv");
 
     xt::xarray<double> X = data.matrixFromCols({3, 4, 5, 6, 7});
     xt::xarray<double> y = data.matrixFromCols({8}, csv_data::UniqueStringIndex);
-    std::cout << "done" << std::endl;
     return std::make_tuple(X, y, static_cast<size_t>(xt::amax(y)(0) + 1));
 }
 
 std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_cancer()
 {
-    std::cout << "reading data ... ";
+    scoped_timer st ("reading data");
     csv_data data;
     data.read("cancer.csv");
 
@@ -51,7 +52,6 @@ std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_cancer()
 
     xt::xarray<double> X = data.matrixFromCols(columns);
     xt::xarray<double> y = data.matrixFromCols({1}, csv_data::UniqueStringIndex);
-    std::cout << "done" << std::endl;
     return std::make_tuple(X, y, static_cast<size_t>(xt::amax(y)(0) + 1));
 }
 
@@ -59,6 +59,8 @@ int main(int argc, char** args)
 {
     // auto [X, y, classes] = read_foods();
     auto [X, y, classes] = read_cancer();
+
+    scoped_timer *st = new scoped_timer("preprocessing data");
     auto X_stdscale = standard_scale::transform(X);
     auto X_norm = normalize::transform(X);
 
@@ -66,6 +68,7 @@ int main(int argc, char** args)
     train_test_split tts;
     tts.init(X.shape()[0], 0.25, true);
     tts.split(X_stdscale, y, X_train, X_test, y_train, y_test);
+    delete st;
 
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
@@ -83,9 +86,8 @@ int main(int argc, char** args)
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
 
-    // TODO: SVM is not working at the moment
-    // svm s;
-    // do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
+    svm s;
+    do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
 
     // we need normalized data for decision trees
     tts.split(X_norm, y, X_train, X_test, y_train, y_test);

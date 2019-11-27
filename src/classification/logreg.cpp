@@ -28,7 +28,7 @@ void logistic_regression::init_classes(size_t number_of_classes)
 
 void logistic_regression::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    auto y_onehot = (y.shape()[1] == m_classes) ? y : one_hot::transform(y, m_classes);
+    auto y_onehot = (y.size() > 1 && y.shape()[1] == m_classes) ? y : one_hot::transform(y, m_classes);
     calc_weights(x, y_onehot);
 }
 
