@@ -21,11 +21,6 @@ xt::xarray<double> logistic_regression::predict(const xt::xarray<double>& x)
     return sigmoid(xt::linalg::dot(x, m_weights));
 }
 
-void logistic_regression::init_classes(size_t number_of_classes)
-{
-    m_classes = number_of_classes;
-}
-
 void logistic_regression::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     auto y_onehot = (y.size() > 1 && y.shape()[1] == m_classes) ? y : one_hot::transform(y, m_classes);
@@ -41,21 +36,6 @@ xt::xarray<double> logistic_regression::weights()
 {
     return m_weights;
 }
-
-double logistic_regression::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
-{
-    xt::xarray<double> p = predict(x);
-    xt::xarray<size_t> predict_class = xt::argmax(p, {1});
-    xt::xarray<size_t> target_class;
-    
-    if (y.shape().size() > 1 && y.shape()[1] > 1)
-        target_class = xt::argmax(y, {1});
-    else
-        target_class = y;
-    target_class.reshape(predict_class.shape());
-    return xt::sum(xt::equal(predict_class, target_class))(0) / static_cast<double>(y.shape()[0]);
-}
-
 
 void logistic_regression::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {

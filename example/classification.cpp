@@ -7,7 +7,6 @@
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
 #include <classification/binomial_distribution.h>
-#include <classification/svm.h>
 #include <core/traintest.h>
 #include <core/standard_scale.h>
 #include <core/normalize.h>
@@ -20,14 +19,19 @@
 void do_classification(classifier *c, const std::string& name, size_t classes, const xt::xarray<double> xtrain, const xt::xarray<double> xtest, const xt::xarray<double> ytrain, const xt::xarray<double> ytest) 
 {
     double score;
+    xt::xarray<double> confusion;
     {
         scoped_timer st (name);
         auto start = std::chrono::high_resolution_clock::now();
         c->init_classes(classes);
         c->train(xtrain, ytrain);
-        score = c->score(xtest, ytest);
+        confusion = c->confusion(xtest, ytest);
+        score = c->score(confusion);
+        
     }
     std::cout << "  score = " << score << std::endl;
+    // std::cout << "  confusion matrix = " << std::endl;
+    // std::cout << confusion << std::endl;
 }
 
 std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_foods()
@@ -85,9 +89,6 @@ int main(int argc, char** args)
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
-
-    svm s;
-    do_classification(&s, "support vector machine", classes, X_train, X_test, y_train, y_test);
 
     // we need normalized data for decision trees
     tts.split(X_norm, y, X_train, X_test, y_train, y_test);

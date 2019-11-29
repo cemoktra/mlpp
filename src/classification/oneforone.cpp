@@ -21,11 +21,11 @@ one_for_one::~one_for_one()
 
 xt::xarray<double> one_for_one::predict(const xt::xarray<double>& x)
 {
-    xt::xarray<double> prediction_count = xt::zeros<double>({ x.shape()[0], m_number_of_classes });
+    xt::xarray<double> prediction_count = xt::zeros<double>({ x.shape()[0], m_classes });
 
     size_t model = 0;
-    for (auto i = 0; i < m_number_of_classes - 1; i++) {
-        for (auto j = i + 1; j < m_number_of_classes; j++) {
+    for (auto i = 0; i < m_classes - 1; i++) {
+        for (auto j = i + 1; j < m_classes; j++) {
             auto p = m_models[model]->predict(x);
             xt::xarray<size_t> target_class = xt::argmax(p, {1});
             auto idx1 = xt::flatten_indices(xt::argwhere(target_class < 1.0));
@@ -38,12 +38,7 @@ xt::xarray<double> one_for_one::predict(const xt::xarray<double>& x)
         }
     }
 
-    return xt::argmax(prediction_count, {1});
-}
-
-void one_for_one::init_classes(size_t number_of_classes)
-{
-    m_number_of_classes = number_of_classes;
+    return prediction_count / static_cast<double>(m_models.size());
 }
 
 void one_for_one::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
@@ -51,8 +46,8 @@ void one_for_one::train(const xt::xarray<double>& x, const xt::xarray<double>& y
     for (auto lr : m_models)
         delete lr;
 
-    for (auto i = 0; i < m_number_of_classes - 1; i++) {
-        for (auto j = i + 1; j < m_number_of_classes; j++) {
+    for (auto i = 0; i < m_classes - 1; i++) {
+        for (auto j = i + 1; j < m_classes; j++) {
             xt::xarray<double> y_, x_;
 
             auto idx = (y.shape()[1] > 1) ? 
@@ -67,23 +62,10 @@ void one_for_one::train(const xt::xarray<double>& x, const xt::xarray<double>& y
             lr->set_param("threshold", get_param("threshold"));
             lr->set_param("max_iterations", get_param("max_iterations"));
             m_models.push_back(lr);
-            lr->init_classes(m_number_of_classes);
+            lr->init_classes(m_classes);
             lr->train(x_, y_);
         }
     }
-}
-
-double one_for_one::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
-{
-    xt::xarray<double> p = predict(x);
-    xt::xarray<size_t> target_class;
-    
-    if (y.shape().size() > 1 && y.shape()[1] > 1)
-        target_class = xt::argmax(y, {1});
-    else
-        target_class = y;
-    target_class.reshape(p.shape());
-    return xt::sum(xt::equal(p, target_class))(0) / static_cast<double>(y.shape()[0]);
 }
 
 void one_for_one::set_weights(const xt::xarray<double>& weights)

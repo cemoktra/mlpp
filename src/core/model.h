@@ -10,7 +10,7 @@ public:
     model(const model&) = delete;
     ~model() = default;
 
-    virtual xt::xarray<double> predict(const xt::xarray<double>& x) = 0;
+    virtual xt::xarray<double> predict(const xt::xarray<double>& x) = 0;    
     virtual double score(const xt::xarray<double>& x, const xt::xarray<double>& y) = 0;
     virtual void train(const xt::xarray<double>& x, const xt::xarray<double>& y) = 0;
 

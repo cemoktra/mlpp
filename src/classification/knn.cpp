@@ -8,14 +8,13 @@
 #include <xtensor-blas/xlinalg.hpp>
 
 knn::knn()
-    : m_classes(0)
 {
     register_param("k", 3);
 }
 
 xt::xarray<double> knn::predict(const xt::xarray<double>& x)
 {
-    xt::xarray<double> result (std::vector<size_t>( { x.shape()[0], 1 }));
+    xt::xarray<double> result = xt::zeros<double>(std::vector<size_t>({x.shape()[0], m_classes}));
     auto kneighbors = static_cast<size_t>(get_param("k"));
     
     for (auto i = 0; i < x.shape()[0]; i++)
@@ -42,30 +41,10 @@ xt::xarray<double> knn::predict(const xt::xarray<double>& x)
         
         for (auto k = 0; k < kneighbors; k++)
             m_class_count(m_knearest_classes(k))++;
-        result(i, 0) = xt::argmax(m_class_count)(0);
+        result(i, xt::argmax(m_class_count)(0)) = 1.0;
     }
 
     return result;
-}
-
-double knn::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
-{
-    size_t pos = 0, neg = 0;
-    auto p = predict(x);
-
-    for (auto i = 0; i < p.shape()[0]; i++) {
-        if (p(i, 0) == y(i, 0))
-            pos++; 
-        else
-            neg++;
-    }
-
-    return static_cast<double>(pos) / static_cast<double>(pos + neg);
-}
-
-void knn::init_classes(size_t number_of_classes)
-{
-    m_classes = number_of_classes;
 }
 
 void knn::train(const xt::xarray<double>& x, const xt::xarray<double>& y)

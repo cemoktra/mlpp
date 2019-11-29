@@ -12,10 +12,8 @@ public:
     ~logistic_regression() = default;
 
     virtual xt::xarray<double> predict(const xt::xarray<double>& x) override;
-    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
-    void init_classes(size_t number_of_classes) override;
-
+  
     void set_weights(const xt::xarray<double>& weights) override;
     xt::xarray<double> weights() override;
 
@@ -26,7 +24,6 @@ protected:
     xt::xarray<double> sigmoid(const xt::xarray<double>& x);
     void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y);
 
-    size_t m_classes;
     xt::xarray<double> m_weights;
 };
 

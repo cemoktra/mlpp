@@ -13,9 +13,7 @@ public:
     ~random_forest();
 
     xt::xarray<double> predict(const xt::xarray<double>& x) override;
-    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
-    void init_classes(size_t number_of_classes) override;
 
     void set_weights(const xt::xarray<double>& weights) override;
     xt::xarray<double> weights() override;
@@ -24,7 +22,6 @@ public:
 
 private:
     decision_tree **m_trees;
-    size_t m_class_count;
 };
 
 #endif

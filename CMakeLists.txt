@@ -13,16 +13,15 @@ add_subdirectory(submodules/zlib EXCLUDE_FROM_ALL )
 
 add_subdirectory(submodules/xtl EXCLUDE_FROM_ALL )
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/submodules/xtl")
-
 add_subdirectory(submodules/xtensor EXCLUDE_FROM_ALL )
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/submodules/xtensor")
-
 add_subdirectory(submodules/xtensor-blas EXCLUDE_FROM_ALL )
-include_directories("${PROJECT_SOURCE_DIR}/submodules/xtensor-blas/include")
 
+include_directories(${CMAKE_BINARY_DIR}/submodules/zlib)
+include_directories(${PROJECT_SOURCE_DIR}/submodules/zlib)
 include_directories(${xtl_INCLUDE_DIRS})
 include_directories(${xtensor_INCLUDE_DIRS})
-include_directories(${XTENSOR_BLAS_INCLUDE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/submodules/xtensor-blas/include)
 
 # mlpp
 add_subdirectory(src)
