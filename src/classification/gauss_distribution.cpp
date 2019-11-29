@@ -11,8 +11,7 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
     m_class_prior.resize( { y.shape()[1] } );
 
     auto all_means = xt::eval(xt::mean(x, {0}));
-    // TODO: use xt::variance when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
-    double epsilon = xt::eval(xt::amax(xt::mean(xt::square(x - all_means), {0})))[0];
+    double epsilon = xt::eval(xt::variance(x, {0}))[0];
     // double epsilon = 0.0001;
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
@@ -22,8 +21,7 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
         auto x_class = xt::view(x, xt::keep(idx), xt::all());
 
         auto mean = xt::eval(xt::mean(x_class, {0}));
-        // TODO: use xt::variance when pull request https://github.com/xtensor-stack/xtensor/pull/1627#issuecomment-558170772 has been merged into xtensor
-        auto var = xt::eval(xt::mean(xt::square(x_class - mean), {0}));
+        auto var = xt::eval(xt::variance(x_class, {0}));
 
         mean.reshape({ mean.shape()[0], 1 });
         var.reshape({ mean.shape()[0], 1 });
