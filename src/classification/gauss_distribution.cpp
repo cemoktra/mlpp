@@ -11,7 +11,7 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
     m_class_prior.resize( { y.shape()[1] } );
 
     auto all_means = xt::eval(xt::mean(x, {0}));
-    double epsilon = xt::eval(xt::variance(x, {0}))[0];
+    double epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
     // double epsilon = 0.0001;
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
