@@ -10,13 +10,13 @@ public:
     linear_regression();
     ~linear_regression() = default;
 
-    xt::xarray<double> predict(const xt::xarray<double>& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) const override;
 
     void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
-    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) const override;
 
     void set_weights(const xt::xarray<double>& weights) override;
-    xt::xarray<double> weights() override;
+    xt::xarray<double> weights() const override;
 
 private:
     void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y);

@@ -8,7 +8,7 @@ linear_regression::linear_regression()
 {
 }
 
-xt::xarray<double> linear_regression::predict(const xt::xarray<double>& x) 
+xt::xarray<double> linear_regression::predict(const xt::xarray<double>& x) const
 {
     if (x.shape()[1] != m_weights.shape()[0])
         throw std::invalid_argument("x dimension is wrong");
@@ -20,8 +20,7 @@ void linear_regression::train(const xt::xarray<double>& x, const xt::xarray<doub
     calc_weights(x, y);
 }
 
-
-double linear_regression::score(const xt::xarray<double>& x, const xt::xarray<double>& y)
+double linear_regression::score(const xt::xarray<double>& x, const xt::xarray<double>& y) const
 {
     xt::xarray<double> p = predict(x);
     xt::xarray<double> e = y - p;
@@ -35,7 +34,7 @@ void linear_regression::set_weights(const xt::xarray<double>& weights)
     m_weights = weights;
 }
 
-xt::xarray<double> linear_regression::weights()
+xt::xarray<double> linear_regression::weights() const
 {
     return m_weights;
 }
