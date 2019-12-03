@@ -28,12 +28,6 @@ int main(int argc, char** args)
     X_train.reshape(std::vector<size_t>({X_train.shape()[0], X_train.shape()[1] * X_train.shape()[1]}));
     X_test.reshape(std::vector<size_t>({X_test.shape()[0], X_test.shape()[1] * X_test.shape()[1]}));
 
-    // standard_scale data
-    st = new scoped_timer("standard_scale");
-    X_train = standard_scale::transform(X_train);
-    X_test  = standard_scale::transform(X_test);
-    delete st;
-
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     nbg.init_classes(static_cast<size_t>(xt::amax(y_train)(0) + 1));
     st = new scoped_timer("naive bayes (gaussian) - train");
