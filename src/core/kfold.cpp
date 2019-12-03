@@ -1,7 +1,6 @@
 #include "kfold.h"
 #include <xtensor/xrandom.hpp>
 #include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
 
 kfold::kfold(size_t k, bool shuffle)
     : m_k(k)

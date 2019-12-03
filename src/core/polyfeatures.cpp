@@ -2,8 +2,6 @@
 #include <numeric>
 #include <algorithm>
 #include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xmath.hpp>
 
 polynomial_features::polynomial_features(size_t degree, bool bias)
     : m_degree(degree)

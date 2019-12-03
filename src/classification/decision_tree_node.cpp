@@ -4,7 +4,6 @@
 #include <thread>
 #include <cmath>
 #include <xtensor/xview.hpp>
-#include <xtensor/xio.hpp>
 
 decision_tree_node::decision_tree_node(size_t layer, const xt::xarray<double>& x, const xt::xarray<double>& y, size_t classes, decision_tree_node *parent, bool positives)
     : m_entropy(1.0)

@@ -2,8 +2,6 @@
 #include "distribution.h"
 #include <core/one_hot.h>
 #include <iostream>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xio.hpp>
 
 naive_bayes::naive_bayes(std::shared_ptr<distribution> distribution)
     : m_distribution(distribution)

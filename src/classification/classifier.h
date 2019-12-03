@@ -3,7 +3,6 @@
 
 #include <core/model.h>
 #include <xtensor/xsort.hpp>
-#include <xtensor/xio.hpp>
 
 class classifier : public model {
 public:

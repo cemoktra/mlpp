@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <xtensor/xview.hpp>
 #include <xtensor-blas/xlinalg.hpp>
-#include <xtensor/xio.hpp>
 
 linear_regression::linear_regression() 
 {

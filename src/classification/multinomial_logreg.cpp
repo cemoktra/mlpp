@@ -1,8 +1,5 @@
 #include "multinomial_logreg.h"
 #include <xtensor-blas/xlinalg.hpp>
-#include <xtensor/xview.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xio.hpp>
 
 multinomial_logistic_regression::multinomial_logistic_regression() 
     : logistic_regression()

@@ -4,7 +4,6 @@
 #include <core/standard_scale.h>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xrandom.hpp>
-#include <xtensor/xio.hpp>
 
 static const size_t matrix_size = 1000;
 

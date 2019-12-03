@@ -1,8 +1,5 @@
 #include "gauss_distribution.h"
 #include <xtensor/xview.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xreducer.hpp>
 #include <xtensor/xbuilder.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
@@ -12,7 +9,6 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
 
     auto all_means = xt::eval(xt::mean(x, {0}));
     double epsilon = xt::eval(xt::amax(xt::variance(x, {0})))[0];
-    // double epsilon = 0.0001;
 
     for (auto cls = 0; cls < y.shape()[1]; cls++) {
         auto cls_col = xt::eval(xt::view(y, xt::all(), xt::range(cls, cls + 1)));

@@ -1,8 +1,5 @@
 #include "random_forest.h"
 #include "decision_tree.h"
-#include <xtensor/xview.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xio.hpp>
 #include <thread>
 #include <mutex>
 
