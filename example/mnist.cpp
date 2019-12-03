@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 #include <xtensor/xio.hpp>
+#include <xtensor/xview.hpp>
 
 int main(int argc, char** args)
 {
@@ -17,9 +18,16 @@ int main(int argc, char** args)
     auto [X_train, X_test, y_train, y_test] = data.read("./mnist/", "train-images-idx3-ubyte.gz", "train-labels-idx1-ubyte.gz", "t10k-images-idx3-ubyte.gz", "t10k-labels-idx1-ubyte.gz");
     delete st;
 
+    // FOR DEBUGGING DECREASE TRAIN/TEST DATA SIZE
+    // X_train = xt::eval(xt::view(X_train, xt::range(0,500), xt::all()));
+    // y_train = xt::eval(xt::view(y_train, xt::range(0,500), xt::all()));
+    // X_test = xt::eval(xt::view(X_test, xt::range(0,100), xt::all()));
+    // y_test = xt::eval(xt::view(y_test, xt::range(0,100), xt::all()));
+
     // make images one dimensional
     X_train.reshape(std::vector<size_t>({X_train.shape()[0], X_train.shape()[1] * X_train.shape()[1]}));
     X_test.reshape(std::vector<size_t>({X_test.shape()[0], X_test.shape()[1] * X_test.shape()[1]}));
+
     // standard_scale data
     st = new scoped_timer("standard_scale");
     X_train = standard_scale::transform(X_train);
