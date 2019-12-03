@@ -38,7 +38,7 @@ void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xar
     m_sigma += epsilon;
 }
 
-xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x)
+xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x) const
 {
     xt::xarray<double> joint_log_likelihood;
     auto sigma_t = xt::transpose(m_sigma);
@@ -58,7 +58,7 @@ xt::xarray<double> gauss_distribution::predict(const xt::xarray<double>& x)
     return joint_log_likelihood;
 }
 
-xt::xarray<double> gauss_distribution::weights()
+xt::xarray<double> gauss_distribution::weights() const
 {
     return xt::xarray<double>();
 }

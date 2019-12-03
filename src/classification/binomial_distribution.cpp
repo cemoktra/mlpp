@@ -17,12 +17,12 @@ void binomial_distribution::calc_weights(const xt::xarray<double>& x, const xt::
     update_class_log_prior();
 }
 
-xt::xarray<double> binomial_distribution::predict(const xt::xarray<double>& x)
+xt::xarray<double> binomial_distribution::predict(const xt::xarray<double>& x) const
 {
     return xt::linalg::dot(x, xt::transpose(m_feature_log_prob)) + m_class_log_prior;
 }
 
-xt::xarray<double> binomial_distribution::weights()
+xt::xarray<double> binomial_distribution::weights() const
 {
     return xt::xarray<double>();
 }

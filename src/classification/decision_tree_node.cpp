@@ -79,7 +79,7 @@ double decision_tree_node::entropy() const
     return m_entropy;
 }
 
-size_t decision_tree_node::decide(const xt::xarray<double>& x)
+size_t decision_tree_node::decide(const xt::xarray<double>& x) const
 {
     if (!m_child[0] && !m_child[1])
         return m_class;
@@ -161,7 +161,7 @@ void decision_tree_node::split(size_t max_depth, size_t min_leaf_items, size_t r
     }
 }
 
-size_t decision_tree_node::count()
+size_t decision_tree_node::count() const
 {
     return m_item_count;
 }

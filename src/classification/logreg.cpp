@@ -14,7 +14,7 @@ logistic_regression::logistic_regression()
     register_param("max_iterations", 0);
 }
 
-xt::xarray<double> logistic_regression::predict(const xt::xarray<double>& x) 
+xt::xarray<double> logistic_regression::predict(const xt::xarray<double>& x) const
 {
     if (x.shape()[1] != m_weights.shape()[0])
         throw std::invalid_argument("x dimension is wrong");
@@ -32,7 +32,7 @@ void logistic_regression::set_weights(const xt::xarray<double>& weights)
     m_weights = weights;
 }
 
-xt::xarray<double> logistic_regression::weights()
+xt::xarray<double> logistic_regression::weights() const
 {
     return m_weights;
 }
@@ -60,21 +60,21 @@ void logistic_regression::calc_weights(const xt::xarray<double>& x, const xt::xa
     }
 }
 
-double logistic_regression::cost(const xt::xarray<double>& y, const xt::xarray<double>& p)
+double logistic_regression::cost(const xt::xarray<double>& y, const xt::xarray<double>& p) const
 {
     xt::xarray<double> c1 = -y * xt::eval(xt::log(p));
     xt::xarray<double> c2 = xt::eval(1 - y) * xt::eval(xt::log(xt::eval(1 - p)));
     return xt::eval(xt::sum(xt::eval(c1 - c2)))(0) / p.shape()[0];
 }
 
-xt::xarray<double> logistic_regression::gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p)
+xt::xarray<double> logistic_regression::gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p) const
 {
     xt::xarray<double> gradient = xt::linalg::dot(xt::transpose(x), (p - y));
     return get_param("learning_rate") * gradient / x.shape()[0];
 }
 
 
-xt::xarray<double> logistic_regression::sigmoid(const xt::xarray<double>& x)
+xt::xarray<double> logistic_regression::sigmoid(const xt::xarray<double>& x) const
 {    
     return 1.0 / (xt::exp(-x) + 1);
 }

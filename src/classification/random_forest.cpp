@@ -37,7 +37,7 @@ random_forest::~random_forest()
     delete [] m_trees;
 }
 
-xt::xarray<double> random_forest::predict(const xt::xarray<double>& x)
+xt::xarray<double> random_forest::predict(const xt::xarray<double>& x) const
 {  
     auto tree_count = static_cast<size_t>(get_param("trees"));
 
@@ -82,7 +82,7 @@ void random_forest::set_weights(const xt::xarray<double>& weights)
 {
 }
 
-xt::xarray<double> random_forest::weights()
+xt::xarray<double> random_forest::weights() const
 {
     return xt::xarray<double>();
 }

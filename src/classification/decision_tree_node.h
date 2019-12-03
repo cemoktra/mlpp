@@ -19,9 +19,9 @@ public:
     double entropy() const;
 
     void split(size_t max_depth = 0, size_t min_leaf_items = 1, size_t randomly_ignored_features = 0);
-    size_t count();
+    size_t count() const;
 
-    size_t decide(const xt::xarray<double>& x);
+    size_t decide(const xt::xarray<double>& x) const;
 
 protected:
     bool filter(const xt::xarray<double>& row);

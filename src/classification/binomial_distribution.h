@@ -11,9 +11,9 @@ public:
     ~binomial_distribution() = default;
 
     void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
-    xt::xarray<double> predict(const xt::xarray<double>& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) const override;
     
-    xt::xarray<double> weights() override;
+    xt::xarray<double> weights() const override;
     void set_weights(const xt::xarray<double>& weights) override;
 
 private:

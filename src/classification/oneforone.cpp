@@ -19,7 +19,7 @@ one_for_one::~one_for_one()
         delete lr;
 }
 
-xt::xarray<double> one_for_one::predict(const xt::xarray<double>& x)
+xt::xarray<double> one_for_one::predict(const xt::xarray<double>& x) const
 {
     xt::xarray<double> prediction_count = xt::zeros<double>({ x.shape()[0], m_classes });
 
@@ -74,7 +74,7 @@ void one_for_one::set_weights(const xt::xarray<double>& weights)
         m_models[i]->set_weights(xt::view(weights, xt::all(), xt::range(i, i + 1)));
 }
 
-xt::xarray<double> one_for_one::weights()
+xt::xarray<double> one_for_one::weights() const
 {
     xt::xarray<double> weights;
 

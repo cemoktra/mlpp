@@ -11,24 +11,24 @@ public:
     classifier(const classifier&) = delete;
     ~classifier() = default;
     
-    virtual xt::xarray<double> predict_class(const xt::xarray<double>& x)
+    virtual xt::xarray<double> predict_class(const xt::xarray<double>& x) const
     {
         return xt::argmax(predict(x), {1});
     }
 
     void init_classes(size_t number_of_classes) { m_classes = number_of_classes; }
 
-    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) override
+    double score(const xt::xarray<double>& x, const xt::xarray<double>& y) const override
     {
-        return xt::sum(xt::diagonal(confusion(x, y)))[0];
+        return score(confusion(x, y));
     }
 
-    double score(const xt::xarray<double>& confusion_matrix)
+    double score(const xt::xarray<double>& confusion_matrix) const
     {
         return xt::sum(xt::diagonal(confusion_matrix))[0];
     }
 
-    xt::xarray<double> confusion(const xt::xarray<double>& x, const xt::xarray<double>& y)
+    xt::xarray<double> confusion(const xt::xarray<double>& x, const xt::xarray<double>& y) const
     {
         xt::xarray<double> confusion = xt::zeros<double>(std::vector<size_t>({m_classes, m_classes}));
         xt::xarray<size_t> p_class = xt::cast<size_t>(predict_class(x));

@@ -14,12 +14,12 @@ public:
     one_for_one();
     ~one_for_one();
 
-    xt::xarray<double> predict(const xt::xarray<double>& x) override;
+    xt::xarray<double> predict(const xt::xarray<double>& x) const override;
 
     void train(const xt::xarray<double>& x, const xt::xarray<double>& y) override;
     
     void set_weights(const xt::xarray<double>& weights) override;
-    xt::xarray<double> weights() override;
+    xt::xarray<double> weights() const override;
     
 protected:
     std::vector<logistic_regression*> m_models;

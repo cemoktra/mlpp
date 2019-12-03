@@ -10,7 +10,7 @@ naive_bayes::naive_bayes(std::shared_ptr<distribution> distribution)
 {
 }
 
-xt::xarray<double> naive_bayes::predict(const xt::xarray<double>& x)
+xt::xarray<double> naive_bayes::predict(const xt::xarray<double>& x) const
 {    
     return m_distribution->predict(x);
 }
@@ -26,7 +26,7 @@ void naive_bayes::set_weights(const xt::xarray<double>& weights)
     m_distribution->set_weights(weights);
 }
 
-xt::xarray<double> naive_bayes::weights()
+xt::xarray<double> naive_bayes::weights() const
 {
     return m_distribution->weights();
 }

@@ -16,7 +16,7 @@ decision_tree::~decision_tree()
     delete m_root;
 }
 
-xt::xarray<double> decision_tree::predict(const xt::xarray<double>& x)
+xt::xarray<double> decision_tree::predict(const xt::xarray<double>& x) const
 {
     xt::xarray<double> result = xt::zeros<double>(std::vector<size_t>({x.shape()[0], m_classes}));
 
@@ -35,7 +35,7 @@ void decision_tree::set_weights(const xt::xarray<double>& weights)
 {
 }
 
-xt::xarray<double> decision_tree::weights()
+xt::xarray<double> decision_tree::weights() const
 {
     return xt::xarray<double>();
 }
