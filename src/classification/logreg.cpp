@@ -40,7 +40,7 @@ xt::xarray<double> logistic_regression::weights()
 void logistic_regression::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
     double current_cost, last_cost;
-    m_weights = xt::ones<double>( { x.shape()[1], y.shape()[1] } );
+    m_weights = xt::zeros<double>( { x.shape()[1], y.shape()[1] } );
     size_t max_iterations = static_cast<size_t>(get_param("max_iterations"));
     size_t iteration = 0;
     last_cost = std::numeric_limits<double>::max();
@@ -64,7 +64,7 @@ double logistic_regression::cost(const xt::xarray<double>& y, const xt::xarray<d
 {
     xt::xarray<double> c1 = -y * xt::eval(xt::log(p));
     xt::xarray<double> c2 = xt::eval(1 - y) * xt::eval(xt::log(xt::eval(1 - p)));
-    return xt::eval(xt::sum(xt::eval(c1 - 2)))(0) / p.shape()[0];
+    return xt::eval(xt::sum(xt::eval(c1 - c2)))(0) / p.shape()[0];
 }
 
 xt::xarray<double> logistic_regression::gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p)
