@@ -77,7 +77,7 @@ int main(int argc, char** args)
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
 
-    one_for_one ofo;
+    one_for_one<logistic_regression> ofo;
     do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
 
     multinomial_logistic_regression mlr;

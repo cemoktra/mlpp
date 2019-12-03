@@ -23,3 +23,8 @@ void parameters::register_param(const std::string& name, double default_value)
 {
     m_parameters[name] = default_value;
 }
+
+void parameters::copy_params(const parameters& rhs)
+{
+    m_parameters = rhs.m_parameters;
+}

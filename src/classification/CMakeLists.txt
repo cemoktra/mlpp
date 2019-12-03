@@ -21,7 +21,6 @@ set(HEADER
 set(SOURCES
     logreg.cpp
     multinomial_logreg.cpp
-    oneforone.cpp
     knn.cpp
     decision_tree.cpp
     decision_tree_node.cpp
