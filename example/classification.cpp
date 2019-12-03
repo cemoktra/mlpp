@@ -71,7 +71,7 @@ int main(int argc, char** args)
     xt::xarray<double> X_train, X_test, y_train, y_test;
     train_test_split tts;
     tts.init(X.shape()[0], 0.25, true);
-    tts.split(X_stdscale, y, X_train, X_test, y_train, y_test);
+    std::tie(X_train, X_test, y_train, y_test) = tts.split(X_stdscale, y);
     delete st;
 
     logistic_regression lr;
@@ -91,7 +91,7 @@ int main(int argc, char** args)
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
 
     // we need normalized data for decision trees
-    tts.split(X_norm, y, X_train, X_test, y_train, y_test);
+    std::tie(X_train, X_test, y_train, y_test) = tts.split(X_norm, y);
 
     decision_tree dt;
     dt.set_param("max_depth", 10);

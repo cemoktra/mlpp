@@ -32,7 +32,7 @@ int main(int argc, char** args)
     auto y = data.matrixFromCols({ 0 }, csv_data::UniqueStringIndex);
     auto x_train = voc.transform(train_strings);
     auto x_test = voc.transform(test_strings);
-    tts.split(y, y_train, y_test);
+    std::tie(y_train, y_test) = tts.split(y);
     std::cout << "done" << std::endl;
 
     double score;

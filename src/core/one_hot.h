@@ -9,7 +9,7 @@ public:
     one_hot() = delete;
     ~one_hot() = delete;
 
-    static xt::xarray<double> transform(const xt::xarray<double>& x, size_t classes);
+    static xt::xarray<double> transform(const xt::xarray<double>& y);
 };
 
 #endif

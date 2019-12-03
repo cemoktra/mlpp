@@ -21,14 +21,14 @@ static void BM_Normalize(benchmark::State& state) {
 static void BM_One_Hot(benchmark::State& state) {
   xt::xarray<int> test_data = xt::random::randint<int>(std::vector<size_t>({matrix_size, 1}), 0, 10);
   for (auto _ : state) {
-    auto result = one_hot::transform(test_data, 10);
+    auto result = one_hot::transform(test_data);
   }
 
   state.SetItemsProcessed(state.iterations());
 }
 
 static void BM_StandardScale(benchmark::State& state) {
-  xt::xarray<int> test_data = xt::random::randint<int>(std::vector<size_t>({matrix_size, matrix_size}), 10, 0);
+  xt::xarray<double> test_data = xt::random::rand<double>(std::vector<size_t>({matrix_size, matrix_size}));
 
   for (auto _ : state) {
     auto result = standard_scale::transform(test_data);

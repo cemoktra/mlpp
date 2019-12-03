@@ -1,15 +1,13 @@
 #include "kfold.h"
-#include <random>
-#include <numeric>
-#include <iostream>
+#include <xtensor/xrandom.hpp>
 #include <xtensor/xview.hpp>
 #include <xtensor/xio.hpp>
 
 kfold::kfold(size_t k, bool shuffle)
     : m_k(k)
     , m_shuffle(shuffle)
-    , m_blockSize(0)
 {
+    
 }
 
 size_t kfold::k()
@@ -17,52 +15,27 @@ size_t kfold::k()
     return m_k;
 }
 
-void kfold::split(size_t index, const xt::xarray<double>& x, const xt::xarray<double>& y, xt::xarray<double>& x_train, xt::xarray<double>& x_test, xt::xarray<double>& y_train, xt::xarray<double>& y_test)
+std::tuple<xt::xarray<double>, xt::xarray<double>, xt::xarray<double>, xt::xarray<double>> kfold::split(size_t index, const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    if (m_indices.size() != y.shape()[0]) {
+    if (m_indices.size() != y.shape()[0])
         prepareIndices(y.shape()[0]);
-        m_blockSize = ceil(static_cast<double>(y.shape()[0]) / m_k);
-    }
-    if (index >= m_k)
-        throw std::out_of_range ("invalid split index");
+    size_t block_size = ceil(static_cast<double>(y.shape()[0]) / m_k);
 
-    auto test_begin = std::next(m_indices.begin(), index * m_blockSize);
-    auto test_end   = std::next(test_begin, m_blockSize - 1);
-    test_end = std::min(test_end, m_indices.end());
-
-    x_train.resize({ x.shape()[0] - m_blockSize, x.shape()[1] });
-    y_train.resize({ x.shape()[0] - m_blockSize, y.shape()[1] });
-    x_test.resize({ m_blockSize, x.shape()[1] });
-    y_test.resize({ m_blockSize, y.shape()[1] });
-
-    size_t train_idx = 0;
-    size_t test_idx = 0;
-    for (auto it = m_indices.begin(); it != m_indices.end(); ++it)
-    {
-        if (it < test_begin || it > test_end) {
-            for (auto j = 0; j < x.shape()[1]; j++)
-                x_train(train_idx, j) = x(*it, j);
-            for (auto j = 0; j < y.shape()[1]; j++)
-                y_train(train_idx, j) = y(*it, j);
-            train_idx++;
-        } else {
-            for (auto j = 0; j < x.shape()[1]; j++)
-                x_test(test_idx, j) = x(*it, j);
-            for (auto j = 0; j < y.shape()[1]; j++)
-                y_test(test_idx, j) = y(*it, j);
-            test_idx++;
-        }
-    }
+    auto test_indices = xt::view(m_indices, xt::range(index * block_size, std::min(index * block_size + block_size, y.shape()[0])));
+    return std::make_tuple<>(
+        xt::eval(xt::view(x, xt::keep(test_indices), xt::all())),
+        xt::eval(xt::view(x, xt::drop(test_indices), xt::all())),
+        xt::eval(xt::view(y, xt::keep(test_indices), xt::all())),
+        xt::eval(xt::view(y, xt::drop(test_indices), xt::all()))
+    );
 }
 
 void kfold::prepareIndices(size_t count)
 {
-    m_indices.resize(count);
-    std::iota(m_indices.begin(), m_indices.end(), 0);
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
-    if (m_shuffle) {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::shuffle(m_indices.begin(), m_indices.end(), gen);
-    }
+    m_indices = xt::arange<int64_t>(count);
+    if (m_shuffle) 
+        xt::random::shuffle(m_indices, gen);    
 }

@@ -17,7 +17,7 @@ xt::xarray<double> naive_bayes::predict(const xt::xarray<double>& x)
 
 void naive_bayes::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    auto y_onehot = (y.size() > 1 && y.shape()[1] == m_classes) ? y : one_hot::transform(y, m_classes);
+    auto y_onehot = (y.size() > 1 && y.shape()[1] == m_classes) ? y : one_hot::transform(y);
     m_distribution->calc_weights(x, y_onehot);
 }
 

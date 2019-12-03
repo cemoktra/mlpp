@@ -36,7 +36,7 @@ int main(int argc, char** args)
     {
         std::cout << "regression with one feature and train-test-split:" << std::endl;
         
-        do_train_test_split(X_subset, y_datas, X_train, X_test, y_train, y_test, split, shuffle);
+        std::tie(X_train, X_test, y_train, y_test) = do_train_test_split(X_subset, y_datas, split, shuffle);
         lr.train(X_train, y_train);
         std::cout << "  weights: " << xt::transpose(lr.weights()) << std::endl;
         std::cout << "  score: " << lr.score(X_test, y_test) << std::endl;
@@ -50,7 +50,7 @@ int main(int argc, char** args)
         xt::xarray<double> mean_weights;
 
         for (auto i = 0; i < kf.k(); ++i) {
-            kf.split(i, X_subset, y_datas, X_train, X_test, y_train, y_test);
+            std::tie(X_train, X_test, y_train, y_test) = kf.split(i, X_subset, y_datas);
             lr.train(X_train, y_train);
             
             std::cout << "  fold " << i + 1 << std::endl;
@@ -77,7 +77,7 @@ int main(int argc, char** args)
     {
         std::cout << "regression with multiple features and train-test-split:" << std::endl;
 
-        do_train_test_split(X_subset, y_datas, X_train, X_test, y_train, y_test, split, shuffle);
+        std::tie(X_train, X_test, y_train, y_test) = do_train_test_split(X_subset, y_datas, split, shuffle);
         lr.train(X_train, y_train);
 
         std::cout << "  weights: " << xt::transpose(lr.weights()) << std::endl;
@@ -93,7 +93,7 @@ int main(int argc, char** args)
     {
         std::cout << "regression with polynomial features and train-test-split:" << std::endl;
 
-        do_train_test_split(X_poly, y_datas, X_train, X_test, y_train, y_test, split, shuffle);
+        std::tie(X_train, X_test, y_train, y_test) = do_train_test_split(X_poly, y_datas, split, shuffle);
         lr.train(X_train, y_train);
 
         std::cout << "  weights: " << xt::transpose(lr.weights()) << std::endl;
