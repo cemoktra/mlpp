@@ -18,13 +18,12 @@ public:
     xt::xarray<double> weights() const override;
 
 protected:
-    virtual double cost(const xt::xarray<double>& y, const xt::xarray<double>& p) const;
-    virtual xt::xarray<double> gradient(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<double>& p) const;
-
-    xt::xarray<double> sigmoid(const xt::xarray<double>& x) const;
     void calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y);
 
     xt::xarray<double> m_weights;
+
+    virtual xt::xarray<double> activation(const xt::xarray<double>& x) const;
+    virtual xt::xarray<double> reverse_activation(const xt::xarray<double>& y) const;
 };
 
 #endif

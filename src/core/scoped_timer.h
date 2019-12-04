@@ -10,7 +10,7 @@ public:
     scoped_timer(const std::string& name) 
         : m_start(std::chrono::high_resolution_clock::now())
     {
-        std::cout << name << " ... ";
+        std::cout << name << " ... " << std::flush;
     }
 
     ~scoped_timer()
