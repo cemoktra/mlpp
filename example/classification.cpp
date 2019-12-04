@@ -94,13 +94,13 @@ int main(int argc, char** args)
     std::tie(X_train, X_test, y_train, y_test) = tts.split(X_norm, y);
 
     decision_tree dt;
-    dt.set_param("max_depth", 10);
+    dt.set_param("max_depth", 5);
     dt.set_param("min_leaf_items", 1);
     do_classification(&dt, "decision tree", classes, X_train, X_test, y_train, y_test);
 
     random_forest rf;
     rf.set_param("trees", 5);
-    rf.set_param("max_depth", 10);
+    rf.set_param("max_depth", 5);
     rf.set_param("min_leaf_items", 1);
     rf.set_param("ignored_features", 3);
     do_classification(&rf, "random forest", classes, X_train, X_test, y_train, y_test);

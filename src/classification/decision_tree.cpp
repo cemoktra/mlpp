@@ -27,8 +27,7 @@ xt::xarray<double> decision_tree::predict(const xt::xarray<double>& x) const
 
 void decision_tree::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    m_root = new decision_tree_node(0, x, y, m_classes, nullptr, true);
-    m_root->split(static_cast<size_t>(get_param("max_depth")), static_cast<size_t>(get_param("min_leaf_items")), static_cast<size_t>(get_param("ignored_features")));
+    m_root = new decision_tree_node(x, y, xt::arange<size_t>(x.shape()[0]), 0, static_cast<size_t>(get_param("max_depth")), static_cast<size_t>(get_param("min_leaf_items")), static_cast<size_t>(get_param("ignored_features")));
 }
 
 void decision_tree::set_weights(const xt::xarray<double>& weights)
