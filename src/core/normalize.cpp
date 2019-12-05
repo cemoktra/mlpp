@@ -1,10 +1,13 @@
 
 #include "normalize.h"
 
+void normalize::fit(const xt::xarray<double>& x)
+{
+    m_mean = xt::mean(x, {0});
+    m_scale = xt::amax(xt::abs(x - m_mean), { 0 });
+}
+
 xt::xarray<double> normalize::transform(const xt::xarray<double>& x)
 {
-    xt::xarray<double> result = xt::eval(x - xt::eval(xt::mean(x, { 0 })));
-    auto minmax = xt::eval(xt::minmax(result));
-    auto scale = std::max(std::fabs(minmax[0][0]), std::fabs(minmax[0][1]));
-    return result / scale;
+    return (x - m_mean) / m_scale;
 }

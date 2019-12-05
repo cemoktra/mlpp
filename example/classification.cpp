@@ -65,45 +65,53 @@ int main(int argc, char** args)
     auto [X, y, classes] = read_cancer();
 
     scoped_timer *st = new scoped_timer("preprocessing data");
-    auto X_stdscale = standard_scale::transform(X);
-    auto X_norm = normalize::transform(X);
-
+    standard_scale sc;
+    normalize norm;
+    
     xt::xarray<double> X_train, X_test, y_train, y_test;
     train_test_split tts;
     tts.init(X.shape()[0], 0.25, true);
-    std::tie(X_train, X_test, y_train, y_test) = tts.split(X_stdscale, y);
+    std::tie(X_train, X_test, y_train, y_test) = tts.split(X, y);
+    
+    sc.fit(X_train);
+    norm.fit(X_train);
     delete st;
+    
+
+    xt::xarray<double> X_train_scaled = sc.transform(X_train);
+    xt::xarray<double> X_test_scaled  = sc.transform(X_test);
 
     logistic_regression lr;
-    do_classification(&lr, "logistic regression (one vs all)", classes, X_train, X_test, y_train, y_test);
+    do_classification(&lr, "logistic regression (one vs all)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     one_for_one<logistic_regression> ofo;
-    do_classification(&ofo, "logistic regression (one vs one)", classes, X_train, X_test, y_train, y_test);
+    do_classification(&ofo, "logistic regression (one vs one)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     multinomial_logistic_regression mlr;
-    do_classification(&mlr, "multinomial", classes, X_train, X_test, y_train, y_test);
+    do_classification(&mlr, "multinomial", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     knn k;
     k.set_param("k", 3);
-    do_classification(&k, "k nearest neighbours", classes, X_train, X_test, y_train, y_test);
+    do_classification(&k, "k nearest neighbours", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
-    do_classification(&nbg, "naive bayes (gauss)", classes, X_train, X_test, y_train, y_test);
+    do_classification(&nbg, "naive bayes (gauss)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     // we need normalized data for decision trees
-    std::tie(X_train, X_test, y_train, y_test) = tts.split(X_norm, y);
+    X_train_scaled = norm.transform(X_train);
+    X_test_scaled  = norm.transform(X_test);
 
     decision_tree dt;
     dt.set_param("max_depth", 5);
     dt.set_param("min_leaf_items", 1);
-    do_classification(&dt, "decision tree", classes, X_train, X_test, y_train, y_test);
+    do_classification(&dt, "decision tree", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     random_forest rf;
     rf.set_param("trees", 5);
     rf.set_param("max_depth", 5);
     rf.set_param("min_leaf_items", 1);
     rf.set_param("ignored_features", 3);
-    do_classification(&rf, "random forest", classes, X_train, X_test, y_train, y_test);
+    do_classification(&rf, "random forest", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     return 0;
 }
