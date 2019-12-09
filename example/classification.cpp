@@ -2,8 +2,6 @@
 #include <classification/oneforone.h>
 #include <classification/multinomial_logreg.h>
 #include <classification/knn.h>
-#include <classification/decision_tree.h>
-#include <classification/random_forest.h>
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
 #include <classification/binomial_distribution.h>
@@ -97,24 +95,6 @@ int main(int argc, char** args)
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
-
-    // we need normalized data for decision trees
-    normal_scaler norm_scaler;
-    norm_scaler.fit(X_train);
-    X_train_scaled = norm_scaler.transform(X_train);
-    X_test_scaled  = norm_scaler.transform(X_test);
-
-    decision_tree dt;
-    dt.set_param("max_depth", 5);
-    dt.set_param("min_leaf_items", 1);
-    do_classification(&dt, "decision tree", classes, X_train_scaled, X_test_scaled, y_train, y_test);
-
-    random_forest rf;
-    rf.set_param("trees", 5);
-    rf.set_param("max_depth", 5);
-    rf.set_param("min_leaf_items", 1);
-    rf.set_param("ignored_features", 3);
-    do_classification(&rf, "random forest", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     return 0;
 }
