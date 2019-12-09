@@ -1,16 +1,15 @@
 #include <benchmark/benchmark.h>
-#include <core/normalize.h>
-#include <core/one_hot.h>
-#include <core/standard_scale.h>
+#include <preprocessing/scaler.h>
+#include <preprocessing/one_hot.h>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xrandom.hpp>
 
 static const size_t matrix_size = 1000;
 
-static void BM_Normalize(benchmark::State& state) {
+static void BM_NormalScale(benchmark::State& state) {
   xt::xarray<double> test_data = xt::random::rand<double>(std::vector<size_t>({matrix_size, matrix_size}));
 
-  normalize scaler;
+  normal_scaler scaler;
   for (auto _ : state) {
     scaler.fit(test_data);
     auto result = scaler.transform(test_data);
@@ -22,7 +21,7 @@ static void BM_Normalize(benchmark::State& state) {
 static void BM_StandardScale(benchmark::State& state) {
   xt::xarray<double> test_data = xt::random::rand<double>(std::vector<size_t>({matrix_size, matrix_size}));
 
-  standard_scale scaler;
+  standard_scaler scaler;
   for (auto _ : state) {
     scaler.fit(test_data);
     auto result = scaler.transform(test_data);
@@ -41,7 +40,7 @@ static void BM_One_Hot(benchmark::State& state) {
 }
 
 
-BENCHMARK(BM_Normalize);
+BENCHMARK(BM_NormalScale);
 BENCHMARK(BM_StandardScale);
 BENCHMARK(BM_One_Hot);
 

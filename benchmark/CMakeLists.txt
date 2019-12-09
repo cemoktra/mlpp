@@ -8,4 +8,4 @@ set(SOURCES
 )
 
 add_executable(mlpp_benchmark ${SOURCES})
-target_link_libraries(mlpp_benchmark mlpp_core benchmark)
+target_link_libraries(mlpp_benchmark mlpp_preprocessing benchmark)

@@ -2,7 +2,7 @@
 #include <core/traintest.h>
 #include <core/kfold.h>
 #include <core/csv_data.h>
-#include <core/polyfeatures.h>
+#include <preprocessing/polyfeatures.h>
 #include <xtensor/xview.hpp>
 #include <xtensor/xio.hpp>
 #include <iostream>

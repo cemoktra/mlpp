@@ -2,7 +2,6 @@
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
 #include <core/mnist_data.h>
-#include <core/standard_scale.h>
 #include <core/scoped_timer.h>
 #include <iostream>
 #include <chrono>

@@ -34,6 +34,6 @@ set(SOURCES
 
 add_library(mlpp_classification ${HEADER} ${SOURCES})
 
-target_link_libraries(mlpp_classification mlpp_core)
+target_link_libraries(mlpp_classification mlpp_core xtensor-blas)
 target_link_libraries(mlpp_classification lapack openblas)
 target_include_directories(mlpp_classification PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

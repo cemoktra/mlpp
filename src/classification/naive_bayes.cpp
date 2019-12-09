@@ -1,6 +1,6 @@
 #include "naive_bayes.h"
 #include "distribution.h"
-#include <core/one_hot.h>
+#include <preprocessing/one_hot.h>
 #include <iostream>
 
 naive_bayes::naive_bayes(std::shared_ptr<distribution> distribution)

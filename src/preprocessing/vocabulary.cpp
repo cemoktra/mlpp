@@ -1,7 +1,7 @@
 #include "vocabulary.h"
 #include <iostream>
 
-void vocabulary::add(const std::vector<std::string>& data)
+void vocabulary::fit(const std::vector<std::string>& data)
 {
     for (auto& item : data) {
         for (auto i = strtok(strdup(item.c_str()), " "); i != nullptr; i = strtok(nullptr, " ")) {

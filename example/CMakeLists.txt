@@ -4,19 +4,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(ex_regression regression.cpp)
-target_link_libraries(ex_regression mlpp_regression)
+target_link_libraries(ex_regression mlpp_preprocessing mlpp_regression)
 
 add_executable(ex_classification classification.cpp)
-target_link_libraries(ex_classification mlpp_classification pthread)
+target_link_libraries(ex_classification mlpp_classification mlpp_preprocessing)
 
 # add_executable(ex_curves curves.cpp)
 # target_link_libraries(ex_curves mlpp_classification)
 
 add_executable(ex_spam spamfilter.cpp)
-target_link_libraries(ex_spam mlpp_classification)
+target_link_libraries(ex_spam mlpp_classification mlpp_preprocessing)
 
 add_executable(ex_mnist mnist.cpp)
-target_link_libraries(ex_mnist mlpp_classification)
+target_link_libraries(ex_mnist mlpp_classification mlpp_preprocessing)
 
 if (WIN32)
   add_custom_command(TARGET ex_mnist POST_BUILD 

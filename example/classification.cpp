@@ -7,14 +7,17 @@
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
 #include <classification/binomial_distribution.h>
+#include <preprocessing/scaler.h>
+#include <preprocessing/pca.h>
 #include <core/traintest.h>
-#include <core/standard_scale.h>
-#include <core/normalize.h>
 #include <core/csv_data.h>
 #include <core/scoped_timer.h>
 #include <iostream>
 #include <numeric>
+
 #include <xtensor/xio.hpp>
+
+
 
 void do_classification(classifier *c, const std::string& name, size_t classes, const xt::xarray<double> xtrain, const xt::xarray<double> xtest, const xt::xarray<double> ytrain, const xt::xarray<double> ytest) 
 {
@@ -65,21 +68,19 @@ int main(int argc, char** args)
     auto [X, y, classes] = read_cancer();
 
     scoped_timer *st = new scoped_timer("preprocessing data");
-    standard_scale sc;
-    normalize norm;
     
     xt::xarray<double> X_train, X_test, y_train, y_test;
     train_test_split tts;
     tts.init(X.shape()[0], 0.25, true);
     std::tie(X_train, X_test, y_train, y_test) = tts.split(X, y);
     
-    sc.fit(X_train);
-    norm.fit(X_train);
     delete st;
-    
 
-    xt::xarray<double> X_train_scaled = sc.transform(X_train);
-    xt::xarray<double> X_test_scaled  = sc.transform(X_test);
+    // standard scaled data for most algorithms
+    standard_scaler std_scaler;
+    std_scaler.fit(X_train);
+    xt::xarray<double> X_train_scaled = std_scaler.transform(X_train);
+    xt::xarray<double> X_test_scaled  = std_scaler.transform(X_test);
 
     logistic_regression lr;
     do_classification(&lr, "logistic regression (one vs all)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
@@ -98,8 +99,10 @@ int main(int argc, char** args)
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
 
     // we need normalized data for decision trees
-    X_train_scaled = norm.transform(X_train);
-    X_test_scaled  = norm.transform(X_test);
+    normal_scaler norm_scaler;
+    norm_scaler.fit(X_train);
+    X_train_scaled = norm_scaler.transform(X_train);
+    X_test_scaled  = norm_scaler.transform(X_test);
 
     decision_tree dt;
     dt.set_param("max_depth", 5);

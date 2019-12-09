@@ -1,5 +1,5 @@
 #include "logreg.h"
-#include <core/one_hot.h>
+#include <preprocessing/one_hot.h>
 #include <stdexcept>
 #include <xtensor-blas/xlinalg.hpp>
 #include <xtensor/xview.hpp>

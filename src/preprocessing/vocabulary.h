@@ -12,7 +12,7 @@ public:
     vocabulary(const vocabulary&) = delete;
     ~vocabulary() = default;
 
-    void add(const std::vector<std::string>& data);
+    void fit(const std::vector<std::string>& data);
     
     void filter_counts(size_t min_occurences = 0, size_t max_occurences = 0);
     void filter_perc(double min_occurences = 0, double max_occurences = 0);

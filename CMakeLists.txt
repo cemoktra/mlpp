@@ -19,9 +19,10 @@ add_subdirectory(submodules/xtensor-blas EXCLUDE_FROM_ALL )
 
 include_directories(${CMAKE_BINARY_DIR}/submodules/zlib)
 include_directories(${PROJECT_SOURCE_DIR}/submodules/zlib)
+
 include_directories(${xtl_INCLUDE_DIRS})
 include_directories(${xtensor_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/submodules/xtensor-blas/include)
+include_directories(${xtensor-blas_INCLUDE_DIRS})
 
 # mlpp
 add_subdirectory(src)

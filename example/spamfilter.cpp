@@ -3,7 +3,7 @@
 #include <classification/binomial_distribution.h>
 #include <core/traintest.h>
 #include <core/csv_data.h>
-#include <core/vocabulary.h>
+#include <preprocessing/vocabulary.h>
 #include <xtensor/xio.hpp>
 #include <iostream>
 #include <numeric>
@@ -23,7 +23,7 @@ int main(int argc, char** args)
 
     std::cout << "preparing vocabulary ... ";
     vocabulary voc;
-    voc.add(train_strings);
+    voc.fit(train_strings);
     voc.filter_counts(3, 50);
     std::cout << "done" << std::endl;
 
