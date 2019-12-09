@@ -17,6 +17,8 @@ public:
         fit(x);
         return transform(x);
     }
+
+    virtual xt::xarray<double> inverse_transform(const  xt::xarray<double>& x) = 0;
 };
 
 class standard_scaler : public scaler
@@ -28,6 +30,8 @@ public:
 
     void fit(const  xt::xarray<double>& x) override;
     xt::xarray<double> transform(const  xt::xarray<double>& x) override;
+
+    xt::xarray<double> inverse_transform(const  xt::xarray<double>& x) override;
 
 private:
     xt::xarray<double> m_mean;
@@ -43,6 +47,8 @@ public:
 
     void fit(const  xt::xarray<double>& x) override;
     xt::xarray<double> transform(const  xt::xarray<double>& x) override;
+
+    xt::xarray<double> inverse_transform(const  xt::xarray<double>& x) override;
 
 private:
     xt::xarray<double> m_mean;
