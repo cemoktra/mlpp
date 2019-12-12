@@ -14,6 +14,7 @@ set(HEADER
     #learning_curve.h
     mnist_data.h
     scoped_timer.h
+    reverse_iterate.h
 )
 
 set(SOURCES
