@@ -12,7 +12,11 @@ public:
     
     virtual xt::xarray<double> predict_class(const xt::xarray<double>& x) const
     {
-        return xt::argmax(predict(x), {1});
+        auto proba = predict(x);
+        if (proba.shape()[1] > 1)
+            return xt::argmax(proba, {1});
+        else
+            return xt::where(proba > 0.5, 1.0, 0-0);
     }
 
     void init_classes(size_t number_of_classes) { m_classes = number_of_classes; }
@@ -32,13 +36,18 @@ public:
         xt::xarray<double> confusion = xt::zeros<double>(std::vector<size_t>({m_classes, m_classes}));
         xt::xarray<size_t> p_class = xt::cast<size_t>(predict_class(x));
         xt::xarray<size_t> t_class;
+
         if (y.shape().size() > 1 && y.shape()[1] > 1)
             t_class = xt::argmax(y, {1});
         else
             t_class = y;
         t_class.reshape(p_class.shape());
-        for (auto r = 0; r < y.shape()[0]; r++)
-            confusion(p_class(r), t_class(r)) += 1.0;
+
+        auto t_it = t_class.begin();
+        for (auto p_val : p_class) {
+            confusion(p_val, *t_it) += 1.0;
+            t_it++;
+        }
         return confusion / t_class.shape()[0];
     }
 

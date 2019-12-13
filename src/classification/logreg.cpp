@@ -25,7 +25,7 @@ xt::xarray<double> logistic_regression::predict(const xt::xarray<double>& x) con
 
 void logistic_regression::train(const xt::xarray<double>& x, const xt::xarray<double>& y)
 {
-    auto y_onehot = (y.size() > 1 && y.shape()[1] == m_classes) ? y : one_hot::transform(y);
+    auto y_onehot = (y.dimension() > 1 && m_classes > 2 && y.shape()[1] == m_classes) ? y : one_hot::transform(y);
     calc_weights(x, y_onehot);
 }
 
