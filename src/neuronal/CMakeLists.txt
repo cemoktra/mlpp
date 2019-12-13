@@ -6,6 +6,7 @@ set(CMAKE_LINK_WHAT_YOU_USE ON)
 
 set(HEADER 
     activation.h
+    backprop_layer.h
     dense_layer.h
     net.h
     solver.h
@@ -13,6 +14,7 @@ set(HEADER
 )
 
 set(SOURCES
+    backprop_layer.cpp
     dense_layer.cpp
     net.cpp
     solver.cpp

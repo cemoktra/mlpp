@@ -31,7 +31,7 @@ public:
 protected:
     solver_type m_solver_type;
     std::shared_ptr<loss> m_loss;
-    std::vector<std::pair<std::shared_ptr<dense_layer>, std::shared_ptr<gradient_descent>>> m_layers;
+    std::vector<std::shared_ptr<dense_layer>> m_layers;
 };
 
 

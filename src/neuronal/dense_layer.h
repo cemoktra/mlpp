@@ -12,15 +12,14 @@
 
 class dense_layer {
 public:
-    dense_layer(size_t neurons, activation_func_t activation = sigmoid()); // TODO: add activation
+    dense_layer(size_t neurons, std::shared_ptr<activation> a);
     dense_layer(const dense_layer&) = delete;
     ~dense_layer() = default;    
 
     xt::xarray<double> forward(const xt::xarray<double>& X);
-    xt::xarray<double> backward(const xt::xarray<double>& g);
 
-    inline xt::xarray<double> weights() const { return m_w; }
     inline xt::xarray<double> input() { return m_X; }
+    inline xt::xarray<double> weights() const { return m_w; }    
     inline xt::xarray<double> output() { return m_y; }
 
     inline size_t neurons() { return m_neurons; }
@@ -28,10 +27,12 @@ public:
     inline void update_weights(const xt::xarray<double>& w) { m_w = w; calculate(); }
     inline void update_input(const xt::xarray<double>& X) { m_X = X; calculate(); }
 
+    inline std::shared_ptr<activation> activation_func() { return m_activation; }
+
 protected:
     void calculate();
 
-    activation_func_t m_activation;
+    std::shared_ptr<activation> m_activation;
     size_t m_neurons;
     xt::xarray<double> m_w;
     xt::xarray<double> m_X;
