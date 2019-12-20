@@ -4,6 +4,7 @@
 #include <core/csv_data.h>
 #include <preprocessing/polyfeatures.h>
 #include <xtensor/xview.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor/xio.hpp>
 #include <iostream>
 

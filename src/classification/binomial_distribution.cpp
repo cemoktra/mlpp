@@ -1,6 +1,7 @@
 #include "binomial_distribution.h"
 #include <iostream>
 #include <xtensor/xview.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 void binomial_distribution::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)

@@ -4,6 +4,7 @@
 
 #include <xtensor/xrandom.hpp>
 #include <xtensor/xview.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 

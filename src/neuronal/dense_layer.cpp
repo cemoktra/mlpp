@@ -1,9 +1,7 @@
 #include "dense_layer.h"
 #include <xtensor/xrandom.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor-blas/xlinalg.hpp>
-
-#include <xtensor/xio.hpp>
-#include <xtensor/xadapt.hpp>
 
 dense_layer::dense_layer(size_t neurons, std::shared_ptr<activation> a)
     : m_neurons(neurons)

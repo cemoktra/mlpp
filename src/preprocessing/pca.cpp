@@ -1,7 +1,8 @@
 #include "pca.h"
-#include <xtensor-blas/xlinalg.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xindex_view.hpp>
+#include <xtensor/xmanipulation.hpp>
+#include <xtensor-blas/xlinalg.hpp>
 
 
 void pca::fit(const xt::xarray<double>& x)
