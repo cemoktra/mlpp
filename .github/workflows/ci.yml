@@ -1,4 +1,4 @@
-name: CPP
+name: CI
 
 on:
   push:
