@@ -15,8 +15,8 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: true
-    - name: Install xmllint
-      run: sudo apt-get install libtbb2 libopenblas-base liblapack3
+    - name: install packages
+      run: sudo apt-get install libblas-dev liblapack-dev libtbb-dev
     - name: configure
       run: mkdir build && cd build && cmake ..
     - name: build
