@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: true
     - name: install packages
-      run: sudo apt-get install libblas-dev liblapack-dev libtbb-dev
+      run: sudo apt-get install libopenblas-dev liblapack-dev libtbb-dev
     - name: configure
       run: mkdir build && cd build && cmake ..
     - name: build
