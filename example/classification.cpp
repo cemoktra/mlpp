@@ -5,8 +5,11 @@
 #include <classification/naive_bayes.h>
 #include <classification/gauss_distribution.h>
 #include <classification/binomial_distribution.h>
+#include <neuronal/net.h>
+#include <neuronal/dense_layer.h>
+#include <neuronal/activation.h>
+#include <neuronal/solver.h>
 #include <preprocessing/scaler.h>
-#include <preprocessing/pca.h>
 #include <core/traintest.h>
 #include <core/csv_data.h>
 #include <core/scoped_timer.h>
@@ -14,6 +17,8 @@
 #include <numeric>
 
 #include <xtensor/xio.hpp>
+
+#include <xtensor/xrandom.hpp>
 
 
 
@@ -60,6 +65,8 @@ std::tuple<xt::xarray<double>, xt::xarray<double>, size_t> read_cancer()
     return std::make_tuple(X, y, static_cast<size_t>(xt::amax(y)(0) + 1));
 }
 
+
+
 int main(int argc, char** args)
 {
     // auto [X, y, classes] = read_foods();
@@ -95,6 +102,18 @@ int main(int argc, char** args)
 
     naive_bayes nbg (std::make_shared<gauss_distribution>());
     do_classification(&nbg, "naive bayes (gauss)", classes, X_train_scaled, X_test_scaled, y_train, y_test);
+
+    {
+        net nn(adam_solver, log_error);
+        nn.add(std::make_shared<dense_layer>(classes > 2 ? classes : 1, activation_factory::create(sigmoid_t)));
+        do_classification(&nn, "1-layer net (adam, sigmoid, log_error) ", classes, X_train_scaled, X_test_scaled, y_train, y_test);
+    }
+    {
+        net nn(adam_solver, log_error);
+        nn.add(std::make_shared<dense_layer>(X.shape()[1], activation_factory::create(linear_t)));
+        nn.add(std::make_shared<dense_layer>(classes > 2 ? classes : 1, activation_factory::create(sigmoid_t)));
+        do_classification(&nn, "2-layer net (adam, sigmoid, log_error) ", classes, X_train_scaled, X_test_scaled, y_train, y_test);
+    }
 
     return 0;
 }

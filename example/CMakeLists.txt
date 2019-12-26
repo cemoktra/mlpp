@@ -7,7 +7,7 @@ add_executable(ex_regression regression.cpp)
 target_link_libraries(ex_regression mlpp_preprocessing mlpp_regression)
 
 add_executable(ex_classification classification.cpp)
-target_link_libraries(ex_classification mlpp_classification mlpp_preprocessing)
+target_link_libraries(ex_classification mlpp_classification mlpp_preprocessing mlpp_neuronal)
 
 # add_executable(ex_curves curves.cpp)
 # target_link_libraries(ex_curves mlpp_classification)

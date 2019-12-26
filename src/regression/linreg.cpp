@@ -1,6 +1,7 @@
 #include "linreg.h"
 #include <stdexcept>
 #include <xtensor/xview.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 linear_regression::linear_regression() 

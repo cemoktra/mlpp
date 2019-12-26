@@ -1,6 +1,7 @@
 #include "gauss_distribution.h"
 #include <xtensor/xview.hpp>
 #include <xtensor/xbuilder.hpp>
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 
 void gauss_distribution::calc_weights(const xt::xarray<double>& x, const xt::xarray<double>& y)
