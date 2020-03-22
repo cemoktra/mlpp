@@ -14,6 +14,8 @@ void csv_reader::read(const std::string& file)
     std::string line;
     bool header = true;
 
+    if (!fs.is_open())
+        return;
     auto lines = count_lines(fs);
     m_line_index = 0;
     if (m_lineCountCB)

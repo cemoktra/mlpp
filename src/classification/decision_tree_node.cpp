@@ -62,7 +62,6 @@ size_t decision_tree_node::decide(const xt::xarray<double>& x) const
         return m_child[0]->decide(x);
     else
         return m_child[1]->decide(x);
-    return 0;
 }
 
 void decision_tree_node::split(const xt::xarray<double>& x, const xt::xarray<double>& y, const xt::xarray<size_t>& node_indices, size_t max_depth, size_t min_leaf_items, size_t randomly_ignored_features)
@@ -74,7 +73,7 @@ void decision_tree_node::split(const xt::xarray<double>& x, const xt::xarray<dou
     double best_threshold = m_split_threshold;
     xt::xarray<size_t> best_indeces[2];
 
-    if (entropy() == 0.0)
+    if (fabs(entropy() - 0.0) < std::numeric_limits<double>::epsilon())
         return;
     if (max_depth > 0 && m_layer >= max_depth)
         return;
